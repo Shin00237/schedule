@@ -1,11 +1,8 @@
 package com.cricri.model;
 
-import lombok.Data;
-
 public record ShiftType(
-    String id,                 // "MATIN", "APRES_MIDI", "SOIR"
-    int heureDebutMinutes,     // 390 pour 6h30 (6*60 + 30)
-    int heureFinMinutes,      // 990 pour 16h30 (16*60 + 30)
-    int dureeMinutes          // heureFinMinutes - heureDebutMinutes
-) {
-}
+    String id, // "MATIN", "APRES_MIDI", "SOIR"
+    int heureDebutMinutes, // 390 pour 6h30 (6*60 + 30)
+    int heureFinMinutes, // 990 pour 16h30 (16*60 + 30)
+    int dureeMinutes // heureFinMinutes - heureDebutMinutes
+    ) {}
