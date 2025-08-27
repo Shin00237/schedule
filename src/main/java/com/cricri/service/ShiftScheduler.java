@@ -21,6 +21,7 @@ public class ShiftScheduler {
     private List<Shift> shifts;
     private Map<String, Integer> shiftIndexMap;  // pour retrouver facilement l'index d'un shift
     private int maxHoursPerWeek = 40 * 60; // 40h en minutes par défaut
+    private int minRestHours = 11; // repos minimum entre shifts en heures
     
     // Variables OR-Tools
     private BoolVar[][] assignments;
@@ -68,6 +69,7 @@ public class ShiftScheduler {
         // Contraintes
         addMinimumEmployeesConstraint();
         addMaxHoursPerWeekConstraint();
+        addMinimumRestConstraint();
     }
 
     public void addMinimumEmployeesConstraint() {
@@ -132,4 +134,45 @@ public class ShiftScheduler {
             }
         }
     }
+
+    public void addMinimumRestConstraint() {
+        int minRestMinutes = minRestHours * 60; // convertir en minutes
+        
+        // Pour chaque employé
+        for (int e = 0; e < employees.size(); e++) {
+            // Pour chaque paire de shifts
+            for (int s1 = 0; s1 < shifts.size(); s1++) {
+                for (int s2 = 0; s2 < shifts.size(); s2++) {
+                    if (s1 != s2 && hasRestConflict(s1, s2, minRestMinutes)) {
+                        // Si les shifts sont en conflit, l'employé ne peut pas faire les deux
+                        model.addLessOrEqual(
+                            LinearExpr.newBuilder()
+                                .add(assignments[e][s1])
+                                .add(assignments[e][s2])
+                                .build(),
+                            1
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean hasRestConflict(int shiftIndex1, int shiftIndex2, int minRestMinutes) {
+        Shift shift1 = shifts.get(shiftIndex1);
+        Shift shift2 = shifts.get(shiftIndex2);
+        
+        // Calculer les temps absolus en minutes depuis le début de la période
+        int endTime1 = calculateAbsoluteTime(shift1.jour(), shift1.type().heureFinMinutes());
+        int startTime2 = calculateAbsoluteTime(shift2.jour(), shift2.type().heureDebutMinutes());
+        
+        // Il y a conflit si shift2 commence moins de minRestMinutes après la fin de shift1
+        return startTime2 > endTime1 && startTime2 < endTime1 + minRestMinutes;
+    }
+
+    private int calculateAbsoluteTime(int jour, int heureMinutes) {
+        // Convertir en temps absolu : (jour-1) * 24h * 60min + heureMinutes
+        return (jour - 1) * 24 * 60 + heureMinutes;
+    }
+
 }

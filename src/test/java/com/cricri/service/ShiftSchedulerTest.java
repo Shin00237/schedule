@@ -53,7 +53,7 @@ class ShiftSchedulerTest {
     }
 
     @Test
-    void testEachShiftMustBeCovered() {
+    void addMinimumEmployeesConstraintTest() {
         // Construire le modèle
         scheduler.buildModel();
         
@@ -79,7 +79,7 @@ class ShiftSchedulerTest {
     }
 
     @Test
-    void testMaxHoursPerWeekConstraint() {
+    void addMaxHoursPerWeekConstraintTest() {
         // Configuration pour tester la contrainte hebdomadaire - plus réaliste
         Employee emp1 = new Employee("E1", "Alice");
         Employee emp2 = new Employee("E2", "Bob");
@@ -149,6 +149,72 @@ class ShiftSchedulerTest {
                 if (solver.value(testScheduler.getAssignments()[e][s]) == 1) {
                     coveredShifts++;
                     break; // Un seul employé par shift suffit
+                }
+            }
+        }
+        assertEquals(testShifts.size(), coveredShifts, "Tous les shifts doivent être couverts");
+    }
+
+    @Test
+    void addMinimumRestConstraintTest() {
+        // Configuration spécifique pour tester la contrainte de repos minimum
+        Employee emp1 = new Employee("E1", "Alice");
+        Employee emp2 = new Employee("E2", "Bob");
+        List<Employee> testEmployees = Arrays.asList(emp1, emp2);
+        
+        // Créer des shifts avec conflit de repos (< 11h entre eux)
+        ShiftType soir = new ShiftType("SOIR", 1320, 1440, 120); // 22h-24h = 2h
+        ShiftType matin = new ShiftType("MATIN", 420, 540, 120); // 7h-9h = 2h
+        
+        // Shift du soir jour 1 (finit à 24h) + shift matin jour 2 (commence à 7h) = 7h de repos seulement
+        Shift soirJ1 = new Shift("Jour1-SOIR", 1, soir, 1, 1);
+        Shift matinJ2 = new Shift("Jour2-MATIN", 2, matin, 1, 1);
+        
+        // Shift sans conflit pour comparaison
+        Shift matinJ3 = new Shift("Jour3-MATIN", 3, matin, 1, 1); // 48h après le soir J1, OK
+        
+        List<Shift> testShifts = Arrays.asList(soirJ1, matinJ2, matinJ3);
+        
+        // Créer le scheduler
+        ShiftScheduler testScheduler = new ShiftScheduler();
+        testScheduler.setEmployees(testEmployees);
+        testScheduler.setShifts(testShifts);
+        testScheduler.setMinRestHours(11); // 11h de repos minimum
+        testScheduler.setShiftIndexMap(new HashMap<>());
+        
+        for (int i = 0; i < testShifts.size(); i++) {
+            testScheduler.getShiftIndexMap().put(testShifts.get(i).id(), i);
+        }
+        
+        // Construire le modèle
+        testScheduler.buildModel();
+        
+        // Résoudre
+        CpSolver solver = new CpSolver();
+        CpSolverStatus status = solver.solve(testScheduler.getModel());
+        
+        // Vérifier qu'une solution existe
+        assertTrue(status == CpSolverStatus.OPTIMAL || status == CpSolverStatus.FEASIBLE, 
+                  "Une solution doit exister avec la contrainte de repos");
+        
+        // Vérifier que la contrainte de repos est respectée
+        for (int e = 0; e < testEmployees.size(); e++) {
+            boolean assignedToSoirJ1 = solver.value(testScheduler.getAssignments()[e][0]) == 1;
+            boolean assignedToMatinJ2 = solver.value(testScheduler.getAssignments()[e][1]) == 1;
+            
+            // Un même employé ne peut pas faire à la fois le soir J1 ET le matin J2 (< 11h de repos)
+            assertFalse(assignedToSoirJ1 && assignedToMatinJ2, 
+                       "L'employé " + testEmployees.get(e).nom() + 
+                       " ne peut pas faire le shift soir J1 ET matin J2 (repos insuffisant)");
+        }
+        
+        // Vérifier que tous les shifts sont couverts
+        int coveredShifts = 0;
+        for (int s = 0; s < testShifts.size(); s++) {
+            for (int e = 0; e < testEmployees.size(); e++) {
+                if (solver.value(testScheduler.getAssignments()[e][s]) == 1) {
+                    coveredShifts++;
+                    break;
                 }
             }
         }
