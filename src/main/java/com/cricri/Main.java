@@ -162,6 +162,9 @@ public class Main {
 
     // Afficher les heures par employé par semaine
     printHoursPerEmployee(scheduler, solver, employees, shifts);
+    
+    // Afficher les jours de repos par employé
+    printRestDaysPerEmployee(scheduler, solver, employees);
   }
 
   private static void printHoursPerEmployee(
@@ -207,6 +210,45 @@ public class Main {
 
       double totalHoursDouble = totalHours / 60.0;
       System.out.printf("  TOTAL: %.1fh\n", totalHoursDouble);
+    }
+  }
+
+  private static void printRestDaysPerEmployee(
+      ShiftScheduler scheduler, CpSolver solver, List<Employee> employees) {
+    System.out.println("\n=== Jours de repos par employé par semaine ===");
+
+    int nbWeeks = scheduler.getWorkingDaysPerWeek()[0].length;
+
+    for (int e = 0; e < employees.size(); e++) {
+      Employee employee = employees.get(e);
+      System.out.println("\n" + employee.nom() + " (" + employee.id() + "):");
+
+      for (int w = 0; w < nbWeeks; w++) {
+        long workingDays = solver.value(scheduler.getWorkingDaysPerWeek()[e][w]);
+        long restDays = 7 - workingDays;
+
+        System.out.printf("  Semaine %d: %d jours de repos", (w + 1), restDays);
+
+        // Afficher les jours de repos spécifiques
+        System.out.print(" (");
+        boolean first = true;
+        for (int d = 0; d < 7; d++) {
+          if (solver.value(scheduler.getWorkingDays()[e][w][d]) == 0) {
+            if (!first) System.out.print(", ");
+            System.out.print(JOURS[d]);
+            first = false;
+          }
+        }
+        System.out.print(")");
+
+        // Vérifier si la contrainte de repos est respectée
+        if (restDays >= 1) {
+          System.out.print(" [OK]");
+        } else {
+          System.out.print(" [ERREUR - Pas assez de repos!]");
+        }
+        System.out.println();
+      }
     }
   }
 }
