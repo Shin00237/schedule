@@ -11,6 +11,10 @@ public record Day(
     return week.weekNumber();
   }
 
+  public int getDayNumber() {
+    return (dayNumber - 1) % 7;
+  }
+
   public boolean isWeekend() {
     return dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY;
   }

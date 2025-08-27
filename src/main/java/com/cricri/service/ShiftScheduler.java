@@ -23,7 +23,8 @@ public class ShiftScheduler {
   // Variables OR-Tools
   private BoolVar[][] assignments;
   private IntVar[] employeesPerShift;
-  private BoolVar[][] workingDays;
+  private BoolVar[][][] workingDays; // [employé][semaine][jour_semaine] (0-6 pour lundi-dimanche)
+  private IntVar[][] workingDaysPerWeek; // [employé][semaine] - nombre de jours travaillés
   private IntVar[] hoursPerEmployee;
   private IntVar[][] hoursPerEmployeePerWeek; // [employé][semaine]
 
@@ -54,6 +55,24 @@ public class ShiftScheduler {
       }
     }
 
+    // Variables pour les jours travaillés
+    workingDays = new BoolVar[employees.size()][nbWeeks][7]; // 0-6 pour lundi-dimanche
+    for (int e = 0; e < employees.size(); e++) {
+      for (int w = 0; w < nbWeeks; w++) {
+        for (int d = 0; d < 7; d++) {
+          workingDays[e][w][d] = model.newBoolVar("workDay_e" + e + "_w" + w + "_d" + d);
+        }
+      }
+    }
+
+    // Variables pour compter les jours travaillés par semaine
+    workingDaysPerWeek = new IntVar[employees.size()][nbWeeks];
+    for (int e = 0; e < employees.size(); e++) {
+      for (int w = 0; w < nbWeeks; w++) {
+        workingDaysPerWeek[e][w] = model.newIntVar(0, 7, "workDaysPerWeek_e" + e + "_w" + w);
+      }
+    }
+
     // workingDays = new BoolVar[employees.size()][nombreJoursDansMois];
     // for (int e = 0; e < employees.size(); e++) {
     // for (int d = 0; d < nombreJoursDansMois; d++) {
@@ -65,6 +84,8 @@ public class ShiftScheduler {
     addMinimumEmployeesConstraint();
     addMaxHoursPerWeekConstraint();
     addMinimumRestConstraint();
+    addWorkingDaysConstraints();
+    addMinimumRestDaysConstraint();
   }
 
   public void addMinimumEmployeesConstraint() {
@@ -161,5 +182,40 @@ public class ShiftScheduler {
   private int calculateAbsoluteTime(int jour, int heureMinutes) {
     // Convertir en temps absolu : (jour-1) * 24h * 60min + heureMinutes
     return (jour - 1) * 24 * 60 + heureMinutes;
+  }
+
+  public void addWorkingDaysConstraints() {
+    // Lier les assignments aux workingDays
+    for (int e = 0; e < employees.size(); e++) {
+      for (int s = 0; s < shifts.size(); s++) {
+        Shift shift = shifts.get(s);
+        int weekNumber = shift.day().getWeekNumber();
+        int dayOfWeek = shift.day().getDayNumber(); // 0-6 pour lundi-dimanche
+
+        // Si l'employé est assigné à ce shift, alors il travaille ce jour
+        // workingDays[e][w][d] >= assignments[e][s]
+        model.addGreaterOrEqual(workingDays[e][weekNumber][dayOfWeek], assignments[e][s]);
+      }
+    }
+
+    // Lier workingDays à workingDaysPerWeek
+    for (int e = 0; e < employees.size(); e++) {
+      for (int w = 0; w < workingDaysPerWeek[e].length; w++) {
+        LinearExprBuilder sumDaysWorked = LinearExpr.newBuilder();
+        for (int d = 0; d < 7; d++) {
+          sumDaysWorked.add(workingDays[e][w][d]);
+        }
+        model.addEquality(workingDaysPerWeek[e][w], sumDaysWorked);
+      }
+    }
+  }
+
+  public void addMinimumRestDaysConstraint() {
+    // Contrainte dure : au moins 1 jour de repos par semaine (max 6 jours travaillés)
+    for (int e = 0; e < employees.size(); e++) {
+      for (int w = 0; w < workingDaysPerWeek[e].length; w++) {
+        model.addLessOrEqual(workingDaysPerWeek[e][w], 6);
+      }
+    }
   }
 }
