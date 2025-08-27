@@ -87,6 +87,9 @@ public class ShiftScheduler {
     addMinimumRestConstraint();
     addWorkingDaysConstraints();
     addMinimumRestDaysConstraint();
+
+    // Fonction objectif
+    addWeekdayStaffingObjective();
   }
 
   public void addMinimumEmployeesConstraint() {
@@ -111,16 +114,6 @@ public class ShiftScheduler {
       // Lier avec la variable employeesPerShift
       model.addEquality(employeesPerShift[s], sumEmployees);
     }
-  }
-
-  private int calculateNumberOfWeeks() {
-    if (shifts.isEmpty()) return 1;
-
-    int maxWeekNumber =
-        shifts.stream().mapToInt(shift -> shift.day().getWeekNumber()).max().orElse(0);
-
-    // Retourner le nombre total de semaines (0-indexé + 1)
-    return maxWeekNumber + 1;
   }
 
   public void addMaxHoursPerWeekConstraint() {
@@ -168,32 +161,6 @@ public class ShiftScheduler {
     }
   }
 
-  private boolean hasRestConflict(int shiftIndex1, int shiftIndex2, int minRestMinutes) {
-    Shift shift1 = shifts.get(shiftIndex1);
-    Shift shift2 = shifts.get(shiftIndex2);
-
-    // Calculer les temps absolus en minutes depuis le début de la période
-    int endTime1 = calculateAbsoluteTime(shift1.day(), shift1.type().heureFinMinutes());
-    int startTime2 = calculateAbsoluteTime(shift2.day(), shift2.type().heureDebutMinutes());
-
-    // Cas 1: Chevauchement - seulement si c'est le même jour absolu
-    int day1 = shift1.day().getWeekNumber() * 7 + shift1.day().getDayNumber();
-    int day2 = shift2.day().getWeekNumber() * 7 + shift2.day().getDayNumber();
-
-    if (day1 == day2 && startTime2 < endTime1) {
-      return true;
-    }
-
-    // Cas 2: Repos insuffisant - shift2 commence moins de minRestMinutes après la fin de shift1
-    return startTime2 > endTime1 && startTime2 < endTime1 + minRestMinutes;
-  }
-
-  private int calculateAbsoluteTime(Day day, int heureMinutes) {
-    // Convertir en temps absolu : (jour-1) * 24h * 60min + heureMinutes
-    int absoluteDay = day.getWeekNumber() * 7 + day.getDayNumber();
-    return absoluteDay * 24 * 60 + heureMinutes;
-  }
-
   public void addWorkingDaysConstraints() {
     // Lier les assignments aux workingDays
     for (int e = 0; e < employees.size(); e++) {
@@ -227,5 +194,57 @@ public class ShiftScheduler {
         model.addLessOrEqual(workingDaysPerWeek[e][w], 6);
       }
     }
+  }
+
+  public void addWeekdayStaffingObjective() {
+    LinearExprBuilder objective = LinearExpr.newBuilder();
+
+    for (int s = 0; s < shifts.size(); s++) {
+      Shift shift = shifts.get(s);
+      if (!shift.day().isWeekend()) {
+        // Pour chaque shift en semaine, ajouter le nombre d'employés à l'objectif
+        for (int e = 0; e < employees.size(); e++) {
+          objective.add(assignments[e][s]); // +1 par employé assigné
+        }
+      }
+    }
+
+    model.maximize(objective); // Maximiser le nombre d'employés en semaine
+  }
+
+  private int calculateNumberOfWeeks() {
+    if (shifts.isEmpty()) return 1;
+
+    int maxWeekNumber =
+        shifts.stream().mapToInt(shift -> shift.day().getWeekNumber()).max().orElse(0);
+
+    // Retourner le nombre total de semaines (0-indexé + 1)
+    return maxWeekNumber + 1;
+  }
+
+  private boolean hasRestConflict(int shiftIndex1, int shiftIndex2, int minRestMinutes) {
+    Shift shift1 = shifts.get(shiftIndex1);
+    Shift shift2 = shifts.get(shiftIndex2);
+
+    // Calculer les temps absolus en minutes depuis le début de la période
+    int endTime1 = calculateAbsoluteTime(shift1.day(), shift1.type().heureFinMinutes());
+    int startTime2 = calculateAbsoluteTime(shift2.day(), shift2.type().heureDebutMinutes());
+
+    // Cas 1: Chevauchement - seulement si c'est le même jour absolu
+    int day1 = shift1.day().getWeekNumber() * 7 + shift1.day().getDayNumber();
+    int day2 = shift2.day().getWeekNumber() * 7 + shift2.day().getDayNumber();
+
+    if (day1 == day2 && startTime2 < endTime1) {
+      return true;
+    }
+
+    // Cas 2: Repos insuffisant - shift2 commence moins de minRestMinutes après la fin de shift1
+    return startTime2 > endTime1 && startTime2 < endTime1 + minRestMinutes;
+  }
+
+  private int calculateAbsoluteTime(Day day, int heureMinutes) {
+    // Convertir en temps absolu : (jour-1) * 24h * 60min + heureMinutes
+    int absoluteDay = day.getWeekNumber() * 7 + day.getDayNumber();
+    return absoluteDay * 24 * 60 + heureMinutes;
   }
 }
