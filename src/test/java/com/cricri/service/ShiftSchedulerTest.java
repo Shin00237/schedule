@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.model.ShiftType;
+import com.cricri.model.Week;
+import com.cricri.model.Day;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
 import com.google.ortools.sat.CpSolverStatus;
@@ -37,9 +39,12 @@ class ShiftSchedulerTest {
         ShiftType matin = new ShiftType("MATIN", 390, 870, 480); // 6h30-14h30, 8h       
         shiftTypes = Arrays.asList(matin);
         
+        // Créer une semaine
+        Week week = Week.create(0);
+        
         // Créer des shifts
-        Shift shift1 = new Shift("Jour1-MATIN", 1, matin, 1, 2);
-        Shift shift2 = new Shift("Jour2-MATIN", 2, matin, 1, 1);
+        Shift shift1 = new Shift("Jour1-MATIN", week.getDay(0), matin, 1, 2); // Lundi
+        Shift shift2 = new Shift("Jour2-MATIN", week.getDay(1), matin, 1, 1); // Mardi
         shifts = Arrays.asList(shift1, shift2);
         
         // Initialiser le scheduler
@@ -87,14 +92,18 @@ class ShiftSchedulerTest {
         
         ShiftType normalShift = new ShiftType("NORMAL", 480, 960, 480); // 8h-16h = 8h
         
+        // Créer 2 semaines
+        Week week1 = Week.create(0);
+        Week week2 = Week.create(1);
+        
         // Créer des shifts sur 2 semaines - faisable avec 2 employés
-        Shift lundi1 = new Shift("Lundi1-NORMAL", 1, normalShift, 1, 1);    // Semaine 1
-        Shift mardi1 = new Shift("Mardi1-NORMAL", 2, normalShift, 1, 1);    // Semaine 1  
-        Shift mercredi1 = new Shift("Mercredi1-NORMAL", 3, normalShift, 1, 1); // Semaine 1
-        Shift jeudi1 = new Shift("Jeudi1-NORMAL", 4, normalShift, 1, 1);    // Semaine 1
-        Shift vendredi1 = new Shift("Vendredi1-NORMAL", 5, normalShift, 1, 1); // Semaine 1
-        Shift lundi2 = new Shift("Lundi2-NORMAL", 8, normalShift, 1, 1);    // Semaine 2
-        Shift mardi2 = new Shift("Mardi2-NORMAL", 9, normalShift, 1, 1);    // Semaine 2
+        Shift lundi1 = new Shift("Lundi1-NORMAL", week1.getDay(0), normalShift, 1, 1);    // Semaine 1
+        Shift mardi1 = new Shift("Mardi1-NORMAL", week1.getDay(1), normalShift, 1, 1);    // Semaine 1  
+        Shift mercredi1 = new Shift("Mercredi1-NORMAL", week1.getDay(2), normalShift, 1, 1); // Semaine 1
+        Shift jeudi1 = new Shift("Jeudi1-NORMAL", week1.getDay(3), normalShift, 1, 1);    // Semaine 1
+        Shift vendredi1 = new Shift("Vendredi1-NORMAL", week1.getDay(4), normalShift, 1, 1); // Semaine 1
+        Shift lundi2 = new Shift("Lundi2-NORMAL", week2.getDay(0), normalShift, 1, 1);    // Semaine 2
+        Shift mardi2 = new Shift("Mardi2-NORMAL", week2.getDay(1), normalShift, 1, 1);    // Semaine 2
         
         List<Shift> testShifts = Arrays.asList(lundi1, mardi1, mercredi1, jeudi1, vendredi1, lundi2, mardi2);
         
@@ -127,7 +136,7 @@ class ShiftSchedulerTest {
             for (int s = 0; s < testShifts.size(); s++) {
                 if (solver.value(testScheduler.getAssignments()[e][s]) == 1) {
                     Shift shift = testShifts.get(s);
-                    int week = (shift.jour() - 1) / 7;
+                    int week = shift.day().getWeekNumber();
                     hoursPerEmployeePerWeek[e][week] += shift.type().dureeMinutes();
                 }
             }
@@ -162,16 +171,19 @@ class ShiftSchedulerTest {
         Employee emp2 = new Employee("E2", "Bob");
         List<Employee> testEmployees = Arrays.asList(emp1, emp2);
         
+        // Créer une semaine
+        Week week = Week.create(0);
+        
         // Créer des shifts avec conflit de repos (< 11h entre eux)
         ShiftType soir = new ShiftType("SOIR", 1320, 1440, 120); // 22h-24h = 2h
         ShiftType matin = new ShiftType("MATIN", 420, 540, 120); // 7h-9h = 2h
         
         // Shift du soir jour 1 (finit à 24h) + shift matin jour 2 (commence à 7h) = 7h de repos seulement
-        Shift soirJ1 = new Shift("Jour1-SOIR", 1, soir, 1, 1);
-        Shift matinJ2 = new Shift("Jour2-MATIN", 2, matin, 1, 1);
+        Shift soirJ1 = new Shift("Jour1-SOIR", week.getDay(0), soir, 1, 1); // Lundi
+        Shift matinJ2 = new Shift("Jour2-MATIN", week.getDay(1), matin, 1, 1); // Mardi
         
         // Shift sans conflit pour comparaison
-        Shift matinJ3 = new Shift("Jour3-MATIN", 3, matin, 1, 1); // 48h après le soir J1, OK
+        Shift matinJ3 = new Shift("Jour3-MATIN", week.getDay(2), matin, 1, 1); // Mercredi, 48h après le soir J1, OK
         
         List<Shift> testShifts = Arrays.asList(soirJ1, matinJ2, matinJ3);
         

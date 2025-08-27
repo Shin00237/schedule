@@ -7,6 +7,8 @@ import java.util.List;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.model.ShiftType;
+import com.cricri.model.Week;
+import com.cricri.model.Day;
 import com.cricri.service.ShiftScheduler;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
@@ -67,14 +69,18 @@ public class Main {
         ShiftType matin = new ShiftType("MATIN", HEURE_DEBUT_MATIN, HEURE_FIN_MATIN, DUREE_SHIFT_MATIN);
         ShiftType soir = new ShiftType("SOIR", HEURE_DEBUT_SOIR, HEURE_FIN_SOIR, DUREE_SHIFT_SOIR);
         
+        // Créer une semaine
+        Week week = Week.create(0);
+        
         // Créer des shifts pour une semaine complète
         List<Shift> shifts = new java.util.ArrayList<>();
         
         for (int i = 0; i < JOURS.length; i++) {
+            Day day = week.getDay(i);
             // Shift du matin
-            shifts.add(new Shift(JOURS[i] + "-MATIN", i + 1, matin, MIN_EMPLOYES_PAR_SHIFT, MAX_EMPLOYES_PAR_SHIFT));
+            shifts.add(new Shift(JOURS[i] + "-MATIN", day, matin, MIN_EMPLOYES_PAR_SHIFT, MAX_EMPLOYES_PAR_SHIFT));
             // Shift du soir
-            shifts.add(new Shift(JOURS[i] + "-SOIR", i + 1, soir, MIN_EMPLOYES_PAR_SHIFT, MAX_EMPLOYES_PAR_SHIFT));
+            shifts.add(new Shift(JOURS[i] + "-SOIR", day, soir, MIN_EMPLOYES_PAR_SHIFT, MAX_EMPLOYES_PAR_SHIFT));
         }
         
         // Créer le scheduler
@@ -142,11 +148,10 @@ public class Main {
         System.out.println("\n=== Heures par employé par semaine ===");
         
         // Calculer le nombre de semaines
-        int maxDay = shifts.stream()
-            .mapToInt(Shift::jour)
+        int nbWeeks = shifts.stream()
+            .mapToInt(shift -> shift.day().getWeekNumber())
             .max()
-            .orElse(7);
-        int nbWeeks = (maxDay + 6) / 7;
+            .orElse(0) + 1;
         
         for (int e = 0; e < employees.size(); e++) {
             Employee employee = employees.get(e);
@@ -160,7 +165,7 @@ public class Main {
                 // Calculer les heures pour cette semaine
                 for (int s = 0; s < shifts.size(); s++) {
                     Shift shift = shifts.get(s);
-                    int shiftWeek = (shift.jour() - 1) / 7;
+                    int shiftWeek = shift.day().getWeekNumber();
                     
                     if (shiftWeek == w && solver.value(scheduler.getAssignments()[e][s]) == 1) {
                         weekHours += shift.type().dureeMinutes();

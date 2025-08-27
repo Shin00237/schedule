@@ -99,13 +99,13 @@ public class ShiftScheduler {
     private int calculateNumberOfWeeks() {
         if (shifts.isEmpty()) return 1;
         
-        int maxDay = shifts.stream()
-            .mapToInt(Shift::jour)
+        int maxWeekNumber = shifts.stream()
+            .mapToInt(shift -> shift.day().getWeekNumber())
             .max()
-            .orElse(7);
+            .orElse(0);
         
-        // Calculer le nombre de semaines (arrondi vers le haut)
-        return (maxDay + 6) / 7;
+        // Retourner le nombre total de semaines (0-indexé + 1)
+        return maxWeekNumber + 1;
     }
 
     public void addMaxHoursPerWeekConstraint() {
@@ -118,7 +118,7 @@ public class ShiftScheduler {
                 // Pour chaque shift de cette semaine
                 for (int s = 0; s < shifts.size(); s++) {
                     Shift shift = shifts.get(s);
-                    int shiftWeek = (shift.jour() - 1) / 7; // Semaine du shift (0-indexé)
+                    int shiftWeek = shift.day().getWeekNumber();
                     
                     if (shiftWeek == w) {
                         // Ajouter les minutes de ce shift si l'employé y est assigné
