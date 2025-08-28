@@ -17,6 +17,27 @@ com.cricri/
 
 ## Règles de Développement
 
+### 0. Système de Configuration (Nouvelle Architecture)
+
+**Classes Clés :**
+- `ConstraintType` : Enumération des types de contraintes disponibles
+- `ConstraintNature` : HARD (obligatoire) ou SOFT (avec pénalité)
+- `ConstraintPriority` : Priorités nommées (FUNDAMENTAL, CONSISTENCY, SAFETY, NORMAL, COMFORT, OPTIMIZATION)
+- `ConstraintConfig` : Record encapsulant la configuration complète d'une contrainte
+- `ConstraintFactory` : Factory pour créer des contraintes à partir de configurations
+
+**Avantages du nouveau système :**
+- Configuration déclarative depuis interface graphique ou fichiers
+- Séparation claire entre types, natures et priorités
+- Support natif des contraintes souples (SOFT)
+- Factory pattern pour une création centralisée
+- Paramètres typés avec validation
+
+**Migration depuis l'ancien système :**
+- `withStandardConstraints()` → `TestDataFactory.createStandardSchedulerWithConfig()`
+- `withMinimumCoverage()` → `ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ...)`
+- Méthodes fluides → Configuration par liste de `ConstraintConfig`
+
 ### 1. Contraintes (package `constraints`)
 
 **Règles obligatoires :**
@@ -26,43 +47,84 @@ com.cricri/
 - Contraintes DOIVENT être stateless (pas d'état interne modifiable)
 - TOUJOURS appeler `context.ensureVariablesInitialized()` au début de `apply()`
 
-**Priorités recommandées :**
-- `-10` : Contraintes fondamentales (couverture minimum)
-- `-5` : Contraintes de cohérence (assignation-heures)  
-- `-3` : Contraintes de sécurité (repos minimum)
-- `0` : Contraintes normales (heures max/semaine)
-- `5` : Contraintes de confort (jours de repos)
+**Priorités avec énumérations (Nouveau Système) :**
+- `ConstraintPriority.FUNDAMENTAL (-10)` : Contraintes fondamentales (couverture minimum)
+- `ConstraintPriority.CONSISTENCY (-5)` : Contraintes de cohérence (assignation-heures)
+- `ConstraintPriority.SAFETY (-3)` : Contraintes de sécurité (repos minimum)
+- `ConstraintPriority.NORMAL (0)` : Contraintes normales (heures max/semaine)
+- `ConstraintPriority.COMFORT (5)` : Contraintes de confort (jours de repos)
+- `ConstraintPriority.OPTIMIZATION (10)` : Contraintes d'optimisation (maximisation heures)
 
-**Exemple type :**
+**Exemple type (Nouvelle Interface) :**
 ```java
 public class MaContrainte implements Constraint {
     private final int parametre;
-    
-    public MaContrainte(int parametre) {
+    private final ConstraintNature nature;
+    private final ConstraintPriority priority;
+
+    public MaContrainte(int parametre, ConstraintNature nature, ConstraintPriority priority) {
         this.parametre = parametre;
+        this.nature = nature;
+        this.priority = priority;
     }
-    
+
     @Override
     public void apply(SchedulingContext context) {
         context.ensureVariablesInitialized();
         // Logique de contrainte...
     }
-    
+
     @Override
     public String getName() {
-        return "MaContrainte(" + parametre + ")";
+        return "MaContrainte(" + parametre + ", " + nature + ")";
     }
-    
+
     @Override
-    public int getPriority() {
-        return 0; // Adapter selon le type
+    public ConstraintPriority getPriority() {
+        return priority;
+    }
+
+    @Override
+    public ConstraintNature getNature() {
+        return nature;
     }
 }
 ```
 
-### 2. Objectifs (package `objectives`)
+### 1.1. Contraintes Spéciales
 
-**Règles obligatoires :**
+**MaximizeWorkingHoursConstraint :**
+Cette contrainte reproduit l'ancienne logique `addWeekdayStaffingObjective()` qui avait été supprimée. Elle résout le problème où les employés ne travaillaient que 5h au lieu de 8h+ par shift.
+
+```java
+// Remplace l'ancienne addWeekdayStaffingObjective()
+ConstraintConfig.of(
+    ConstraintType.MAXIMIZE_WORKING_HOURS,
+    ConstraintNature.SOFT,
+    ConstraintPriority.OPTIMIZATION,
+    "weekdayMultiplier", 2  // Pondération ×3 pour jours de semaine (1 + 2)
+)
+```
+
+**Fonctionnement :**
+- Maximise les heures réelles travaillées (pousse vers la durée complète des shifts)
+- Favorise les assignations en semaine plutôt qu'en weekend
+- Utilise `model.maximize()` pour optimiser les heures totales
+- Nature SOFT avec priorité OPTIMIZATION pour s'appliquer après les contraintes critiques
+
+**Migration :**
+- Ancien : `addWeekdayStaffingObjective()` dans le scheduler
+- Nouveau : `MaximizeWorkingHoursConstraint` configurée comme contrainte
+
+### 2. Objectifs (package `objectives`) - En Cours de Migration
+
+**⚠️ Statut : La plupart des objectifs ont été migrés vers des contraintes SOFT**
+
+**Anciennes fonctions objectif migrées :**
+- `WeekdayPreferenceObjective` → `WeekdayPreferenceConstraint` + `MaximizeWorkingHoursConstraint`
+- `addWeekdayStaffingObjective()` → `MaximizeWorkingHoursConstraint`
+
+**Règles pour les objectifs restants :**
 - Toute fonction objectif DOIT implémenter `ObjectiveFunction`
 - Nom de classe DOIT finir par `Objective`
 - Une seule fonction objectif peut être appliquée (combine les critères si nécessaire)
@@ -85,12 +147,12 @@ void testMaContrainte() {
     List<Shift> shifts = createTestShifts();
     SchedulingContext context = new SchedulingContext(employees, shifts, indexMap);
     MaContrainte constraint = new MaContrainte(parametre);
-    
+
     // Act
     constraint.apply(context);
     CpSolver solver = new CpSolver();
     CpSolverStatus status = solver.solve(context.getModel());
-    
+
     // Assert
     assertTrue(status == OPTIMAL || status == FEASIBLE);
     // Vérifications spécifiques...
@@ -99,31 +161,60 @@ void testMaContrainte() {
 
 ### 4. Configuration et Usage
 
-**API Fluide Recommandée :**
+**API Moderne avec ConstraintConfig (Recommandée) :**
 ```java
-ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts)
-    .withMinimumCoverage()
-    .withMaxHoursPerWeek(39 * 60)
-    .withMinimumRest(11)
-    .withConstraint(new MaContraintCustom(params))
-    .withWeekdayPreference();
+List<ConstraintConfig> constraintConfigs = Arrays.asList(
+    ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD, ConstraintPriority.FUNDAMENTAL),
+    ConstraintConfig.of(ConstraintType.MAX_HOURS_PER_WEEK, ConstraintNature.HARD, ConstraintPriority.NORMAL, "maxHoursPerWeek", 39 * 60),
+    ConstraintConfig.of(ConstraintType.MINIMUM_REST, ConstraintNature.HARD, ConstraintPriority.SAFETY, "minRestHours", 11),
+    ConstraintConfig.of(ConstraintType.WEEKDAY_PREFERENCE, ConstraintNature.SOFT, ConstraintPriority.COMFORT, "multiplier", 1)
+);
 
+ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts);
+for (ConstraintConfig config : constraintConfigs) {
+    scheduler.withConstraint(ConstraintFactory.create(config));
+}
 scheduler.buildModel();
 ```
 
-**Configurations Prédéfinies :**
-- `withStandardConstraints()` : Contraintes de base pour planning classique
-- Ajouter d'autres presets selon les besoins métier
+**API Legacy (pour compatibilité avec les tests) :**
+```java
+// Utiliser les méthodes utilitaires dans TestDataFactory
+ModularShiftScheduler scheduler = TestDataFactory.createStandardSchedulerWithConfig(
+    employees, shifts, 39 * 60, 11, 5 * 60);
+```
+
+**Configurations Standard :**
+- `TestDataFactory.createStandardScheduler()` : Contraintes standard (40h/semaine, 11h repos, 5h min/shift)
+- `TestDataFactory.createMinimumCoverageScheduler()` : Seulement couverture minimum
+- Utiliser `ConstraintConfig` pour des configurations personnalisées
 
 ### 5. Extensibilité
 
 **Pour ajouter une nouvelle contrainte :**
 
-1. Créer la classe dans `constraints/`
-2. Implémenter l'interface `Constraint`
-3. Ajouter les tests dans `test/`
-4. Optionnel : Ajouter une méthode convenience dans `ModularShiftScheduler`
+1. Créer la classe dans `constraints/` implémentant l'interface `Constraint`
+2. Ajouter le nouveau type dans `ConstraintType.java`
+3. Ajouter le cas correspondant dans `ConstraintFactory.java`
+4. Ajouter les tests dans `test/`
 5. Documenter les paramètres et cas d'usage
+
+**Exemple complet d'ajout de contrainte :**
+```java
+// 1. Créer MaContrainte.java
+public class MaContrainte implements Constraint {
+    public MaContrainte(int param, ConstraintNature nature, ConstraintPriority priority) { ... }
+}
+
+// 2. Ajouter dans ConstraintType.java
+MA_CONTRAINTE
+
+// 3. Ajouter dans ConstraintFactory.java
+case MA_CONTRAINTE -> createMaConstraint(config);
+
+// 4. Usage avec ConstraintConfig
+ConstraintConfig.of(ConstraintType.MA_CONTRAINTE, ConstraintNature.HARD, ConstraintPriority.NORMAL, "param", valeur)
+```
 
 **Pour ajouter un nouvel objectif :**
 1. Créer la classe dans `objectives/`
@@ -157,12 +248,12 @@ scheduler.buildModel();
 ```java
 /**
  * Contrainte limitant le nombre d'heures maximum par semaine pour chaque employé.
- * 
+ *
  * @param maxHoursPerWeek Limite en minutes (ex: 39*60 pour 39h)
- * 
+ *
  * Exemple d'usage:
  * scheduler.withConstraint(new MaxHoursPerWeekConstraint(39 * 60));
- * 
+ *
  * Complexité: O(employees × weeks × shifts)
  */
 public class MaxHoursPerWeekConstraint implements Constraint {
@@ -193,7 +284,7 @@ public class MaxHoursPerWeekConstraint implements Constraint {
 ```
 src/test/java/com/cricri/
 ├── constraints/          # Tests unitaires des contraintes
-├── objectives/          # Tests des fonctions objectif  
+├── objectives/          # Tests des fonctions objectif
 ├── service/            # Tests des services (Scheduler, Context)
 ├── integration/        # Tests d'intégration bout-en-bout
 ├── performance/        # Tests de performance et benchmarks

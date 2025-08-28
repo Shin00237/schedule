@@ -117,7 +117,7 @@ public class Main {
 
         // 6. withMinimumRestDays(1) - par défaut SOFT, COMFORT dans la classe
         ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, ConstraintPriority.COMFORT,
-            "minRestDaysPerWeek", 1), // 1 jour de repos minimum
+            "minRestDaysPerWeek", 2), // 1 jour de repos minimum
 
         // 7. withWeekdayPreference() - par défaut SOFT, COMFORT
         ConstraintConfig.of(ConstraintType.WEEKDAY_PREFERENCE, ConstraintNature.SOFT, ConstraintPriority.COMFORT,
