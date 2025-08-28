@@ -2,17 +2,20 @@ package com.cricri.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import com.cricri.constraints.*;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import com.cricri.constraints.ConstraintConfig;
+import com.cricri.constraints.ConstraintFactory;
+import com.cricri.constraints.ConstraintNature;
+import com.cricri.constraints.ConstraintPriority;
+import com.cricri.constraints.ConstraintType;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.testutils.SolverAssertions;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 /**
  * Tests de compatibilité avec l'ancienne version de ShiftSchedulerTest.
@@ -33,7 +36,7 @@ class LegacyCompatibilityTest {
   }
 
   @Test
-  void testLegacyStandardConfigurationStillWorks() {
+  void legacyStandardConfigurationStillWorksTest() {
     // Recréer la configuration "standard" de l'ancien test
     ModularShiftScheduler scheduler =
         TestDataFactory.createStandardSchedulerWithConfig(
@@ -54,7 +57,7 @@ class LegacyCompatibilityTest {
   }
 
   @Test
-  void testLegacyWeekdayOptimizationStillWorks() {
+  void legacyWeekdayOptimizationStillWorksTest() {
     // Test similaire à testWeekdayStaffingObjective de l'ancien code
     ModularShiftScheduler scheduler =
         new ModularShiftScheduler(employees, shifts)
@@ -141,7 +144,7 @@ class LegacyCompatibilityTest {
   }
 
   @Test
-  void testLegacyMethodsStillAccessible() {
+  void legacyMethodsStillAccessibleTest() {
     // Vérifier que les méthodes utilisées dans l'ancien test sont toujours disponibles
     ModularShiftScheduler scheduler =
         TestDataFactory.createStandardSchedulerWithConfig(employees, shifts, 40 * 60, 11, 5 * 60);
@@ -166,7 +169,7 @@ class LegacyCompatibilityTest {
   }
 
   @Test
-  void testLegacyTwoWeekScenarioStillWorks() {
+  void legacyTwoWeekScenarioStillWorksTest() {
     // Recréer le scénario "deux semaines" de l'ancien test
     List<Shift> twoWeekShifts =
         TestDataFactory.createTwoWeekShifts(
@@ -223,7 +226,7 @@ class LegacyCompatibilityTest {
   }
 
   @Test
-  void testLegacyConflictScenarioStillWorks() {
+  void legacyConflictScenarioStillWorksTest() {
     // Tester un scénario de conflit similaire à l'ancien test
     List<Shift> conflictShifts =
         TestDataFactory.createConflictingShifts(TestDataFactory.createStandardWeeks()[0]);

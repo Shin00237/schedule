@@ -1,7 +1,8 @@
 package com.cricri.constraints;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import java.util.List;
+import org.junit.jupiter.api.Test;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.service.SchedulingContext;
@@ -9,8 +10,6 @@ import com.cricri.testutils.ConstraintTestBase;
 import com.cricri.testutils.SolverAssertions;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.sat.CpSolver;
-import java.util.List;
-import org.junit.jupiter.api.Test;
 
 /**
  * Tests unitaires pour AssignmentHoursConstraint.
@@ -29,7 +28,7 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testConstraintProperties() {
+  void constraintPropertiesTest() {
     testConstraintProperties(constraint);
 
     assertEquals(
@@ -38,7 +37,7 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testBasicAssignmentHoursConstraint() {
+  void basicAssignmentHoursConstraintTest() {
     // Ajouter une contrainte de couverture minimum pour avoir des assignations
     new MinimumCoverageConstraint().apply(context);
 
@@ -54,7 +53,7 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testNonAssignedEmployeeHasZeroHours() {
+  void nonAssignedEmployeeHasZeroHoursTest() {
     // Créer un scénario avec plus d'employés que nécessaire
     List<Employee> manyEmployees = TestDataFactory.createEmployees(5);
     List<Shift> fewShifts = shifts.subList(0, 2); // Seulement 2 shifts
@@ -94,7 +93,7 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testAssignedEmployeeRespectsMinimumHours() {
+  void assignedEmployeeRespectsMinimumHoursTest() {
     // Ajouter contrainte de couverture
     new MinimumCoverageConstraint().apply(context);
     constraint.apply(context);
@@ -118,7 +117,7 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testAssignedEmployeeRespectsMaximumHours() {
+  void assignedEmployeeRespectsMaximumHoursTest() {
     new MinimumCoverageConstraint().apply(context);
     constraint.apply(context);
 
@@ -142,7 +141,7 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testWithDifferentMinimumHours() {
+  void withDifferentMinimumHoursTest() {
     // Tester avec un minimum d'heures différent
     AssignmentHoursConstraint strictConstraint =
         new AssignmentHoursConstraint(7 * 60); // 7h minimum
@@ -169,7 +168,7 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testWithZeroMinimumHours() {
+  void withZeroMinimumHoursTest() {
     // Tester avec minimum = 0 (permet des assignations partielles)
     AssignmentHoursConstraint flexibleConstraint = new AssignmentHoursConstraint(0);
 
@@ -199,7 +198,7 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testConstraintWithVariousShiftTypes() {
+  void constraintWithVariousShiftTypesTest() {
     // Créer des shifts de différents types
     List<Shift> mixedShifts = TestDataFactory.createMixedShifts(week1);
     SchedulingContext mixedContext = TestDataFactory.createContext(employees, mixedShifts);

@@ -28,7 +28,7 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testConstraintProperties() {
+  void constraintPropertiesTest() {
     testConstraintProperties(constraint);
 
     assertEquals("WorkingDays(HARD)", constraint.getName());
@@ -36,7 +36,7 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testBasicWorkingDaysConsistency() {
+  void basicWorkingDaysConsistencyTest() {
     // Appliquer les contraintes de base pour avoir des assignations
     new MinimumCoverageConstraint().apply(context);
     new AssignmentHoursConstraint(5 * 60).apply(context);
@@ -49,7 +49,7 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testWorkingDaysWithMultipleShiftsPerDay() {
+  void workingDaysWithMultipleShiftsPerDayTest() {
     // Créer des shifts avec plusieurs shifts le même jour
     List<Shift> multiShiftsPerDay =
         List.of(
@@ -84,7 +84,7 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testWorkingDaysPerWeekCalculation() {
+  void workingDaysPerWeekCalculationTest() {
     new MinimumCoverageConstraint().apply(context);
     new AssignmentHoursConstraint(5 * 60).apply(context);
     constraint.apply(context);
@@ -113,7 +113,7 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testWorkingDaysAcrossMultipleWeeks() {
+  void workingDaysAcrossMultipleWeeksTest() {
     SchedulingContext twoWeekContext = createTwoWeekScenario();
 
     new MinimumCoverageConstraint().apply(twoWeekContext);
@@ -149,7 +149,7 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testWorkingDaysWithNoAssignments() {
+  void workingDaysWithNoAssignmentsTest() {
     // Créer un scénario où certains employés n'ont aucune assignation
     List<com.cricri.model.Employee> manyEmployees = TestDataFactory.createEmployees(6);
     List<Shift> fewShifts = shifts.subList(0, 2); // Seulement 2 shifts
@@ -188,7 +188,7 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testWorkingDaysWithComplexShiftPatterns() {
+  void workingDaysWithComplexShiftPatternsTest() {
     // Créer un pattern complexe : shifts sur différents jours et types
     List<Shift> complexPattern =
         List.of(
@@ -231,7 +231,7 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testWorkingDaysConstraintConsistency() {
+  void workingDaysConstraintConsistencyTest() {
     // Test de cohérence globale avec toutes les contraintes
     new MinimumCoverageConstraint().apply(context);
     new AssignmentHoursConstraint(5 * 60).apply(context);
@@ -252,7 +252,7 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testWorkingDaysEdgeCases() {
+  void workingDaysEdgeCasesTest() {
     // Test avec des cas limites : shifts à minuit, weekend, etc.
     List<Shift> edgeCases =
         List.of(

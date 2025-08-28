@@ -2,17 +2,20 @@ package com.cricri.robustness;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import com.cricri.constraints.*;
+import java.util.Collections;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import com.cricri.constraints.ConstraintConfig;
+import com.cricri.constraints.ConstraintFactory;
+import com.cricri.constraints.ConstraintNature;
+import com.cricri.constraints.ConstraintPriority;
+import com.cricri.constraints.ConstraintType;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.service.ModularShiftScheduler;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.Loader;
-import java.util.Collections;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 /**
  * Tests de robustesse pour vérifier que le système gère correctement les cas limites et les erreurs
@@ -26,7 +29,7 @@ class SchedulingRobustnessTest {
   }
 
   @Test
-  void testEmptyEmployeesList() {
+  void emptyEmployeesListTest() {
     List<Employee> emptyEmployees = Collections.emptyList();
     List<Shift> shifts =
         TestDataFactory.createStandardWeekShifts(TestDataFactory.createStandardWeeks()[0]);
@@ -41,7 +44,7 @@ class SchedulingRobustnessTest {
   }
 
   @Test
-  void testEmptyShiftsList() {
+  void emptyShiftsListTest() {
     List<Employee> employees = TestDataFactory.createStandardEmployees();
     List<Shift> emptyShifts = Collections.emptyList();
 
@@ -54,7 +57,7 @@ class SchedulingRobustnessTest {
   }
 
   @Test
-  void testNullInputsHandling() {
+  void nullInputsHandlingTest() {
     List<Employee> employees = TestDataFactory.createStandardEmployees();
     List<Shift> shifts =
         TestDataFactory.createStandardWeekShifts(TestDataFactory.createStandardWeeks()[0]);
@@ -74,7 +77,7 @@ class SchedulingRobustnessTest {
   }
 
   @Test
-  void testExtremeConstraintValues() {
+  void extremeConstraintValuesTest() {
     List<Employee> employees = TestDataFactory.createStandardEmployees();
     List<Shift> shifts =
         TestDataFactory.createStandardWeekShifts(TestDataFactory.createStandardWeeks()[0]);
@@ -121,7 +124,7 @@ class SchedulingRobustnessTest {
   }
 
   @Test
-  void testConstraintValidationEdgeCases() {
+  void constraintValidationEdgeCasesTest() {
     List<Employee> employees = TestDataFactory.createStandardEmployees();
     List<Shift> shifts =
         TestDataFactory.createStandardWeekShifts(TestDataFactory.createStandardWeeks()[0]);
@@ -160,7 +163,7 @@ class SchedulingRobustnessTest {
   }
 
   @Test
-  void testLargeNumberHandling() {
+  void largeNumberHandlingTest() {
     List<Employee> employees = TestDataFactory.createStandardEmployees();
     List<Shift> shifts =
         TestDataFactory.createStandardWeekShifts(TestDataFactory.createStandardWeeks()[0]);
@@ -198,7 +201,7 @@ class SchedulingRobustnessTest {
   }
 
   @Test
-  void testRepeatedBuildModelCalls() {
+  void repeatedBuildModelCallsTest() {
     List<Employee> employees = TestDataFactory.createStandardEmployees();
     List<Shift> shifts =
         TestDataFactory.createStandardWeekShifts(TestDataFactory.createStandardWeeks()[0]);
@@ -216,7 +219,7 @@ class SchedulingRobustnessTest {
   }
 
   @Test
-  void testSchedulerStateConsistency() {
+  void schedulerStateConsistencyTest() {
     List<Employee> employees = TestDataFactory.createStandardEmployees();
     List<Shift> shifts =
         TestDataFactory.createStandardWeekShifts(TestDataFactory.createStandardWeeks()[0]);
@@ -248,7 +251,7 @@ class SchedulingRobustnessTest {
   }
 
   @Test
-  void testConcurrentAccessSafety() {
+  void concurrentAccessSafetyTest() {
     List<Employee> employees = TestDataFactory.createStandardEmployees();
     List<Shift> shifts =
         TestDataFactory.createStandardWeekShifts(TestDataFactory.createStandardWeeks()[0]);

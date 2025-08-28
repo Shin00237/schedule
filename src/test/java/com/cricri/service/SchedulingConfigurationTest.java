@@ -4,12 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import com.cricri.model.Week;
-import com.cricri.testutils.TestDataFactory;
 import java.time.DayOfWeek;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import com.cricri.model.Week;
+import com.cricri.testutils.TestDataFactory;
 
 /**
  * Tests unitaires pour SchedulingConfiguration.
@@ -20,7 +19,7 @@ import org.junit.jupiter.api.Test;
 class SchedulingConfigurationTest {
 
   @Test
-  void testStandardWeekConfiguration() {
+  void standardWeekConfigurationTest() {
     SchedulingConfiguration config = SchedulingConfiguration.STANDARD_WEEK;
 
     assertEquals(7, config.getDaysPerCycle());
@@ -35,7 +34,7 @@ class SchedulingConfigurationTest {
   }
 
   @Test
-  void testWeekdaysOnlyConfiguration() {
+  void weekdaysOnlyConfigurationTest() {
     SchedulingConfiguration config = SchedulingConfiguration.WEEKDAYS_ONLY;
 
     assertEquals(5, config.getDaysPerCycle());
@@ -51,7 +50,7 @@ class SchedulingConfigurationTest {
   }
 
   @Test
-  void testSixDaysWeekConfiguration() {
+  void sixDaysWeekConfigurationTest() {
     SchedulingConfiguration config = SchedulingConfiguration.SIX_DAYS_WEEK;
 
     assertEquals(6, config.getDaysPerCycle());
@@ -62,7 +61,7 @@ class SchedulingConfigurationTest {
   }
 
   @Test
-  void testCustomConfiguration() {
+  void customConfigurationTest() {
     // Configuration personnalisée : 3 jours seulement
     List<DayOfWeek> customPattern =
         List.of(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY, DayOfWeek.SATURDAY);
@@ -79,7 +78,7 @@ class SchedulingConfigurationTest {
   }
 
   @Test
-  void testConfigurationValidation() {
+  void configurationValidationTest() {
     // Tester les validations du constructeur
     assertThrows(
         IllegalArgumentException.class, () -> new SchedulingConfiguration(0, List.of(), "Invalid"));
@@ -96,7 +95,7 @@ class SchedulingConfigurationTest {
   }
 
   @Test
-  void testGetDayOfWeekValidation() {
+  void getDayOfWeekValidationTest() {
     SchedulingConfiguration config = SchedulingConfiguration.WEEKDAYS_ONLY;
 
     assertThrows(IllegalArgumentException.class, () -> config.getDayOfWeek(-1));
@@ -104,7 +103,7 @@ class SchedulingConfigurationTest {
   }
 
   @Test
-  void testWeekCreationWithDifferentConfigurations() {
+  void weekCreationWithDifferentConfigurationsTest() {
     // Tester création de semaines avec différentes configurations
     Week standardWeek = Week.create(0, SchedulingConfiguration.STANDARD_WEEK);
     assertEquals(7, standardWeek.days().size());
@@ -118,7 +117,7 @@ class SchedulingConfigurationTest {
   }
 
   @Test
-  void testShiftCreationWithWeekdaysOnly() {
+  void shiftCreationWithWeekdaysOnlyTest() {
     // Tester création de shifts avec configuration 5 jours
     Week weekdaysWeek = Week.create(0, SchedulingConfiguration.WEEKDAYS_ONLY);
     var employees = TestDataFactory.createEmployees(3);
@@ -147,7 +146,7 @@ class SchedulingConfigurationTest {
   }
 
   @Test
-  void testToStringRepresentation() {
+  void toStringRepresentationTest() {
     assertEquals(
         "Semaine standard (7j) (7 jours)", SchedulingConfiguration.STANDARD_WEEK.toString());
     assertEquals(

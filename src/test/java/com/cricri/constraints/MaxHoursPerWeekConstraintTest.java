@@ -2,7 +2,11 @@ package com.cricri.constraints;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.model.ShiftType;
@@ -11,11 +15,6 @@ import com.cricri.service.SchedulingContext;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
 import com.google.ortools.sat.CpSolverStatus;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 class MaxHoursPerWeekConstraintTest {
 
@@ -54,7 +53,7 @@ class MaxHoursPerWeekConstraintTest {
   }
 
   @Test
-  void testApplyConstraint() {
+  void applyConstraintTest() {
     // Appliquer les contraintes nécessaires
     new MinimumCoverageConstraint().apply(context);
     new AssignmentHoursConstraint(5 * 60).apply(context);
@@ -101,17 +100,17 @@ class MaxHoursPerWeekConstraintTest {
   }
 
   @Test
-  void testConstraintName() {
+  void constraintNameTest() {
     assertEquals("MaxHoursPerWeek(" + (maxHoursPerWeek / 60.0) + "h)", constraint.getName());
   }
 
   @Test
-  void testConstraintPriority() {
+  void constraintPriorityTest() {
     assertEquals(0, constraint.getPriority());
   }
 
   @Test
-  void testHoursCalculation() {
+  void hoursCalculationTest() {
     // Appliquer les contraintes
     new MinimumCoverageConstraint().apply(context);
     new AssignmentHoursConstraint(5 * 60).apply(context);

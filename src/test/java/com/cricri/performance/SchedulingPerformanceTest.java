@@ -1,6 +1,14 @@
 package com.cricri.performance;
 
-import com.cricri.constraints.*;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import com.cricri.constraints.ConstraintConfig;
+import com.cricri.constraints.ConstraintFactory;
+import com.cricri.constraints.ConstraintNature;
+import com.cricri.constraints.ConstraintPriority;
+import com.cricri.constraints.ConstraintType;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.model.Week;
@@ -9,10 +17,6 @@ import com.cricri.testutils.SolverAssertions;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
 
 /**
  * Tests de performance pour s'assurer que le système reste performant même avec des volumes de
@@ -27,7 +31,7 @@ class SchedulingPerformanceTest {
 
   @Test
   @Timeout(5) // Maximum 5 secondes
-  void testSmallScalePerformance() {
+  void smallScalePerformanceTest() {
     List<Employee> employees = TestDataFactory.createEmployees(4);
     List<Shift> shifts =
         TestDataFactory.createStandardWeekShifts(TestDataFactory.createStandardWeeks()[0]);
@@ -49,7 +53,7 @@ class SchedulingPerformanceTest {
 
   @Test
   @Timeout(10) // Maximum 10 secondes
-  void testMediumScalePerformance() {
+  void mediumScalePerformanceTest() {
     List<Employee> employees = TestDataFactory.createEmployees(8);
     Week[] weeks = TestDataFactory.createStandardWeeks();
 
@@ -90,7 +94,7 @@ class SchedulingPerformanceTest {
 
   @Test
   @Timeout(30) // Maximum 30 secondes pour grosse charge
-  void testConstraintComplexityPerformance() {
+  void constraintComplexityPerformanceTest() {
     // Test avec toutes les contraintes activées
     List<Employee> employees = TestDataFactory.createEmployees(6);
     List<Shift> shifts =
@@ -166,7 +170,7 @@ class SchedulingPerformanceTest {
   }
 
   @Test
-  void testMemoryUsageBenchmark() {
+  void memoryUsageBenchmarkTest() {
     // Test de création/destruction répétée
     Runtime runtime = Runtime.getRuntime();
     long initialMemory = runtime.totalMemory() - runtime.freeMemory();

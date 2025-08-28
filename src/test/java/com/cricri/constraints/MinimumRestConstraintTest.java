@@ -1,15 +1,14 @@
 package com.cricri.constraints;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import java.util.List;
+import org.junit.jupiter.api.Test;
 import com.cricri.model.Shift;
 import com.cricri.service.SchedulingContext;
 import com.cricri.testutils.ConstraintTestBase;
 import com.cricri.testutils.SolverAssertions;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.sat.CpSolver;
-import java.util.List;
-import org.junit.jupiter.api.Test;
 
 /**
  * Tests unitaires pour MinimumRestConstraint.
@@ -28,7 +27,7 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testConstraintProperties() {
+  void constraintPropertiesTest() {
     testConstraintProperties(constraint);
 
     assertEquals("MinimumRest(" + minimumRestHours + "h)", constraint.getName());
@@ -36,7 +35,7 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testNoRestConflictWithNormalShifts() {
+  void noRestConflictWithNormalShiftsTest() {
     // Avec des shifts normaux (8h-16h) sur des jours différents, pas de conflit
     new MinimumCoverageConstraint().apply(context);
     new AssignmentHoursConstraint(5 * 60).apply(context);
@@ -49,7 +48,7 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testRestConflictPreventsSimultaneousAssignment() {
+  void restConflictPreventsSimultaneousAssignmentTest() {
     // Créer des shifts en conflit temporel (même jour, horaires qui se chevauchent)
     SchedulingContext conflictContext = createConflictingScenario();
 
@@ -72,7 +71,7 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testAdequateRestBetweenConsecutiveShifts() {
+  void adequateRestBetweenConsecutiveShiftsTest() {
     // Créer des shifts consécutifs mais avec repos suffisant
     List<Shift> consecutiveShifts =
         List.of(
@@ -97,7 +96,7 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testInsufficientRestPreventsConsecutiveAssignment() {
+  void insufficientRestPreventsConsecutiveAssignmentTest() {
     // Créer des shifts consécutifs avec repos insuffisant
     List<Shift> tooCloseShifts =
         List.of(
@@ -128,7 +127,7 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testDifferentRestPeriods() {
+  void differentRestPeriodsTest() {
     // Tester avec un repos plus strict (16h) mais sur un scénario plus simple
     MinimumRestConstraint strictConstraint = new MinimumRestConstraint(16);
 
@@ -145,7 +144,7 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testRestConstraintWithFlexibleRestPeriod() {
+  void restConstraintWithFlexibleRestPeriodTest() {
     // Tester avec un repos plus souple (8h)
     MinimumRestConstraint flexibleConstraint = new MinimumRestConstraint(8);
 
@@ -171,7 +170,7 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testMultipleEmployeesWithRestConstraints() {
+  void multipleEmployeesWithRestConstraintsTest() {
     // Avec plusieurs employés, les conflits peuvent être résolus par répartition
     List<com.cricri.model.Employee> manyEmployees = TestDataFactory.createEmployees(4);
     SchedulingContext multiEmployeeContext =
@@ -204,7 +203,7 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testNightShiftRestConstraints() {
+  void nightShiftRestConstraintsTest() {
     // Tester avec des shifts de nuit - utilisation plus souple du test
     List<Shift> nightShifts =
         List.of(
@@ -227,7 +226,7 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testRestConstraintAcrossWeekends() {
+  void restConstraintAcrossWeekendsTest() {
     // Tester le repos à travers le weekend
     List<Shift> weekendShifts =
         List.of(

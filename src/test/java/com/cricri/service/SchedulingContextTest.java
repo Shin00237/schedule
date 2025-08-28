@@ -5,16 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import java.util.HashMap;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.model.Week;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.Loader;
-import java.util.HashMap;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 /**
  * Tests unitaires pour SchedulingContext.
@@ -38,7 +37,7 @@ class SchedulingContextTest {
   }
 
   @Test
-  void testBasicContextConstruction() {
+  void basicContextConstructionTest() {
     assertNotNull(context.getEmployees());
     assertNotNull(context.getShifts());
     assertNotNull(context.getShiftIndexMap());
@@ -51,7 +50,7 @@ class SchedulingContextTest {
   }
 
   @Test
-  void testLazyInitializationBehavior() {
+  void lazyInitializationBehaviorTest() {
     // Au début, les variables ne devraient pas être initialisées
     assertFalse(
         context.isVariablesInitialized(), "Variables ne devraient pas être initialisées au départ");
@@ -71,7 +70,7 @@ class SchedulingContextTest {
   }
 
   @Test
-  void testEnsureVariablesInitialized() {
+  void ensureVariablesInitializedTest() {
     // Avant l'initialisation
     assertFalse(context.isVariablesInitialized());
 
@@ -91,7 +90,7 @@ class SchedulingContextTest {
   }
 
   @Test
-  void testVariableDimensions() {
+  void variableDimensionsTest() {
     context.ensureVariablesInitialized();
 
     // Vérifier dimensions des variables d'assignation
@@ -118,7 +117,7 @@ class SchedulingContextTest {
   }
 
   @Test
-  void testVariableNaming() {
+  void variableNamingTest() {
     context.ensureVariablesInitialized();
 
     // Vérifier que les variables ont des noms appropriés
@@ -138,7 +137,7 @@ class SchedulingContextTest {
   }
 
   @Test
-  void testWeekCountCalculation() {
+  void weekCountCalculationTest() {
     // Test avec shifts sur une semaine
     assertEquals(1, context.getWeekCount(), "Une semaine attendue");
 
@@ -163,7 +162,7 @@ class SchedulingContextTest {
   }
 
   @Test
-  void testShiftIndexMapUsage() {
+  void shiftIndexMapUsageTest() {
     // Vérifier que la map d'index est correctement construite
     for (int i = 0; i < shifts.size(); i++) {
       Shift shift = shifts.get(i);
@@ -178,7 +177,7 @@ class SchedulingContextTest {
   }
 
   @Test
-  void testMultipleInitializationCalls() {
+  void multipleInitializationCallsTest() {
     // L'initialisation multiple ne devrait pas poser de problème
     assertFalse(context.isVariablesInitialized());
 
@@ -200,7 +199,7 @@ class SchedulingContextTest {
   }
 
   @Test
-  void testContextWithLargeDataset() {
+  void contextWithLargeDatasetTest() {
     // Test avec plus d'employés et de shifts
     List<Employee> largeTeam = TestDataFactory.createEmployees(8);
     Week[] weeks = {Week.create(0), Week.create(1), Week.create(2)};
@@ -235,7 +234,7 @@ class SchedulingContextTest {
   }
 
   @Test
-  void testContextWithEdgeCases() {
+  void contextWithEdgeCasesTest() {
     // Test avec un seul employé
     List<Employee> singleEmployee = TestDataFactory.createEmployees(1);
     SchedulingContext singleEmpContext = TestDataFactory.createContext(singleEmployee, shifts);
@@ -254,7 +253,7 @@ class SchedulingContextTest {
   }
 
   @Test
-  void testContextVariableBounds() {
+  void contextVariableBoundsTest() {
     context.ensureVariablesInitialized();
 
     // Vérifier que les variables ont des bornes appropriées
@@ -285,7 +284,7 @@ class SchedulingContextTest {
   }
 
   @Test
-  void testContextUtilityMethods() {
+  void contextUtilityMethodsTest() {
     // Test des méthodes utilitaires
     assertTrue(context.getEmployeeCount() > 0);
     assertTrue(context.getShiftCount() > 0);
@@ -300,7 +299,7 @@ class SchedulingContextTest {
   }
 
   @Test
-  void testContextMemoryUsage() {
+  void contextMemoryUsageTest() {
     // Test simple pour vérifier qu'on ne gaspille pas trop de mémoire
     SchedulingContext[] contexts = new SchedulingContext[10];
 

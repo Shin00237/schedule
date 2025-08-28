@@ -3,8 +3,14 @@ package com.cricri.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import com.cricri.constraints.*;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import com.cricri.constraints.ConstraintConfig;
+import com.cricri.constraints.ConstraintFactory;
+import com.cricri.constraints.ConstraintNature;
+import com.cricri.constraints.ConstraintPriority;
+import com.cricri.constraints.ConstraintType;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.model.Week;
@@ -12,9 +18,6 @@ import com.cricri.testutils.SolverAssertions;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 /**
  * Tests unitaires pour ModularShiftScheduler.
@@ -38,7 +41,7 @@ class ModularShiftSchedulerTest {
   }
 
   @Test
-  void testBasicSchedulerConstruction() {
+  void basicSchedulerConstructionTest() {
     assertNotNull(scheduler.getEmployees());
     assertNotNull(scheduler.getShifts());
     assertNotNull(scheduler.getModel());
@@ -51,7 +54,7 @@ class ModularShiftSchedulerTest {
   }
 
   @Test
-  void testFluentAPIConstraintMethods() {
+  void fluentAPIConstraintMethodsTest() {
     // Tester l'API fluide pour les contraintes
     ModularShiftScheduler configuredScheduler =
         scheduler
@@ -109,7 +112,7 @@ class ModularShiftSchedulerTest {
   }
 
   @Test
-  void testFluentAPIObjectiveMethods() {
+  void fluentAPIObjectiveMethodsTest() {
     // Tester l'API fluide pour les objectifs
     ModularShiftScheduler configuredScheduler =
         scheduler
@@ -156,7 +159,7 @@ class ModularShiftSchedulerTest {
   }
 
   @Test
-  void testWithStandardConstraints() {
+  void withStandardConstraintsTest() {
     // Tester la configuration standard
     ModularShiftScheduler standardScheduler =
         TestDataFactory.createStandardSchedulerWithConfig(
@@ -181,7 +184,7 @@ class ModularShiftSchedulerTest {
   }
 
   @Test
-  void testMultipleConstraintChaining() {
+  void multipleConstraintChainingTest() {
     // Tester l'enchaînement de multiples contraintes
     ModularShiftScheduler chainedScheduler =
         new ModularShiftScheduler(employees, shifts)
@@ -253,7 +256,7 @@ class ModularShiftSchedulerTest {
   }
 
   @Test
-  void testSchedulerWithNoConstraints() {
+  void schedulerWithNoConstraintsTest() {
     // Tester un scheduler sans contraintes (devrait quand même fonctionner)
     ModularShiftScheduler emptyScheduler = new ModularShiftScheduler(employees, shifts);
 
@@ -268,7 +271,7 @@ class ModularShiftSchedulerTest {
   }
 
   @Test
-  void testSchedulerAccessorMethods() {
+  void schedulerAccessorMethodsTest() {
     // Tester les méthodes d'accès après construction
     TestDataFactory.createStandardSchedulerWithConfig(employees, shifts, 40 * 60, 11, 5 * 60)
         .buildModel();
@@ -292,7 +295,7 @@ class ModularShiftSchedulerTest {
   }
 
   @Test
-  void testSchedulerWithLargeDataset() {
+  void schedulerWithLargeDatasetTest() {
     // Test avec plus de données
     List<Employee> largeTeam = TestDataFactory.createEmployees(6);
     Week[] weeks = TestDataFactory.createStandardWeeks();
@@ -329,7 +332,7 @@ class ModularShiftSchedulerTest {
   }
 
   @Test
-  void testSchedulerPrintMethods() {
+  void schedulerPrintMethodsTest() {
     // Tester les méthodes d'affichage (pas d'assertion, juste vérifier qu'elles ne crashent pas)
     scheduler
         .withConstraint(
@@ -361,7 +364,7 @@ class ModularShiftSchedulerTest {
   }
 
   @Test
-  void testSchedulerWithEdgeCaseData() {
+  void schedulerWithEdgeCaseDataTest() {
     // Test avec des données limite
     List<Employee> singleEmployee = TestDataFactory.createEmployees(1);
     List<Shift> singleShift = shifts.subList(0, 1);
@@ -391,7 +394,7 @@ class ModularShiftSchedulerTest {
   }
 
   @Test
-  void testSchedulerConstraintValidation() {
+  void schedulerConstraintValidationTest() {
     // Tester avec des paramètres de contraintes variés
     ModularShiftScheduler validationScheduler =
         new ModularShiftScheduler(employees, shifts)
@@ -446,7 +449,7 @@ class ModularShiftSchedulerTest {
   }
 
   @Test
-  void testSchedulerMemoryManagement() {
+  void schedulerMemoryManagementTest() {
     // Test de création/destruction répétée pour vérifier la gestion mémoire
     for (int i = 0; i < 5; i++) {
       ModularShiftScheduler tempScheduler =
@@ -463,7 +466,7 @@ class ModularShiftSchedulerTest {
   }
 
   @Test
-  void testSchedulerConfigurationImmutability() {
+  void schedulerConfigurationImmutabilityTest() {
     // Vérifier que modifier la configuration ne casse pas les instances précédentes
     ModularShiftScheduler config1 =
         TestDataFactory.createStandardSchedulerWithConfig(employees, shifts, 30 * 60, 10, 4 * 60);

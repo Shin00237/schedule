@@ -1,7 +1,8 @@
 package com.cricri.constraints;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import java.util.List;
+import org.junit.jupiter.api.Test;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.service.SchedulingContext;
@@ -9,8 +10,6 @@ import com.cricri.testutils.ConstraintTestBase;
 import com.cricri.testutils.SolverAssertions;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.sat.CpSolver;
-import java.util.List;
-import org.junit.jupiter.api.Test;
 
 /**
  * Tests unitaires pour MinimumCoverageConstraint.
@@ -28,7 +27,7 @@ class MinimumCoverageConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testConstraintProperties() {
+  void constraintPropertiesTest() {
     testConstraintProperties(constraint);
 
     assertEquals("MinimumCoverage(HARD)", constraint.getName());
@@ -36,7 +35,7 @@ class MinimumCoverageConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testBasicMinimumCoverageConstraint() {
+  void basicMinimumCoverageConstraintTest() {
     testConstraintWithStandardData(constraint);
 
     // Vérifier que la couverture est respectée après résolution
@@ -45,7 +44,7 @@ class MinimumCoverageConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testCoverageWithRangeRequirements() {
+  void coverageWithRangeRequirementsTest() {
     // Tester avec des shifts ayant des plages min-max
     List<Shift> rangeShifts =
         List.of(
@@ -63,7 +62,7 @@ class MinimumCoverageConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testInfeasibleScenario() {
+  void infeasibleScenarioTest() {
     // Scénario impossible : 1 employé pour un shift qui en demande 2
     List<Employee> oneEmployee = TestDataFactory.createEmployees(1);
     List<Shift> impossibleShifts =
@@ -76,7 +75,7 @@ class MinimumCoverageConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testMultipleShiftsWithDifferentRequirements() {
+  void multipleShiftsWithDifferentRequirementsTest() {
     // Tester avec des shifts ayant des besoins variés
     List<Employee> fiveEmployees = TestDataFactory.createEmployees(5);
     List<Shift> variedShifts =
@@ -93,7 +92,7 @@ class MinimumCoverageConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testConstraintWithZeroMaxEmployees() {
+  void constraintWithZeroMaxEmployeesTest() {
     // Tester avec maxEmployees = 0 (shift optionnel)
     List<Shift> optionalShifts =
         List.of(
