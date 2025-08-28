@@ -1,4 +1,4 @@
-package com.cricri.constraints;
+package com.cricri.constraints.enums;
 
 /**
  * Définit la nature d'une contrainte dans le système de planification.

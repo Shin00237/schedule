@@ -3,6 +3,7 @@ package com.cricri.constraints;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import com.cricri.constraints.enums.ConstraintPriority;
 import com.cricri.model.Shift;
 import com.cricri.service.SchedulingContext;
 import com.cricri.testutils.ConstraintTestBase;

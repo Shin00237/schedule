@@ -1,6 +1,9 @@
-package com.cricri.constraints;
+package com.cricri.constraints.config;
 
 import java.util.Map;
+import com.cricri.constraints.enums.ConstraintNature;
+import com.cricri.constraints.enums.ConstraintPriority;
+import com.cricri.constraints.enums.ConstraintType;
 
 /**
  * Configuration complète d'une contrainte dans le système de planification.

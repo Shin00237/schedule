@@ -1,10 +1,15 @@
 package com.cricri.testutils;
 
-import com.cricri.constraints.ConstraintConfig;
-import com.cricri.constraints.ConstraintFactory;
-import com.cricri.constraints.ConstraintNature;
-import com.cricri.constraints.ConstraintPriority;
-import com.cricri.constraints.ConstraintType;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
+import com.cricri.constraints.config.ConstraintConfig;
+import com.cricri.constraints.enums.ConstraintNature;
+import com.cricri.constraints.enums.ConstraintPriority;
+import com.cricri.constraints.enums.ConstraintType;
+import com.cricri.factory.ConstraintFactory;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.model.ShiftType;
@@ -12,11 +17,6 @@ import com.cricri.model.Week;
 import com.cricri.service.ModularShiftScheduler;
 import com.cricri.service.SchedulingConfiguration;
 import com.cricri.service.SchedulingContext;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.IntStream;
 
 /**
  * Factory pour créer des données de test standardisées et réutilisables.

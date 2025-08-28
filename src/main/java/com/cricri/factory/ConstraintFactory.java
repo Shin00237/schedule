@@ -1,4 +1,15 @@
-package com.cricri.constraints;
+package com.cricri.factory;
+
+import com.cricri.constraints.AssignmentHoursConstraint;
+import com.cricri.constraints.Constraint;
+import com.cricri.constraints.MaxHoursPerWeekConstraint;
+import com.cricri.constraints.MaximizeWorkingHoursConstraint;
+import com.cricri.constraints.MinimumCoverageConstraint;
+import com.cricri.constraints.MinimumRestConstraint;
+import com.cricri.constraints.MinimumRestDaysConstraint;
+import com.cricri.constraints.WeekdayPreferenceConstraint;
+import com.cricri.constraints.WorkingDaysConstraint;
+import com.cricri.constraints.config.ConstraintConfig;
 
 /**
  * Factory pour créer des contraintes à partir de configurations.

@@ -1,5 +1,7 @@
 package com.cricri.constraints;
 
+import com.cricri.constraints.enums.ConstraintNature;
+import com.cricri.constraints.enums.ConstraintPriority;
 import com.cricri.model.Shift;
 import com.cricri.service.SchedulingContext;
 import com.google.ortools.sat.LinearExpr;

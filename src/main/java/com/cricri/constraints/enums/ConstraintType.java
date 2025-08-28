@@ -1,4 +1,4 @@
-package com.cricri.constraints;
+package com.cricri.constraints.enums;
 
 /**
  * Enumération des types de contraintes disponibles dans le système de planification.

@@ -2,11 +2,11 @@ package com.cricri;
 
 import java.util.Arrays;
 import java.util.List;
-import com.cricri.constraints.ConstraintConfig;
-import com.cricri.constraints.ConstraintFactory;
-import com.cricri.constraints.ConstraintNature;
-import com.cricri.constraints.ConstraintPriority;
-import com.cricri.constraints.ConstraintType;
+import com.cricri.constraints.config.ConstraintConfig;
+import com.cricri.constraints.enums.ConstraintNature;
+import com.cricri.constraints.enums.ConstraintPriority;
+import com.cricri.constraints.enums.ConstraintType;
+import com.cricri.factory.ConstraintFactory;
 import com.cricri.model.Day;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
