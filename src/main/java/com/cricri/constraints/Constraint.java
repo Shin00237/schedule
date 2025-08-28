@@ -26,6 +26,6 @@ public interface Constraint {
    * Priorité d'application (plus faible = appliqué en premier)
    */
   default int getPriority() {
-    return 0;
+    return ConstraintPriority.NORMAL;
   }
 }

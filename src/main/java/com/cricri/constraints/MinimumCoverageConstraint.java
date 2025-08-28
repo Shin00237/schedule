@@ -40,6 +40,6 @@ public class MinimumCoverageConstraint implements Constraint {
 
   @Override
   public int getPriority() {
-    return -10; // Très prioritaire
+    return ConstraintPriority.FUNDAMENTAL;
   }
 }

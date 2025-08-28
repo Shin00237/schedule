@@ -47,6 +47,6 @@ public class WorkingDaysConstraint implements Constraint {
 
   @Override
   public int getPriority() {
-    return -2; // Prioritaire pour la cohérence
+    return ConstraintPriority.CONSISTENCY;
   }
 }

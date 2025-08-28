@@ -53,6 +53,6 @@ public class MaxHoursPerWeekConstraint implements Constraint {
 
   @Override
   public int getPriority() {
-    return 0; // Priorité normale
+    return ConstraintPriority.NORMAL;
   }
 }

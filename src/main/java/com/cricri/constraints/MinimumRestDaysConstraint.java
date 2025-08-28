@@ -30,6 +30,6 @@ public class MinimumRestDaysConstraint implements Constraint {
 
   @Override
   public int getPriority() {
-    return 5; // Moins prioritaire que les contraintes de base
+    return ConstraintPriority.COMFORT;
   }
 }

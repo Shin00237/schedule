@@ -73,6 +73,6 @@ public class MinimumRestConstraint implements Constraint {
 
   @Override
   public int getPriority() {
-    return -3; // Assez prioritaire
+    return ConstraintPriority.SAFETY;
   }
 }

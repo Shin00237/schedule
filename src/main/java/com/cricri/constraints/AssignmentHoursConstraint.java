@@ -49,6 +49,6 @@ public class AssignmentHoursConstraint implements Constraint {
 
   @Override
   public int getPriority() {
-    return -5; // Prioritaire pour la cohérence
+    return ConstraintPriority.CONSISTENCY;
   }
 }
