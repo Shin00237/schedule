@@ -1,24 +1,16 @@
 package com.cricri.service;
 
+import com.cricri.constraints.Constraint;
+import com.cricri.model.Employee;
+import com.cricri.model.Shift;
+import com.google.ortools.sat.BoolVar;
+import com.google.ortools.sat.CpModel;
+import com.google.ortools.sat.IntVar;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.cricri.constraints.AssignmentHoursConstraint;
-import com.cricri.constraints.Constraint;
-import com.cricri.constraints.MaxHoursPerWeekConstraint;
-import com.cricri.constraints.MinimumCoverageConstraint;
-import com.cricri.constraints.MinimumRestConstraint;
-import com.cricri.constraints.MinimumRestDaysConstraint;
-import com.cricri.constraints.WeekdayPreferenceConstraint;
-import com.cricri.constraints.WorkingDaysConstraint;
-import com.cricri.model.Employee;
-import com.cricri.model.Shift;
-import com.google.ortools.sat.BoolVar;
-import com.google.ortools.sat.CpModel;
-import com.google.ortools.sat.CpSolver;
-import com.google.ortools.sat.IntVar;
 import lombok.Getter;
 
 @Getter
@@ -33,7 +25,7 @@ public class ModularShiftScheduler {
     if (shifts == null) {
       throw new IllegalArgumentException("La liste des shifts ne peut pas être null");
     }
-    
+
     Map<String, Integer> shiftIndexMap = new HashMap<>();
     for (int i = 0; i < shifts.size(); i++) {
       shiftIndexMap.put(shifts.get(i).id(), i);
@@ -46,7 +38,6 @@ public class ModularShiftScheduler {
     constraints.add(constraint);
     return this;
   }
-
 
   public void buildModel() {
     System.out.println("\n=== Construction du modèle modulaire ===");
@@ -102,6 +93,15 @@ public class ModularShiftScheduler {
     System.out.println("\n=== Contraintes configurées ===");
     constraints.stream()
         .sorted(Comparator.comparingInt(constraint -> constraint.getPriority().getValue()))
-        .forEach(c -> System.out.println("  " + c.getName() + " (priorité: " + c.getPriority() + ", nature: " + c.getNature() + ")"));
+        .forEach(
+            c ->
+                System.out.println(
+                    "  "
+                        + c.getName()
+                        + " (priorité: "
+                        + c.getPriority()
+                        + ", nature: "
+                        + c.getNature()
+                        + ")"));
   }
 }

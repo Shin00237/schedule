@@ -11,7 +11,7 @@ public record Shift(
   public int jour() {
     return day.dayNumber();
   }
-  
+
   // Méthode pour récupérer le jour de la semaine (0-6)
   public int jourDansLaSemaine() {
     return day.getDayInWeek();

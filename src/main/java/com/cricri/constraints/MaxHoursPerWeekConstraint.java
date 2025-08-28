@@ -14,7 +14,8 @@ public class MaxHoursPerWeekConstraint implements Constraint {
     this(maxHoursPerWeek, ConstraintNature.HARD, ConstraintPriority.NORMAL);
   }
 
-  public MaxHoursPerWeekConstraint(int maxHoursPerWeek, ConstraintNature nature, ConstraintPriority priority) {
+  public MaxHoursPerWeekConstraint(
+      int maxHoursPerWeek, ConstraintNature nature, ConstraintPriority priority) {
     this.maxHoursPerWeek = maxHoursPerWeek;
     this.nature = nature;
     this.priority = priority;
@@ -42,9 +43,7 @@ public class MaxHoursPerWeekConstraint implements Constraint {
         }
 
         // Lier avec la variable hoursPerEmployeePerWeek
-        context
-            .getModel()
-            .addEquality(context.getHoursPerEmployeePerWeek()[e][w], hoursInWeek);
+        context.getModel().addEquality(context.getHoursPerEmployeePerWeek()[e][w], hoursInWeek);
 
         // Contrainte : ne pas dépasser le maximum d'heures par semaine
         context

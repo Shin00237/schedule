@@ -7,7 +7,7 @@ public record ShiftType(
     int dureeMinutes, // heureFinMinutes - heureDebutMinutes
     int pauseMinutes // durée de pause incluse dans le shift
     ) {
-  
+
   // Durée effective de travail (sans les pauses)
   public int dureeEffectiveMinutes() {
     return dureeMinutes - pauseMinutes;

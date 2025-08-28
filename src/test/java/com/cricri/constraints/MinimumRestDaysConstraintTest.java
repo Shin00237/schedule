@@ -3,10 +3,6 @@ package com.cricri.constraints;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
-
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.service.SchedulingContext;
@@ -14,12 +10,14 @@ import com.cricri.testutils.ConstraintTestBase;
 import com.cricri.testutils.SolverAssertions;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.sat.CpSolver;
+import java.util.List;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests unitaires pour MinimumRestDaysConstraint.
- * 
- * Cette contrainte assure qu'un employé a un nombre minimum de jours
- * de repos par semaine (ex: au moins 1 jour de repos = max 6 jours travaillés).
+ *
+ * <p>Cette contrainte assure qu'un employé a un nombre minimum de jours de repos par semaine (ex:
+ * au moins 1 jour de repos = max 6 jours travaillés).
  */
 class MinimumRestDaysConstraintTest extends ConstraintTestBase {
 
@@ -34,9 +32,9 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
   @Test
   void testConstraintProperties() {
     testConstraintProperties(constraint);
-    
-    assertEquals("MinimumRestDays(" + minimumRestDays + " rest days min, SOFT)", 
-        constraint.getName());
+
+    assertEquals(
+        "MinimumRestDays(" + minimumRestDays + " rest days min, SOFT)", constraint.getName());
     assertEquals(ConstraintPriority.COMFORT, constraint.getPriority());
   }
 
@@ -68,7 +66,9 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
     constraint.apply(impossibleContext);
 
     // Le problème devrait être infaisable
-    testConstraintMakesScenarioInfeasible(constraint, impossibleContext,
+    testConstraintMakesScenarioInfeasible(
+        constraint,
+        impossibleContext,
         "1 employé ne peut pas couvrir 7 shifts avec 1 jour de repos obligatoire");
   }
 
@@ -87,7 +87,8 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
     CpSolver solver = SolverAssertions.solveAndAssertSolution(feasibleContext);
 
     // Vérifier que tous les shifts sont couverts
-    SolverAssertions.assertAllShiftsCovered(solver, feasibleContext.getAssignments(), allWeekShifts);
+    SolverAssertions.assertAllShiftsCovered(
+        solver, feasibleContext.getAssignments(), allWeekShifts);
 
     // Vérifier que chaque employé a au moins 1 jour de repos
     SolverAssertions.assertWorkingDaysRespected(
@@ -98,7 +99,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
   void testStricterRestDaysConstraint() {
     // Tester avec 2 jours de repos minimum (max 5 jours travaillés)
     MinimumRestDaysConstraint strictConstraint = new MinimumRestDaysConstraint(2);
-    
+
     // Même avec 2 employés et 7 shifts, ce sera plus difficile
     List<Employee> twoEmployees = TestDataFactory.createEmployees(2);
     List<Shift> allWeekShifts = TestDataFactory.createWeekShifts(week1, 1, 1);
@@ -122,7 +123,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
   void testFlexibleRestDaysConstraint() {
     // Tester avec 0 jour de repos minimum (7 jours travaillés possibles)
     MinimumRestDaysConstraint flexibleConstraint = new MinimumRestDaysConstraint(0);
-    
+
     List<Employee> oneEmployee = TestDataFactory.createEmployees(1);
     List<Shift> allWeekShifts = TestDataFactory.createWeekShifts(week1, 1, 1);
     SchedulingContext flexibleContext = TestDataFactory.createContext(oneEmployee, allWeekShifts);
@@ -134,7 +135,8 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
 
     // Maintenant, un employé devrait pouvoir couvrir tous les shifts
     CpSolver solver = SolverAssertions.solveAndAssertSolution(flexibleContext);
-    SolverAssertions.assertAllShiftsCovered(solver, flexibleContext.getAssignments(), allWeekShifts);
+    SolverAssertions.assertAllShiftsCovered(
+        solver, flexibleContext.getAssignments(), allWeekShifts);
 
     // Vérifier qu'il peut travailler jusqu'à 7 jours
     SolverAssertions.assertWorkingDaysRespected(
@@ -145,7 +147,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
   void testMultiWeekRestDaysConstraint() {
     // Tester sur plusieurs semaines
     SchedulingContext twoWeekContext = createTwoWeekScenario();
-    
+
     new MinimumCoverageConstraint().apply(twoWeekContext);
     new AssignmentHoursConstraint(5 * 60).apply(twoWeekContext);
     new WorkingDaysConstraint().apply(twoWeekContext);
@@ -157,8 +159,10 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
     for (int e = 0; e < employees.size(); e++) {
       for (int w = 0; w < 2; w++) { // 2 semaines
         long workingDays = solver.value(twoWeekContext.getWorkingDaysPerWeek()[e][w]);
-        assertTrue(workingDays <= 6,
-            String.format("L'employé %s semaine %d travaille %d jours (max 6)",
+        assertTrue(
+            workingDays <= 6,
+            String.format(
+                "L'employé %s semaine %d travaille %d jours (max 6)",
                 employees.get(e).nom(), w + 1, workingDays));
       }
     }
@@ -186,15 +190,16 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
   @Test
   void testRestDaysWithMultipleShiftsPerDay() {
     // Tester avec plusieurs shifts le même jour
-    List<Shift> multiShiftsPerDay = List.of(
-        new Shift("Lundi-MATIN", week1.getDay(0), TestDataFactory.MORNING_SHIFT, 1, 1),
-        new Shift("Lundi-SOIR", week1.getDay(0), TestDataFactory.EVENING_SHIFT, 1, 1),
-        new Shift("Mardi-NORMAL", week1.getDay(1), TestDataFactory.NORMAL_SHIFT, 1, 1),
-        new Shift("Mercredi-MATIN", week1.getDay(2), TestDataFactory.MORNING_SHIFT, 1, 1),
-        new Shift("Mercredi-SOIR", week1.getDay(2), TestDataFactory.EVENING_SHIFT, 1, 1)
-    );
+    List<Shift> multiShiftsPerDay =
+        List.of(
+            new Shift("Lundi-MATIN", week1.getDay(0), TestDataFactory.MORNING_SHIFT, 1, 1),
+            new Shift("Lundi-SOIR", week1.getDay(0), TestDataFactory.EVENING_SHIFT, 1, 1),
+            new Shift("Mardi-NORMAL", week1.getDay(1), TestDataFactory.NORMAL_SHIFT, 1, 1),
+            new Shift("Mercredi-MATIN", week1.getDay(2), TestDataFactory.MORNING_SHIFT, 1, 1),
+            new Shift("Mercredi-SOIR", week1.getDay(2), TestDataFactory.EVENING_SHIFT, 1, 1));
 
-    SchedulingContext multiShiftContext = TestDataFactory.createContext(employees, multiShiftsPerDay);
+    SchedulingContext multiShiftContext =
+        TestDataFactory.createContext(employees, multiShiftsPerDay);
 
     new MinimumCoverageConstraint().apply(multiShiftContext);
     new AssignmentHoursConstraint(5 * 60).apply(multiShiftContext);
@@ -208,15 +213,18 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
         solver, multiShiftContext.getWorkingDaysPerWeek(), employees, 6);
 
     // Tous les shifts doivent être couverts
-    SolverAssertions.assertAllShiftsCovered(solver, multiShiftContext.getAssignments(), multiShiftsPerDay);
+    SolverAssertions.assertAllShiftsCovered(
+        solver, multiShiftContext.getAssignments(), multiShiftsPerDay);
   }
 
   @Test
   void testRestDaysCalculationAccuracy() {
     // Test spécifique pour vérifier le calcul des jours travaillés
     List<Employee> oneEmployee = TestDataFactory.createEmployees(1);
-    List<Shift> exactlyFiveShifts = TestDataFactory.createWeekShifts(week1, 1, 1).subList(0, 5); // Lun-Ven
-    SchedulingContext fiveShiftContext = TestDataFactory.createContext(oneEmployee, exactlyFiveShifts);
+    List<Shift> exactlyFiveShifts =
+        TestDataFactory.createWeekShifts(week1, 1, 1).subList(0, 5); // Lun-Ven
+    SchedulingContext fiveShiftContext =
+        TestDataFactory.createContext(oneEmployee, exactlyFiveShifts);
 
     new MinimumCoverageConstraint().apply(fiveShiftContext);
     new AssignmentHoursConstraint(5 * 60).apply(fiveShiftContext);
@@ -237,7 +245,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
   void testExtremeRestDaysConstraint() {
     // Tester avec contrainte extrême: 6 jours de repos (max 1 jour travaillé)
     MinimumRestDaysConstraint extremeConstraint = new MinimumRestDaysConstraint(6);
-    
+
     // Même avec beaucoup d'employés, très restrictif
     List<Employee> manyEmployees = TestDataFactory.createEmployees(8);
     List<Shift> fewShifts = shifts.subList(0, 3); // Seulement 3 shifts

@@ -34,8 +34,7 @@ public class WorkingDaysConstraint implements Constraint {
         context
             .getModel()
             .addGreaterOrEqual(
-                context.getWorkingDays()[e][weekNumber][dayOfWeek],
-                context.getAssignments()[e][s]);
+                context.getWorkingDays()[e][weekNumber][dayOfWeek], context.getAssignments()[e][s]);
       }
     }
 

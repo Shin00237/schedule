@@ -1,15 +1,14 @@
 package com.cricri.model;
 
+import com.cricri.service.SchedulingConfiguration;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
-import com.cricri.service.SchedulingConfiguration;
 
 public record Week(
     int weekNumber, // 0, 1, 2...
     List<Day> days, // jours de la semaine selon la configuration
-    SchedulingConfiguration config
-    ) {
+    SchedulingConfiguration config) {
   public static Week create(int weekNumber, SchedulingConfiguration config) {
     List<Day> days = new ArrayList<>();
     List<DayOfWeek> cyclePattern = config.getCyclePattern();
@@ -24,7 +23,7 @@ public record Week(
 
     return week;
   }
-  
+
   // Méthode de compatibilité avec configuration par défaut
   public static Week create(int weekNumber) {
     return create(weekNumber, SchedulingConfiguration.STANDARD_WEEK);

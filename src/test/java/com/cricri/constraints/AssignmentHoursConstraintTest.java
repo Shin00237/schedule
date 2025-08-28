@@ -2,10 +2,6 @@ package com.cricri.constraints;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
-
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.service.SchedulingContext;
@@ -13,13 +9,14 @@ import com.cricri.testutils.ConstraintTestBase;
 import com.cricri.testutils.SolverAssertions;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.sat.CpSolver;
+import java.util.List;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests unitaires pour AssignmentHoursConstraint.
- * 
- * Cette contrainte assure la cohérence entre assignations et heures réelles :
- * - Si employé non assigné → heures = 0
- * - Si employé assigné → heures >= minimum ET heures <= maximum du shift
+ *
+ * <p>Cette contrainte assure la cohérence entre assignations et heures réelles : - Si employé non
+ * assigné → heures = 0 - Si employé assigné → heures >= minimum ET heures <= maximum du shift
  */
 class AssignmentHoursConstraintTest extends ConstraintTestBase {
 
@@ -34,8 +31,9 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
   @Test
   void testConstraintProperties() {
     testConstraintProperties(constraint);
-    
-    assertEquals("AssignmentHours(min=" + (minHoursPerShift / 60.0) + "h, HARD)", constraint.getName());
+
+    assertEquals(
+        "AssignmentHours(min=" + (minHoursPerShift / 60.0) + "h, HARD)", constraint.getName());
     assertEquals(ConstraintPriority.CONSISTENCY, constraint.getPriority());
   }
 
@@ -43,7 +41,7 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
   void testBasicAssignmentHoursConstraint() {
     // Ajouter une contrainte de couverture minimum pour avoir des assignations
     new MinimumCoverageConstraint().apply(context);
-    
+
     // Appliquer la contrainte testée
     constraint.apply(context);
 
@@ -52,8 +50,7 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
 
     // Vérifier la cohérence assignation-heures
     SolverAssertions.assertAssignmentHoursConsistency(
-        solver, context.getAssignments(), context.getActualHours(), 
-        shifts, minHoursPerShift);
+        solver, context.getAssignments(), context.getActualHours(), shifts, minHoursPerShift);
   }
 
   @Test
@@ -85,12 +82,15 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
 
       if (!isAssignedToAnyShift) {
         foundNonAssignedEmployee = true;
-        assertEquals(0, totalHours,
+        assertEquals(
+            0,
+            totalHours,
             "L'employé " + manyEmployees.get(e).nom() + " non assigné devrait avoir 0h");
       }
     }
 
-    assert foundNonAssignedEmployee : "Il devrait y avoir au moins un employé non assigné dans ce scénario";
+    assert foundNonAssignedEmployee
+        : "Il devrait y avoir au moins un employé non assigné dans ce scénario";
   }
 
   @Test
@@ -108,10 +108,10 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
         long actualHours = solver.value(context.getActualHours()[e][s]);
 
         if (isAssigned) {
-          assert actualHours >= minHoursPerShift :
-              String.format("L'employé %s assigné au shift %s devrait avoir au moins %dh, mais n'a que %dmin",
-                  employees.get(e).nom(), shifts.get(s).id(), 
-                  minHoursPerShift / 60, actualHours);
+          assert actualHours >= minHoursPerShift
+              : String.format(
+                  "L'employé %s assigné au shift %s devrait avoir au moins %dh, mais n'a que %dmin",
+                  employees.get(e).nom(), shifts.get(s).id(), minHoursPerShift / 60, actualHours);
         }
       }
     }
@@ -132,8 +132,9 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
         int maxShiftHours = shifts.get(s).type().dureeEffectiveMinutes();
 
         if (isAssigned) {
-          assert actualHours <= maxShiftHours :
-              String.format("L'employé %s au shift %s ne devrait pas dépasser %dmin, mais a %dmin",
+          assert actualHours <= maxShiftHours
+              : String.format(
+                  "L'employé %s au shift %s ne devrait pas dépasser %dmin, mais a %dmin",
                   employees.get(e).nom(), shifts.get(s).id(), maxShiftHours, actualHours);
         }
       }
@@ -143,7 +144,8 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
   @Test
   void testWithDifferentMinimumHours() {
     // Tester avec un minimum d'heures différent
-    AssignmentHoursConstraint strictConstraint = new AssignmentHoursConstraint(7 * 60); // 7h minimum
+    AssignmentHoursConstraint strictConstraint =
+        new AssignmentHoursConstraint(7 * 60); // 7h minimum
 
     new MinimumCoverageConstraint().apply(context);
     strictConstraint.apply(context);
@@ -157,8 +159,9 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
         long actualHours = solver.value(context.getActualHours()[e][s]);
 
         if (isAssigned) {
-          assert actualHours >= 7 * 60 :
-              String.format("Avec contrainte stricte, l'employé %s devrait avoir au moins 7h, mais n'a que %dmin",
+          assert actualHours >= 7 * 60
+              : String.format(
+                  "Avec contrainte stricte, l'employé %s devrait avoir au moins 7h, mais n'a que %dmin",
                   employees.get(e).nom(), actualHours);
         }
       }
@@ -187,8 +190,7 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
         }
 
         // Les heures doivent toujours être >= 0
-        assert actualHours >= 0 :
-            "Les heures ne peuvent pas être négatives";
+        assert actualHours >= 0 : "Les heures ne peuvent pas être négatives";
       }
     }
 
@@ -215,14 +217,18 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
         Shift shift = mixedShifts.get(s);
 
         if (isAssigned) {
-          assert actualHours >= minHoursPerShift :
-              String.format("Shift %s: heures insuffisantes %dmin < %dmin",
+          assert actualHours >= minHoursPerShift
+              : String.format(
+                  "Shift %s: heures insuffisantes %dmin < %dmin",
                   shift.id(), actualHours, minHoursPerShift);
-          assert actualHours <= shift.type().dureeEffectiveMinutes() :
-              String.format("Shift %s: heures excessives %dmin > %dmin",
+          assert actualHours <= shift.type().dureeEffectiveMinutes()
+              : String.format(
+                  "Shift %s: heures excessives %dmin > %dmin",
                   shift.id(), actualHours, shift.type().dureeEffectiveMinutes());
         } else {
-          assertEquals(0, actualHours,
+          assertEquals(
+              0,
+              actualHours,
               String.format("Shift %s: employé non assigné mais heures > 0", shift.id()));
         }
       }

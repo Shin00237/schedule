@@ -2,11 +2,7 @@ package com.cricri.constraints;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.model.ShiftType;
@@ -15,6 +11,11 @@ import com.cricri.service.SchedulingContext;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
 import com.google.ortools.sat.CpSolverStatus;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class MaxHoursPerWeekConstraintTest {
 
@@ -29,23 +30,23 @@ class MaxHoursPerWeekConstraintTest {
     Loader.loadNativeLibraries();
 
     // Employés de test
-    employees = Arrays.asList(
-        new Employee("E1", "Alice"),
-        new Employee("E2", "Bob"));
+    employees = Arrays.asList(new Employee("E1", "Alice"), new Employee("E2", "Bob"));
 
     // Shifts sur 2 semaines pour tester la limite par semaine
-    ShiftType normalShift = new ShiftType("NORMAL", 480, 960, 480, 45); // 8h effectives (480-45=435min)
+    ShiftType normalShift =
+        new ShiftType("NORMAL", 480, 960, 480, 45); // 8h effectives (480-45=435min)
     Week week1 = Week.create(0);
     Week week2 = Week.create(1);
-    
-    shifts = Arrays.asList(
-        // Semaine 1 : 3 shifts = 435*3 = 1305min = 21.75h > 20h limite
-        new Shift("S1W1-1", week1.getDay(0), normalShift, 1, 1),
-        new Shift("S1W1-2", week1.getDay(1), normalShift, 1, 1),
-        new Shift("S1W1-3", week1.getDay(2), normalShift, 1, 1),
-        // Semaine 2 : 2 shifts = 435*2 = 870min = 14.5h < 20h limite
-        new Shift("S2W2-1", week2.getDay(0), normalShift, 1, 1),
-        new Shift("S2W2-2", week2.getDay(1), normalShift, 1, 1));
+
+    shifts =
+        Arrays.asList(
+            // Semaine 1 : 3 shifts = 435*3 = 1305min = 21.75h > 20h limite
+            new Shift("S1W1-1", week1.getDay(0), normalShift, 1, 1),
+            new Shift("S1W1-2", week1.getDay(1), normalShift, 1, 1),
+            new Shift("S1W1-3", week1.getDay(2), normalShift, 1, 1),
+            // Semaine 2 : 2 shifts = 435*2 = 870min = 14.5h < 20h limite
+            new Shift("S2W2-1", week2.getDay(0), normalShift, 1, 1),
+            new Shift("S2W2-2", week2.getDay(1), normalShift, 1, 1));
 
     // Contexte de test
     context = new SchedulingContext(employees, shifts, new HashMap<>());
@@ -64,16 +65,25 @@ class MaxHoursPerWeekConstraintTest {
     CpSolverStatus status = solver.solve(context.getModel());
 
     // Vérifier qu'une solution existe
-    assertTrue(status == CpSolverStatus.OPTIMAL || status == CpSolverStatus.FEASIBLE,
+    assertTrue(
+        status == CpSolverStatus.OPTIMAL || status == CpSolverStatus.FEASIBLE,
         "Une solution doit exister");
 
     // Vérifier les limites d'heures par semaine
     for (int e = 0; e < employees.size(); e++) {
       for (int w = 0; w < 2; w++) { // 2 semaines
         long hoursInWeek = solver.value(context.getHoursPerEmployeePerWeek()[e][w]);
-        assertTrue(hoursInWeek <= maxHoursPerWeek,
-            "L'employé " + employees.get(e).nom() + " semaine " + (w+1) + 
-            " dépasse la limite: " + (hoursInWeek/60.0) + "h > " + (maxHoursPerWeek/60.0) + "h");
+        assertTrue(
+            hoursInWeek <= maxHoursPerWeek,
+            "L'employé "
+                + employees.get(e).nom()
+                + " semaine "
+                + (w + 1)
+                + " dépasse la limite: "
+                + (hoursInWeek / 60.0)
+                + "h > "
+                + (maxHoursPerWeek / 60.0)
+                + "h");
       }
     }
 
@@ -92,7 +102,7 @@ class MaxHoursPerWeekConstraintTest {
 
   @Test
   void testConstraintName() {
-    assertEquals("MaxHoursPerWeek(" + (maxHoursPerWeek/60.0) + "h)", constraint.getName());
+    assertEquals("MaxHoursPerWeek(" + (maxHoursPerWeek / 60.0) + "h)", constraint.getName());
   }
 
   @Test
@@ -116,18 +126,20 @@ class MaxHoursPerWeekConstraintTest {
     for (int e = 0; e < employees.size(); e++) {
       for (int w = 0; w < 2; w++) {
         long expectedHours = 0;
-        
+
         // Calculer les heures attendues pour cette semaine
         for (int s = 0; s < shifts.size(); s++) {
           Shift shift = shifts.get(s);
-          if (shift.day().getWeekNumber() == w && 
-              solver.value(context.getAssignments()[e][s]) == 1) {
+          if (shift.day().getWeekNumber() == w
+              && solver.value(context.getAssignments()[e][s]) == 1) {
             expectedHours += solver.value(context.getActualHours()[e][s]);
           }
         }
-        
+
         long actualHours = solver.value(context.getHoursPerEmployeePerWeek()[e][w]);
-        assertEquals(expectedHours, actualHours,
+        assertEquals(
+            expectedHours,
+            actualHours,
             "Les heures calculées ne correspondent pas aux assignations");
       }
     }

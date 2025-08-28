@@ -2,11 +2,8 @@ package com.cricri.constraints;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
-
 import com.cricri.model.Shift;
 import com.cricri.service.SchedulingContext;
 import com.cricri.testutils.ConstraintTestBase;
@@ -16,11 +13,10 @@ import com.google.ortools.sat.CpSolver;
 
 /**
  * Tests unitaires pour WorkingDaysConstraint.
- * 
- * Cette contrainte établit la cohérence entre les assignations de shifts
- * et les variables de jours travaillés. Elle assure que :
- * - Si un employé travaille un shift un jour donné → workingDay[jour] = true
- * - workingDaysPerWeek = somme des workingDays de la semaine
+ *
+ * <p>Cette contrainte établit la cohérence entre les assignations de shifts et les variables de
+ * jours travaillés. Elle assure que : - Si un employé travaille un shift un jour donné →
+ * workingDay[jour] = true - workingDaysPerWeek = somme des workingDays de la semaine
  */
 class WorkingDaysConstraintTest extends ConstraintTestBase {
 
@@ -34,8 +30,8 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
   @Test
   void testConstraintProperties() {
     testConstraintProperties(constraint);
-    
-    assertEquals("WorkingDays", constraint.getName());
+
+    assertEquals("WorkingDays(HARD)", constraint.getName());
     assertEquals(ConstraintPriority.CONSISTENCY, constraint.getPriority());
   }
 
@@ -55,14 +51,15 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
   @Test
   void testWorkingDaysWithMultipleShiftsPerDay() {
     // Créer des shifts avec plusieurs shifts le même jour
-    List<Shift> multiShiftsPerDay = List.of(
-        new Shift("Lundi-MATIN", week1.getDay(0), TestDataFactory.MORNING_SHIFT, 1, 1),
-        new Shift("Lundi-SOIR", week1.getDay(0), TestDataFactory.EVENING_SHIFT, 1, 1),
-        new Shift("Mardi-NORMAL", week1.getDay(1), TestDataFactory.NORMAL_SHIFT, 1, 1)
-    );
+    List<Shift> multiShiftsPerDay =
+        List.of(
+            new Shift("Lundi-MATIN", week1.getDay(0), TestDataFactory.MORNING_SHIFT, 1, 1),
+            new Shift("Lundi-SOIR", week1.getDay(0), TestDataFactory.EVENING_SHIFT, 1, 1),
+            new Shift("Mardi-NORMAL", week1.getDay(1), TestDataFactory.NORMAL_SHIFT, 1, 1));
 
-    SchedulingContext multiShiftContext = TestDataFactory.createContext(employees, multiShiftsPerDay);
-    
+    SchedulingContext multiShiftContext =
+        TestDataFactory.createContext(employees, multiShiftsPerDay);
+
     new MinimumCoverageConstraint().apply(multiShiftContext);
     new AssignmentHoursConstraint(5 * 60).apply(multiShiftContext);
     constraint.apply(multiShiftContext);
@@ -77,8 +74,11 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
       boolean workingLundi = solver.value(multiShiftContext.getWorkingDays()[e][0][0]) == 1;
 
       if (assignedLundiMatin || assignedLundiSoir) {
-        assertTrue(workingLundi, 
-            "L'employé " + employees.get(e).nom() + " travaille lundi mais workingDay[lundi] = false");
+        assertTrue(
+            workingLundi,
+            "L'employé "
+                + employees.get(e).nom()
+                + " travaille lundi mais workingDay[lundi] = false");
       }
     }
   }
@@ -94,7 +94,7 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
     // Vérifier que workingDaysPerWeek = somme des workingDays
     for (int e = 0; e < employees.size(); e++) {
       int expectedWorkingDays = 0;
-      
+
       // Compter les jours réellement travaillés
       for (int d = 0; d < 7; d++) {
         if (solver.value(context.getWorkingDays()[e][0][d]) == 1) {
@@ -103,16 +103,19 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
       }
 
       long actualWorkingDaysPerWeek = solver.value(context.getWorkingDaysPerWeek()[e][0]);
-      
-      assertEquals(expectedWorkingDays, actualWorkingDaysPerWeek,
-          "workingDaysPerWeek devrait égaler la somme des workingDays pour " + employees.get(e).nom());
+
+      assertEquals(
+          expectedWorkingDays,
+          actualWorkingDaysPerWeek,
+          "workingDaysPerWeek devrait égaler la somme des workingDays pour "
+              + employees.get(e).nom());
     }
   }
 
   @Test
   void testWorkingDaysAcrossMultipleWeeks() {
     SchedulingContext twoWeekContext = createTwoWeekScenario();
-    
+
     new MinimumCoverageConstraint().apply(twoWeekContext);
     new AssignmentHoursConstraint(5 * 60).apply(twoWeekContext);
     constraint.apply(twoWeekContext);
@@ -133,9 +136,11 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
         }
 
         long actualWorkingDays = solver.value(twoWeekContext.getWorkingDaysPerWeek()[e][w]);
-        assertEquals(expectedWorkingDays, actualWorkingDays,
-            String.format("Semaine %d, employé %s: incohérence workingDays", 
-                w + 1, employees.get(e).nom()));
+        assertEquals(
+            expectedWorkingDays,
+            actualWorkingDays,
+            String.format(
+                "Semaine %d, employé %s: incohérence workingDays", w + 1, employees.get(e).nom()));
       }
     }
 
@@ -160,7 +165,7 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
     // car OR-Tools peut optimiser différemment
     for (int e = 0; e < manyEmployees.size(); e++) {
       boolean hasAnyAssignment = false;
-      
+
       for (int s = 0; s < fewShifts.size(); s++) {
         if (solver.value(sparsContext.getAssignments()[e][s]) == 1) {
           hasAnyAssignment = true;
@@ -169,12 +174,15 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
       }
 
       long workingDays = solver.value(sparsContext.getWorkingDaysPerWeek()[e][0]);
-      
+
       if (hasAnyAssignment) {
-        assertTrue(workingDays > 0,
-            "L'employé " + manyEmployees.get(e).nom() + " avec assignation devrait avoir >0 jours travaillés");
+        assertTrue(
+            workingDays > 0,
+            "L'employé "
+                + manyEmployees.get(e).nom()
+                + " avec assignation devrait avoir >0 jours travaillés");
       }
-      // Note: Ne pas vérifier workingDays = 0 pour non-assignés car la contrainte 
+      // Note: Ne pas vérifier workingDays = 0 pour non-assignés car la contrainte
       // permet workingDays >= assignments, pas d'égalité stricte
     }
   }
@@ -182,15 +190,15 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
   @Test
   void testWorkingDaysWithComplexShiftPatterns() {
     // Créer un pattern complexe : shifts sur différents jours et types
-    List<Shift> complexPattern = List.of(
-        new Shift("Lundi-MATIN", week1.getDay(0), TestDataFactory.MORNING_SHIFT, 1, 1),
-        new Shift("Mercredi-SOIR", week1.getDay(2), TestDataFactory.EVENING_SHIFT, 1, 1),
-        new Shift("Vendredi-NUIT", week1.getDay(4), TestDataFactory.NIGHT_SHIFT, 1, 1),
-        new Shift("Dimanche-NORMAL", week1.getDay(6), TestDataFactory.NORMAL_SHIFT, 1, 1)
-    );
+    List<Shift> complexPattern =
+        List.of(
+            new Shift("Lundi-MATIN", week1.getDay(0), TestDataFactory.MORNING_SHIFT, 1, 1),
+            new Shift("Mercredi-SOIR", week1.getDay(2), TestDataFactory.EVENING_SHIFT, 1, 1),
+            new Shift("Vendredi-NUIT", week1.getDay(4), TestDataFactory.NIGHT_SHIFT, 1, 1),
+            new Shift("Dimanche-NORMAL", week1.getDay(6), TestDataFactory.NORMAL_SHIFT, 1, 1));
 
     SchedulingContext complexContext = TestDataFactory.createContext(employees, complexPattern);
-    
+
     new MinimumCoverageConstraint().apply(complexContext);
     new AssignmentHoursConstraint(5 * 60).apply(complexContext);
     constraint.apply(complexContext);
@@ -200,7 +208,7 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
     // Vérifier que chaque jour d'assignation correspond à un workingDay
     for (int e = 0; e < employees.size(); e++) {
       boolean[] expectedWorkingDays = new boolean[7];
-      
+
       // Mapper les assignations aux jours
       for (int s = 0; s < complexPattern.size(); s++) {
         if (solver.value(complexContext.getAssignments()[e][s]) == 1) {
@@ -213,8 +221,10 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
       for (int d = 0; d < 7; d++) {
         boolean actualWorkingDay = solver.value(complexContext.getWorkingDays()[e][0][d]) == 1;
         if (expectedWorkingDays[d]) {
-          assertTrue(actualWorkingDay,
-              String.format("L'employé %s devrait travailler le jour %d", employees.get(e).nom(), d));
+          assertTrue(
+              actualWorkingDay,
+              String.format(
+                  "L'employé %s devrait travailler le jour %d", employees.get(e).nom(), d));
         }
       }
     }
@@ -233,8 +243,8 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
     // Vérifier que workingDaysPerWeek respecte la limite de MinimumRestDaysConstraint
     for (int e = 0; e < employees.size(); e++) {
       long workingDays = solver.value(context.getWorkingDaysPerWeek()[e][0]);
-      assertTrue(workingDays <= 6,
-          "workingDaysPerWeek devrait respecter la contrainte MinimumRestDays");
+      assertTrue(
+          workingDays <= 6, "workingDaysPerWeek devrait respecter la contrainte MinimumRestDays");
     }
 
     // Tous les shifts doivent être couverts
@@ -244,13 +254,16 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
   @Test
   void testWorkingDaysEdgeCases() {
     // Test avec des cas limites : shifts à minuit, weekend, etc.
-    List<Shift> edgeCases = List.of(
-        new Shift("Samedi-NORMAL", week1.getDay(5), TestDataFactory.NORMAL_SHIFT, 1, 1), // Weekend
-        new Shift("Dimanche-MATIN", week1.getDay(6), TestDataFactory.MORNING_SHIFT, 1, 1) // Dimanche
-    );
+    List<Shift> edgeCases =
+        List.of(
+            new Shift(
+                "Samedi-NORMAL", week1.getDay(5), TestDataFactory.NORMAL_SHIFT, 1, 1), // Weekend
+            new Shift(
+                "Dimanche-MATIN", week1.getDay(6), TestDataFactory.MORNING_SHIFT, 1, 1) // Dimanche
+            );
 
     SchedulingContext edgeContext = TestDataFactory.createContext(employees, edgeCases);
-    
+
     new MinimumCoverageConstraint().apply(edgeContext);
     new AssignmentHoursConstraint(5 * 60).apply(edgeContext);
     constraint.apply(edgeContext);
@@ -261,12 +274,10 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
     verifyAssignmentWorkingDayConsistency(solver, edgeContext, edgeCases);
   }
 
-  /**
-   * Méthode utilitaire pour vérifier la cohérence assignations → workingDays
-   */
+  /** Méthode utilitaire pour vérifier la cohérence assignations → workingDays */
   private void verifyAssignmentWorkingDayConsistency(
       CpSolver solver, SchedulingContext context, List<Shift> shifts) {
-    
+
     for (int e = 0; e < context.getEmployeeCount(); e++) {
       boolean[] shouldWorkDays = new boolean[7]; // Un par jour de la semaine
 
@@ -283,8 +294,10 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
       for (int d = 0; d < 7; d++) {
         boolean actualWorkingDay = solver.value(context.getWorkingDays()[e][0][d]) == 1;
         if (shouldWorkDays[d]) {
-          assertTrue(actualWorkingDay,
-              String.format("L'employé %d devrait travailler le jour %d selon ses assignations", e, d));
+          assertTrue(
+              actualWorkingDay,
+              String.format(
+                  "L'employé %d devrait travailler le jour %d selon ses assignations", e, d));
         }
         // Note: actualWorkingDay peut être true même si shouldWorkDays[d] est false
         // car la contrainte est workingDay >= assignment, pas d'égalité stricte

@@ -14,7 +14,8 @@ public class MinimumRestConstraint implements Constraint {
     this(minRestHours, ConstraintNature.HARD, ConstraintPriority.SAFETY);
   }
 
-  public MinimumRestConstraint(int minRestHours, ConstraintNature nature, ConstraintPriority priority) {
+  public MinimumRestConstraint(
+      int minRestHours, ConstraintNature nature, ConstraintPriority priority) {
     this.minRestHours = minRestHours;
     this.nature = nature;
     this.priority = priority;

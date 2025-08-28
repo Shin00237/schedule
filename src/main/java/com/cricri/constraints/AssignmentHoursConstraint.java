@@ -12,7 +12,8 @@ public class AssignmentHoursConstraint implements Constraint {
     this(minHoursPerShift, ConstraintNature.HARD, ConstraintPriority.CONSISTENCY);
   }
 
-  public AssignmentHoursConstraint(int minHoursPerShift, ConstraintNature nature, ConstraintPriority priority) {
+  public AssignmentHoursConstraint(
+      int minHoursPerShift, ConstraintNature nature, ConstraintPriority priority) {
     this.minHoursPerShift = minHoursPerShift;
     this.nature = nature;
     this.priority = priority;

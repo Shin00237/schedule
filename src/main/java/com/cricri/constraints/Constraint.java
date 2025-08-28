@@ -10,43 +10,36 @@ public interface Constraint {
    */
   void apply(SchedulingContext context);
 
-  /**
-   * Nom unique de la contrainte pour debugging
-   */
+  /** Nom unique de la contrainte pour debugging */
   String getName();
 
-  /**
-   * Validation des prérequis avant application
-   */
+  /** Validation des prérequis avant application */
   default boolean validate(SchedulingContext context) {
     return true;
   }
 
-  /**
-   * Priorité d'application (plus faible = appliqué en premier)
-   */
+  /** Priorité d'application (plus faible = appliqué en premier) */
   default ConstraintPriority getPriority() {
     return ConstraintPriority.NORMAL;
   }
 
   /**
    * Nature de la contrainte (HARD ou SOFT)
-   * 
+   *
    * @return HARD pour une contrainte absolue, SOFT pour une contrainte avec pénalité
    */
   ConstraintNature getNature();
 
   /**
    * Poids de pénalité pour les contraintes souples.
-   * 
-   * Utilise automatiquement la valeur de la priorité comme poids de pénalité.
-   * Plus la priorité est critique (valeur négative), plus la pénalité est forte.
-   * Ce poids n'est utilisé que si getNature() retourne SOFT.
-   * 
-   * Exemples :
-   * - SAFETY(-3) → pénalité forte de -3 (très important de respecter)
-   * - COMFORT(5) → pénalité faible de 5 (moins critique)
-   * 
+   *
+   * <p>Utilise automatiquement la valeur de la priorité comme poids de pénalité. Plus la priorité
+   * est critique (valeur négative), plus la pénalité est forte. Ce poids n'est utilisé que si
+   * getNature() retourne SOFT.
+   *
+   * <p>Exemples : - SAFETY(-3) → pénalité forte de -3 (très important de respecter) - COMFORT(5) →
+   * pénalité faible de 5 (moins critique)
+   *
    * @return Le poids de pénalité basé sur la priorité (0 si HARD)
    */
   default int getPenaltyWeight() {

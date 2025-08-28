@@ -7,82 +7,81 @@ import com.google.ortools.sat.LinearExprBuilder;
 
 /**
  * Contrainte de maximisation des heures travaillées avec préférence pour les jours de semaine.
- * 
- * Cette contrainte reproduit la logique de l'ancienne addWeekdayStaffingObjective() :
- * - Maximise les heures réelles travaillées (pousse vers la durée complète des shifts)
- * - Favorise les assignations en semaine plutôt qu'en weekend
- * 
- * Remplace l'ancien système d'objectifs par une contrainte SOFT qui utilise
- * la fonction objectif de OR-Tools.
+ *
+ * <p>Cette contrainte reproduit la logique de l'ancienne addWeekdayStaffingObjective() : - Maximise
+ * les heures réelles travaillées (pousse vers la durée complète des shifts) - Favorise les
+ * assignations en semaine plutôt qu'en weekend
+ *
+ * <p>Remplace l'ancien système d'objectifs par une contrainte SOFT qui utilise la fonction objectif
+ * de OR-Tools.
  */
 public class MaximizeWorkingHoursConstraint implements Constraint {
-    private final int weekdayMultiplier;
-    private final ConstraintNature nature;
-    private final ConstraintPriority priority;
+  private final int weekdayMultiplier;
+  private final ConstraintNature nature;
+  private final ConstraintPriority priority;
 
-    public MaximizeWorkingHoursConstraint() {
-        this(2, ConstraintNature.SOFT, ConstraintPriority.OPTIMIZATION);
+  public MaximizeWorkingHoursConstraint() {
+    this(2, ConstraintNature.SOFT, ConstraintPriority.OPTIMIZATION);
+  }
+
+  public MaximizeWorkingHoursConstraint(int weekdayMultiplier) {
+    this(weekdayMultiplier, ConstraintNature.SOFT, ConstraintPriority.OPTIMIZATION);
+  }
+
+  public MaximizeWorkingHoursConstraint(
+      int weekdayMultiplier, ConstraintNature nature, ConstraintPriority priority) {
+    this.weekdayMultiplier = weekdayMultiplier;
+    this.nature = nature;
+    this.priority = priority;
+  }
+
+  @Override
+  public void apply(SchedulingContext context) {
+    context.ensureVariablesInitialized();
+
+    // Créer l'expression objectif comme dans l'ancienne addWeekdayStaffingObjective()
+    LinearExprBuilder objective = LinearExpr.newBuilder();
+
+    // Objectif principal : maximiser les heures réelles travaillées
+    for (int e = 0; e < context.getEmployeeCount(); e++) {
+      for (int s = 0; s < context.getShiftCount(); s++) {
+        objective.add(context.getActualHours()[e][s]); // Encourager plus d'heures
+      }
     }
 
-    public MaximizeWorkingHoursConstraint(int weekdayMultiplier) {
-        this(weekdayMultiplier, ConstraintNature.SOFT, ConstraintPriority.OPTIMIZATION);
-    }
-
-    public MaximizeWorkingHoursConstraint(int weekdayMultiplier, ConstraintNature nature, ConstraintPriority priority) {
-        this.weekdayMultiplier = weekdayMultiplier;
-        this.nature = nature;
-        this.priority = priority;
-    }
-
-    @Override
-    public void apply(SchedulingContext context) {
-        context.ensureVariablesInitialized();
-        
-        // Créer l'expression objectif comme dans l'ancienne addWeekdayStaffingObjective()
-        LinearExprBuilder objective = LinearExpr.newBuilder();
-
-        // Objectif principal : maximiser les heures réelles travaillées
+    // Objectif secondaire : favoriser les jours de semaine
+    for (int s = 0; s < context.getShiftCount(); s++) {
+      Shift shift = context.getShifts().get(s);
+      if (!isWeekend(shift)) {
         for (int e = 0; e < context.getEmployeeCount(); e++) {
-            for (int s = 0; s < context.getShiftCount(); s++) {
-                objective.add(context.getActualHours()[e][s]); // Encourager plus d'heures
-            }
+          // Pondération supplémentaire pour les jours de semaine
+          objective.addTerm(context.getActualHours()[e][s], weekdayMultiplier);
         }
-
-        // Objectif secondaire : favoriser les jours de semaine
-        for (int s = 0; s < context.getShiftCount(); s++) {
-            Shift shift = context.getShifts().get(s);
-            if (!isWeekend(shift)) {
-                for (int e = 0; e < context.getEmployeeCount(); e++) {
-                    // Pondération supplémentaire pour les jours de semaine
-                    objective.addTerm(context.getActualHours()[e][s], weekdayMultiplier);
-                }
-            }
-        }
-
-        // Maximiser les heures totales (comme dans l'ancienne version)
-        context.getModel().maximize(objective);
+      }
     }
 
-    /**
-     * Détermine si un shift tombe un weekend.
-     */
-    private boolean isWeekend(Shift shift) {
-        int dayInWeek = shift.day().getDayInWeek(); // 0=lundi, 6=dimanche
-        return dayInWeek == 5 || dayInWeek == 6; // samedi ou dimanche
-    }
+    // Maximiser les heures totales (comme dans l'ancienne version)
+    context.getModel().maximize(objective);
+  }
 
-    @Override
-    public String getName() {
-        return "MaximizeWorkingHours(weekday×" + (1 + weekdayMultiplier) + ", " + nature + ")";
-    }
+  /** Détermine si un shift tombe un weekend. */
+  private boolean isWeekend(Shift shift) {
+    int dayInWeek = shift.day().getDayInWeek(); // 0=lundi, 6=dimanche
+    return dayInWeek == 5 || dayInWeek == 6; // samedi ou dimanche
+  }
 
-    @Override
-    public ConstraintNature getNature() {
-        return nature;
-    }
+  @Override
+  public String getName() {
+    return "MaximizeWorkingHours(weekday×" + (1 + weekdayMultiplier) + ", " + nature + ")";
+  }
 
-    @Override
-    public ConstraintPriority getPriority() {
-        return priority;
-    }
+  @Override
+  public ConstraintNature getNature() {
+    return nature;
+  }
+
+  @Override
+  public ConstraintPriority getPriority() {
+    return priority;
+  }
 }

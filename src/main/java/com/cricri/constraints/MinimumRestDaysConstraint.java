@@ -11,7 +11,8 @@ public class MinimumRestDaysConstraint implements Constraint {
     this(minRestDaysPerWeek, ConstraintNature.SOFT, ConstraintPriority.COMFORT);
   }
 
-  public MinimumRestDaysConstraint(int minRestDaysPerWeek, ConstraintNature nature, ConstraintPriority priority) {
+  public MinimumRestDaysConstraint(
+      int minRestDaysPerWeek, ConstraintNature nature, ConstraintPriority priority) {
     this.minRestDaysPerWeek = minRestDaysPerWeek;
     this.nature = nature;
     this.priority = priority;
@@ -27,9 +28,7 @@ public class MinimumRestDaysConstraint implements Constraint {
     // Contrainte : au moins X jours de repos par semaine (max Y jours travaillés)
     for (int e = 0; e < context.getEmployeeCount(); e++) {
       for (int w = 0; w < context.getWorkingDaysPerWeek()[e].length; w++) {
-        context
-            .getModel()
-            .addLessOrEqual(context.getWorkingDaysPerWeek()[e][w], maxWorkingDays);
+        context.getModel().addLessOrEqual(context.getWorkingDaysPerWeek()[e][w], maxWorkingDays);
       }
     }
   }

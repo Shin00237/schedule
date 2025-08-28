@@ -1,12 +1,12 @@
 package com.cricri.service;
 
-import java.util.List;
-import java.util.Map;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.google.ortools.sat.BoolVar;
 import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.IntVar;
+import java.util.List;
+import java.util.Map;
 import lombok.Data;
 
 @Data
@@ -34,14 +34,17 @@ public class SchedulingContext {
   private boolean variablesInitialized = false;
 
   public SchedulingContext(
-      List<Employee> employees, List<Shift> shifts, Map<String, Integer> shiftIndexMap, SchedulingConfiguration config) {
+      List<Employee> employees,
+      List<Shift> shifts,
+      Map<String, Integer> shiftIndexMap,
+      SchedulingConfiguration config) {
     this.employees = employees;
     this.shifts = shifts;
     this.shiftIndexMap = shiftIndexMap;
     this.config = config;
     this.model = new CpModel();
   }
-  
+
   // Constructeur avec configuration par défaut pour compatibilité
   public SchedulingContext(
       List<Employee> employees, List<Shift> shifts, Map<String, Integer> shiftIndexMap) {
@@ -91,7 +94,7 @@ public class SchedulingContext {
 
     // Variables temporelles
     int nbWeeks = getWeekCount();
-    
+
     // Variables pour les heures par employé par semaine
     hoursPerEmployeePerWeek = new IntVar[getEmployeeCount()][nbWeeks];
     for (int e = 0; e < getEmployeeCount(); e++) {
@@ -116,7 +119,8 @@ public class SchedulingContext {
     workingDaysPerWeek = new IntVar[getEmployeeCount()][nbWeeks];
     for (int e = 0; e < getEmployeeCount(); e++) {
       for (int w = 0; w < nbWeeks; w++) {
-        workingDaysPerWeek[e][w] = model.newIntVar(0, config.getDaysPerCycle(), "workDaysPerWeek_e" + e + "_w" + w);
+        workingDaysPerWeek[e][w] =
+            model.newIntVar(0, config.getDaysPerCycle(), "workDaysPerWeek_e" + e + "_w" + w);
       }
     }
   }

@@ -1,7 +1,5 @@
 package com.cricri;
 
-import java.util.Arrays;
-import java.util.List;
 import com.cricri.constraints.ConstraintConfig;
 import com.cricri.constraints.ConstraintFactory;
 import com.cricri.constraints.ConstraintNature;
@@ -16,6 +14,8 @@ import com.cricri.service.ModularShiftScheduler;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
 import com.google.ortools.sat.CpSolverStatus;
+import java.util.Arrays;
+import java.util.List;
 
 public class Main {
 
@@ -72,8 +72,10 @@ public class Main {
     List<Employee> employees = Arrays.asList(alice, bob, charlie, david, eva);
 
     // Créer des types de shift (avec 45 minutes de pause)
-    ShiftType matin = new ShiftType("MATIN", HEURE_DEBUT_MATIN, HEURE_FIN_MATIN, DUREE_SHIFT_MATIN, DUREE_PAUSE);
-    ShiftType soir = new ShiftType("SOIR", HEURE_DEBUT_SOIR, HEURE_FIN_SOIR, DUREE_SHIFT_SOIR, DUREE_PAUSE);
+    ShiftType matin =
+        new ShiftType("MATIN", HEURE_DEBUT_MATIN, HEURE_FIN_MATIN, DUREE_SHIFT_MATIN, DUREE_PAUSE);
+    ShiftType soir =
+        new ShiftType("SOIR", HEURE_DEBUT_SOIR, HEURE_FIN_SOIR, DUREE_SHIFT_SOIR, DUREE_PAUSE);
 
     // Créer une semaine
     Week week = Week.create(0);
@@ -96,41 +98,69 @@ public class Main {
     ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts);
 
     // Ajouter les contraintes exactement comme dans withStandardConstraints()
-    List<ConstraintConfig> constraintConfigs = Arrays.asList(
-        // 1. withMinimumCoverage() - par défaut HARD, FUNDAMENTAL
-        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD, ConstraintPriority.FUNDAMENTAL),
+    List<ConstraintConfig> constraintConfigs =
+        Arrays.asList(
+            // 1. withMinimumCoverage() - par défaut HARD, FUNDAMENTAL
+            ConstraintConfig.of(
+                ConstraintType.MINIMUM_COVERAGE,
+                ConstraintNature.HARD,
+                ConstraintPriority.FUNDAMENTAL),
 
-        // 2. withAssignmentHours(minHoursPerShift) - par défaut HARD, CONSISTENCY
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ConstraintPriority.CONSISTENCY,
-            "minHoursPerShift", 5 * 60), // 5h minimum par shift
+            // 2. withAssignmentHours(minHoursPerShift) - par défaut HARD, CONSISTENCY
+            ConstraintConfig.of(
+                ConstraintType.ASSIGNMENT_HOURS,
+                ConstraintNature.HARD,
+                ConstraintPriority.CONSISTENCY,
+                "minHoursPerShift",
+                5 * 60), // 5h minimum par shift
 
-        // 3. withMaxHoursPerWeek(maxHoursPerWeek) - par défaut HARD, NORMAL
-        ConstraintConfig.of(ConstraintType.MAX_HOURS_PER_WEEK, ConstraintNature.HARD, ConstraintPriority.NORMAL,
-            "maxHoursPerWeek", MAX_HEURES_PAR_SEMAINE), // 39h par semaine
+            // 3. withMaxHoursPerWeek(maxHoursPerWeek) - par défaut HARD, NORMAL
+            ConstraintConfig.of(
+                ConstraintType.MAX_HOURS_PER_WEEK,
+                ConstraintNature.HARD,
+                ConstraintPriority.NORMAL,
+                "maxHoursPerWeek",
+                MAX_HEURES_PAR_SEMAINE), // 39h par semaine
 
-        // 4. withMinimumRest(minRestHours) - par défaut HARD, SAFETY
-        ConstraintConfig.of(ConstraintType.MINIMUM_REST, ConstraintNature.HARD, ConstraintPriority.SAFETY,
-            "minRestHours", 11), // 11h de repos minimum
+            // 4. withMinimumRest(minRestHours) - par défaut HARD, SAFETY
+            ConstraintConfig.of(
+                ConstraintType.MINIMUM_REST,
+                ConstraintNature.HARD,
+                ConstraintPriority.SAFETY,
+                "minRestHours",
+                11), // 11h de repos minimum
 
-        // 5. withWorkingDays() - par défaut HARD, CONSISTENCY
-        ConstraintConfig.of(ConstraintType.WORKING_DAYS, ConstraintNature.HARD, ConstraintPriority.CONSISTENCY),
+            // 5. withWorkingDays() - par défaut HARD, CONSISTENCY
+            ConstraintConfig.of(
+                ConstraintType.WORKING_DAYS, ConstraintNature.HARD, ConstraintPriority.CONSISTENCY),
 
-        // 6. withMinimumRestDays(1) - par défaut SOFT, COMFORT dans la classe
-        ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, ConstraintPriority.COMFORT,
-            "minRestDaysPerWeek", 2), // 1 jour de repos minimum
+            // 6. withMinimumRestDays(1) - par défaut SOFT, COMFORT dans la classe
+            ConstraintConfig.of(
+                ConstraintType.MINIMUM_REST_DAYS,
+                ConstraintNature.SOFT,
+                ConstraintPriority.COMFORT,
+                "minRestDaysPerWeek",
+                2), // 1 jour de repos minimum
 
-        // 7. withWeekdayPreference() - par défaut SOFT, COMFORT
-        ConstraintConfig.of(ConstraintType.WEEKDAY_PREFERENCE, ConstraintNature.SOFT, ConstraintPriority.COMFORT,
-            "multiplier", 1),
+            // 7. withWeekdayPreference() - par défaut SOFT, COMFORT
+            ConstraintConfig.of(
+                ConstraintType.WEEKDAY_PREFERENCE,
+                ConstraintNature.SOFT,
+                ConstraintPriority.COMFORT,
+                "multiplier",
+                1),
 
-        // 8. withMaximizeWorkingHours() - reproduit l'ancienne addWeekdayStaffingObjective()
-        ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, ConstraintPriority.OPTIMIZATION,
-            "weekdayMultiplier", 2)
-    );
+            // 8. withMaximizeWorkingHours() - reproduit l'ancienne addWeekdayStaffingObjective()
+            ConstraintConfig.of(
+                ConstraintType.MAXIMIZE_WORKING_HOURS,
+                ConstraintNature.SOFT,
+                ConstraintPriority.OPTIMIZATION,
+                "weekdayMultiplier",
+                2));
 
     // Créer et ajouter toutes les contraintes
     for (ConstraintConfig config : constraintConfigs) {
-        scheduler.withConstraint(ConstraintFactory.create(config));
+      scheduler.withConstraint(ConstraintFactory.create(config));
     }
 
     return scheduler;
@@ -185,7 +215,8 @@ public class Main {
           // Calculer les heures de début et fin réelles
           String startEndTime = calculateWorkingHours(shift, actualMinutes);
 
-          System.out.printf("  [OK] %s (%.1fh effective / %.1fh présence) - %s%n",
+          System.out.printf(
+              "  [OK] %s (%.1fh effective / %.1fh présence) - %s%n",
               employees.get(e).nom(),
               actualHours,
               shift.type().dureeMinutes() / 60.0,
@@ -212,7 +243,10 @@ public class Main {
   }
 
   private static void printHoursPerEmployee(
-      ModularShiftScheduler scheduler, CpSolver solver, List<Employee> employees, List<Shift> shifts) {
+      ModularShiftScheduler scheduler,
+      CpSolver solver,
+      List<Employee> employees,
+      List<Shift> shifts) {
     System.out.println("\n=== Heures par employé par semaine ===");
 
     // Calculer le nombre de semaines
