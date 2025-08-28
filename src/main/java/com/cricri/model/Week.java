@@ -23,7 +23,7 @@ public record Week(
     Week week = new Week(weekNumber, days);
 
     for (int i = 0; i < 7; i++) {
-      int dayNumber = weekNumber * 7 + i + 1; // 1-indexé
+      int dayNumber = weekNumber * 7 + i; // 0-indexé
       days.add(new Day(dayNumber, daysOfWeek[i], week));
     }
 

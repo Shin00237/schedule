@@ -49,8 +49,8 @@ public class MinimumRestConstraint implements Constraint {
     int startTime2 = calculateAbsoluteTime(shift2.day(), shift2.type().heureDebutMinutes());
 
     // Cas 1: Chevauchement - seulement si c'est le même jour absolu
-    int day1 = shift1.day().getWeekNumber() * 7 + shift1.day().getDayNumber();
-    int day2 = shift2.day().getWeekNumber() * 7 + shift2.day().getDayNumber();
+    int day1 = shift1.day().dayNumber(); // Déjà global et 0-indexé
+    int day2 = shift2.day().dayNumber(); // Déjà global et 0-indexé
 
     if (day1 == day2 && startTime2 < endTime1) {
       return true;
@@ -61,8 +61,8 @@ public class MinimumRestConstraint implements Constraint {
   }
 
   private int calculateAbsoluteTime(Day day, int heureMinutes) {
-    // Convertir en temps absolu : (jour-1) * 24h * 60min + heureMinutes
-    int absoluteDay = day.getWeekNumber() * 7 + day.getDayNumber();
+    // Convertir en temps absolu : jour * 24h * 60min + heureMinutes (déjà 0-indexé)
+    int absoluteDay = day.dayNumber();
     return absoluteDay * 24 * 60 + heureMinutes;
   }
 

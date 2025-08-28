@@ -204,7 +204,7 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
       // Mapper les assignations aux jours
       for (int s = 0; s < complexPattern.size(); s++) {
         if (solver.value(complexContext.getAssignments()[e][s]) == 1) {
-          int dayOfWeek = complexPattern.get(s).day().getDayNumber();
+          int dayOfWeek = complexPattern.get(s).day().getDayInWeek();
           expectedWorkingDays[dayOfWeek] = true;
         }
       }
@@ -274,7 +274,7 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
       for (int s = 0; s < shifts.size(); s++) {
         if (solver.value(context.getAssignments()[e][s]) == 1) {
           Shift shift = shifts.get(s);
-          int dayOfWeek = shift.day().getDayNumber(); // 0-6
+          int dayOfWeek = shift.day().getDayInWeek(); // 0-6
           shouldWorkDays[dayOfWeek] = true;
         }
       }

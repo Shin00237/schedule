@@ -3,7 +3,7 @@ package com.cricri.model;
 import java.time.DayOfWeek;
 
 public record Day(
-    int dayNumber, // 1-indexé comme actuellement
+    int dayNumber, // 0-indexé (0-6 dans la semaine, global pour les contraintes)
     DayOfWeek dayOfWeek, // MONDAY, TUESDAY, etc.
     Week week // référence vers la semaine parent
     ) {
@@ -11,8 +11,8 @@ public record Day(
     return week.weekNumber();
   }
 
-  public int getDayNumber() {
-    return (dayNumber - 1) % 7;
+  public int getDayInWeek() {
+    return dayNumber % 7; // 0-6 (lundi=0, dimanche=6)
   }
 
   public boolean isWeekend() {

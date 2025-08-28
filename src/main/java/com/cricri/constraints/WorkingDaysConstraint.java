@@ -16,7 +16,7 @@ public class WorkingDaysConstraint implements Constraint {
       for (int s = 0; s < context.getShiftCount(); s++) {
         Shift shift = context.getShifts().get(s);
         int weekNumber = shift.day().getWeekNumber();
-        int dayOfWeek = shift.day().getDayNumber(); // 0-6 pour lundi-dimanche
+        int dayOfWeek = shift.day().getDayInWeek(); // 0-6 pour lundi-dimanche
 
         // Si l'employé est assigné à ce shift, alors il travaille ce jour
         // workingDays[e][w][d] >= assignments[e][s]
