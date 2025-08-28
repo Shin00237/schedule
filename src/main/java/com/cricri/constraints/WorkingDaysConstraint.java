@@ -6,6 +6,17 @@ import com.google.ortools.sat.LinearExpr;
 import com.google.ortools.sat.LinearExprBuilder;
 
 public class WorkingDaysConstraint implements Constraint {
+  private final ConstraintNature nature;
+  private final ConstraintPriority priority;
+
+  public WorkingDaysConstraint() {
+    this(ConstraintNature.HARD, ConstraintPriority.CONSISTENCY);
+  }
+
+  public WorkingDaysConstraint(ConstraintNature nature, ConstraintPriority priority) {
+    this.nature = nature;
+    this.priority = priority;
+  }
 
   @Override
   public void apply(SchedulingContext context) {
@@ -43,11 +54,16 @@ public class WorkingDaysConstraint implements Constraint {
 
   @Override
   public String getName() {
-    return "WorkingDays";
+    return "WorkingDays(" + nature + ")";
   }
 
   @Override
-  public int getPriority() {
-    return ConstraintPriority.CONSISTENCY;
+  public ConstraintPriority getPriority() {
+    return priority;
+  }
+
+  @Override
+  public ConstraintNature getNature() {
+    return nature;
   }
 }

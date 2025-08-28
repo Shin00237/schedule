@@ -7,9 +7,17 @@ import com.google.ortools.sat.LinearExpr;
 
 public class MinimumRestConstraint implements Constraint {
   private final int minRestHours;
+  private final ConstraintNature nature;
+  private final ConstraintPriority priority;
 
   public MinimumRestConstraint(int minRestHours) {
+    this(minRestHours, ConstraintNature.HARD, ConstraintPriority.SAFETY);
+  }
+
+  public MinimumRestConstraint(int minRestHours, ConstraintNature nature, ConstraintPriority priority) {
     this.minRestHours = minRestHours;
+    this.nature = nature;
+    this.priority = priority;
   }
 
   @Override
@@ -68,11 +76,16 @@ public class MinimumRestConstraint implements Constraint {
 
   @Override
   public String getName() {
-    return "MinimumRest(" + minRestHours + "h)";
+    return "MinimumRest(" + minRestHours + "h, " + nature + ")";
   }
 
   @Override
-  public int getPriority() {
-    return ConstraintPriority.SAFETY;
+  public ConstraintPriority getPriority() {
+    return priority;
+  }
+
+  @Override
+  public ConstraintNature getNature() {
+    return nature;
   }
 }

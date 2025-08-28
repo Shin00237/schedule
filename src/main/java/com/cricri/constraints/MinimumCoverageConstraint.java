@@ -6,6 +6,17 @@ import com.google.ortools.sat.LinearExpr;
 import com.google.ortools.sat.LinearExprBuilder;
 
 public class MinimumCoverageConstraint implements Constraint {
+  private final ConstraintNature nature;
+  private final ConstraintPriority priority;
+
+  public MinimumCoverageConstraint() {
+    this(ConstraintNature.HARD, ConstraintPriority.FUNDAMENTAL);
+  }
+
+  public MinimumCoverageConstraint(ConstraintNature nature, ConstraintPriority priority) {
+    this.nature = nature;
+    this.priority = priority;
+  }
 
   @Override
   public void apply(SchedulingContext context) {
@@ -35,11 +46,16 @@ public class MinimumCoverageConstraint implements Constraint {
 
   @Override
   public String getName() {
-    return "MinimumCoverage";
+    return "MinimumCoverage(" + nature + ")";
   }
 
   @Override
-  public int getPriority() {
-    return ConstraintPriority.FUNDAMENTAL;
+  public ConstraintPriority getPriority() {
+    return priority;
+  }
+
+  @Override
+  public ConstraintNature getNature() {
+    return nature;
   }
 }

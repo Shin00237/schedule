@@ -2,6 +2,11 @@ package com.cricri;
 
 import java.util.Arrays;
 import java.util.List;
+import com.cricri.constraints.ConstraintConfig;
+import com.cricri.constraints.ConstraintFactory;
+import com.cricri.constraints.ConstraintNature;
+import com.cricri.constraints.ConstraintPriority;
+import com.cricri.constraints.ConstraintType;
 import com.cricri.model.Day;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
@@ -38,7 +43,6 @@ public class Main {
     ModularShiftScheduler scheduler = createTestScheduler();
     printConfiguration(scheduler);
     scheduler.printConstraints();
-    scheduler.printObjectives();
 
     // Construire le modèle
     scheduler.buildModel();
@@ -88,12 +92,46 @@ public class Main {
           new Shift(JOURS[i] + "-SOIR", day, soir, MIN_EMPLOYES_PAR_SHIFT, MAX_EMPLOYES_PAR_SHIFT));
     }
 
-    // Créer le scheduler modulaire avec contraintes standard
-    ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts)
-        .withStandardConstraints(
-            MAX_HEURES_PAR_SEMAINE, // 39h par semaine
-            11, // 11h de repos minimum
-            5 * 60); // 5h minimum par shift
+    // Créer le scheduler modulaire
+    ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts);
+
+    // Ajouter les contraintes exactement comme dans withStandardConstraints()
+    List<ConstraintConfig> constraintConfigs = Arrays.asList(
+        // 1. withMinimumCoverage() - par défaut HARD, FUNDAMENTAL
+        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD, ConstraintPriority.FUNDAMENTAL),
+
+        // 2. withAssignmentHours(minHoursPerShift) - par défaut HARD, CONSISTENCY
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ConstraintPriority.CONSISTENCY,
+            "minHoursPerShift", 5 * 60), // 5h minimum par shift
+
+        // 3. withMaxHoursPerWeek(maxHoursPerWeek) - par défaut HARD, NORMAL
+        ConstraintConfig.of(ConstraintType.MAX_HOURS_PER_WEEK, ConstraintNature.HARD, ConstraintPriority.NORMAL,
+            "maxHoursPerWeek", MAX_HEURES_PAR_SEMAINE), // 39h par semaine
+
+        // 4. withMinimumRest(minRestHours) - par défaut HARD, SAFETY
+        ConstraintConfig.of(ConstraintType.MINIMUM_REST, ConstraintNature.HARD, ConstraintPriority.SAFETY,
+            "minRestHours", 11), // 11h de repos minimum
+
+        // 5. withWorkingDays() - par défaut HARD, CONSISTENCY
+        ConstraintConfig.of(ConstraintType.WORKING_DAYS, ConstraintNature.HARD, ConstraintPriority.CONSISTENCY),
+
+        // 6. withMinimumRestDays(1) - par défaut SOFT, COMFORT dans la classe
+        ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, ConstraintPriority.COMFORT,
+            "minRestDaysPerWeek", 1), // 1 jour de repos minimum
+
+        // 7. withWeekdayPreference() - par défaut SOFT, COMFORT
+        ConstraintConfig.of(ConstraintType.WEEKDAY_PREFERENCE, ConstraintNature.SOFT, ConstraintPriority.COMFORT,
+            "multiplier", 1),
+
+        // 8. withMaximizeWorkingHours() - reproduit l'ancienne addWeekdayStaffingObjective()
+        ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, ConstraintPriority.OPTIMIZATION,
+            "weekdayMultiplier", 2)
+    );
+
+    // Créer et ajouter toutes les contraintes
+    for (ConstraintConfig config : constraintConfigs) {
+        scheduler.withConstraint(ConstraintFactory.create(config));
+    }
 
     return scheduler;
   }

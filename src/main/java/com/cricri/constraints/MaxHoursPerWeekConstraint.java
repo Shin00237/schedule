@@ -7,9 +7,17 @@ import com.google.ortools.sat.LinearExprBuilder;
 
 public class MaxHoursPerWeekConstraint implements Constraint {
   private final int maxHoursPerWeek;
+  private final ConstraintNature nature;
+  private final ConstraintPriority priority;
 
   public MaxHoursPerWeekConstraint(int maxHoursPerWeek) {
+    this(maxHoursPerWeek, ConstraintNature.HARD, ConstraintPriority.NORMAL);
+  }
+
+  public MaxHoursPerWeekConstraint(int maxHoursPerWeek, ConstraintNature nature, ConstraintPriority priority) {
     this.maxHoursPerWeek = maxHoursPerWeek;
+    this.nature = nature;
+    this.priority = priority;
   }
 
   @Override
@@ -48,11 +56,16 @@ public class MaxHoursPerWeekConstraint implements Constraint {
 
   @Override
   public String getName() {
-    return "MaxHoursPerWeek(" + (maxHoursPerWeek / 60.0) + "h)";
+    return "MaxHoursPerWeek(" + (maxHoursPerWeek / 60.0) + "h, " + nature + ")";
   }
 
   @Override
-  public int getPriority() {
-    return ConstraintPriority.NORMAL;
+  public ConstraintPriority getPriority() {
+    return priority;
+  }
+
+  @Override
+  public ConstraintNature getNature() {
+    return nature;
   }
 }

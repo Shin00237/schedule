@@ -5,9 +5,17 @@ import com.google.ortools.sat.LinearExpr;
 
 public class AssignmentHoursConstraint implements Constraint {
   private final int minHoursPerShift;
+  private final ConstraintNature nature;
+  private final ConstraintPriority priority;
 
   public AssignmentHoursConstraint(int minHoursPerShift) {
+    this(minHoursPerShift, ConstraintNature.HARD, ConstraintPriority.CONSISTENCY);
+  }
+
+  public AssignmentHoursConstraint(int minHoursPerShift, ConstraintNature nature, ConstraintPriority priority) {
     this.minHoursPerShift = minHoursPerShift;
+    this.nature = nature;
+    this.priority = priority;
   }
 
   @Override
@@ -44,11 +52,16 @@ public class AssignmentHoursConstraint implements Constraint {
 
   @Override
   public String getName() {
-    return "AssignmentHours(min=" + (minHoursPerShift / 60.0) + "h)";
+    return "AssignmentHours(min=" + (minHoursPerShift / 60.0) + "h, " + nature + ")";
   }
 
   @Override
-  public int getPriority() {
-    return ConstraintPriority.CONSISTENCY;
+  public ConstraintPriority getPriority() {
+    return priority;
+  }
+
+  @Override
+  public ConstraintNature getNature() {
+    return nature;
   }
 }
