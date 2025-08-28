@@ -185,3 +185,91 @@ public class MaxHoursPerWeekConstraint implements Constraint {
 4. **Implémentation** : Coder la logique OR-Tools
 5. **Integration** : Tester avec d'autres contraintes
 6. **Documentation** : Compléter la Javadoc et exemples
+
+## Architecture de Tests
+
+### Structure Recommandée
+
+```
+src/test/java/com/cricri/
+├── constraints/          # Tests unitaires des contraintes
+├── objectives/          # Tests des fonctions objectif  
+├── service/            # Tests des services (Scheduler, Context)
+├── integration/        # Tests d'intégration bout-en-bout
+├── performance/        # Tests de performance et benchmarks
+├── robustness/         # Tests de robustesse et cas limites
+└── testutils/          # Utilitaires de test réutilisables
+    ├── ConstraintTestBase.java    # Classe de base pour tests de contraintes
+    ├── SolverAssertions.java      # Assertions spécialisées OR-Tools
+    └── TestDataFactory.java      # Factory pour données de test
+```
+
+### Règles pour les Tests
+
+**Héritage et Structure :**
+- Tests de contraintes DOIVENT étendre `ConstraintTestBase`
+- Utiliser `setupSpecific()` pour la configuration spécifique au test
+- Appeler `testConstraintProperties(constraint)` pour valider les propriétés de base
+
+**Assertions Réutilisables :**
+- Utiliser `SolverAssertions.assertSolutionExists()` au lieu de code dupliqué
+- Privilégier `SolverAssertions.assertAllShiftsCovered()` pour vérifier la couverture
+- Utiliser `SolverAssertions.solveAndAssertSolution()` pour résolution + vérification
+
+**Données de Test :**
+- Utiliser `TestDataFactory` pour créer des données cohérentes
+- `createStandardEmployees()` et `createStandardWeekShifts()` pour cas standards
+- `createConflictingShifts()` et `createTwoWeekShifts()` pour cas spéciaux
+
+**Piège à Éviter - Tests d'Assumptions :**
+- NE PAS tester la solution optimale trouvée par OR-Tools
+- Tester UNIQUEMENT que les contraintes sont respectées
+- OR-Tools peut trouver plusieurs solutions valides différentes
+- Exemple INCORRECT : "chaque employé doit être assigné à exactement un shift"
+- Exemple CORRECT : "chaque shift doit avoir entre min et max employés"
+
+### Règles de Collaboration avec Claude
+
+**Approche TDD Obligatoire :**
+- TOUJOURS écrire les tests AVANT l'implémentation
+- Cycle Rouge → Vert → Refactor systématique
+- Ne jamais implémenter de fonctionnalités non demandées
+
+**Règles de Communication :**
+- Claude NE DOIT PAS ajouter de fonctionnalités sans autorisation explicite
+- Claude NE DOIT PAS créer de tests non demandés
+- Demander confirmation avant d'ajouter du code supplémentaire
+- Expliquer le "pourquoi" avant le "comment"
+
+**Philosophie Bibliothèque de Règles :**
+- Chaque contrainte est une règle métier isolée et réutilisable
+- Priorité à la composition plutôt qu'à l'héritage
+- API fluide pour combiner les règles selon le besoin
+- Chaque règle doit pouvoir être testée indépendamment
+
+**Workflow de Développement avec Claude :**
+1. **Demande** : L'utilisateur exprime un besoin précis
+2. **Design** : Claude propose une approche (pas d'implémentation)
+3. **Validation** : L'utilisateur approuve l'approche
+4. **TDD** : Tests d'abord, implémentation ensuite
+5. **Refactor** : Amélioration du code existant seulement si demandé
+
+## Règles Strictes de Développement
+
+**Règles de Code :**
+- JAMAIS de code mort ou commenté
+- JAMAIS de `System.out.println()` en production (utiliser les logs)
+- JAMAIS de constantes magiques (toujours nommer les valeurs)
+- Variables et méthodes en français (cohérence avec le domaine métier)
+
+**Règles de Commits :**
+- Un commit = une fonctionnalité complète et testée
+- Messages de commit explicites avec contexte métier
+- JAMAIS commit de code qui ne compile pas
+- JAMAIS commit de tests qui échouent
+
+**Règles d'Architecture :**
+- Une contrainte = une responsabilité unique
+- Séparation stricte contraintes / objectifs / services
+- Pas de dépendances circulaires entre packages
+- Interface avant implémentation (design by contract)
