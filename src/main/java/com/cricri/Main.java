@@ -145,7 +145,17 @@ public class Main {
       int assignedCount = 0;
       for (int e = 0; e < employees.size(); e++) {
         if (solver.value(scheduler.getAssignments()[e][s]) == 1) {
-          System.out.println("  [OK] " + employees.get(e).nom());
+          long actualMinutes = solver.value(scheduler.getActualHours()[e][s]);
+          double actualHours = actualMinutes / 60.0;
+          
+          // Calculer les heures de début et fin réelles
+          String startEndTime = calculateWorkingHours(shift, actualMinutes);
+          
+          System.out.printf("  [OK] %s (%.1fh sur %.1fh) - %s%n", 
+              employees.get(e).nom(), 
+              actualHours,
+              shift.type().dureeMinutes() / 60.0,
+              startEndTime);
           assignedCount++;
         }
       }
@@ -190,7 +200,8 @@ public class Main {
           int shiftWeek = shift.day().getWeekNumber();
 
           if (shiftWeek == w && solver.value(scheduler.getAssignments()[e][s]) == 1) {
-            weekHours += shift.type().dureeMinutes();
+            // Utiliser les heures réelles au lieu de la durée complète du shift
+            weekHours += solver.value(scheduler.getActualHours()[e][s]);
           }
         }
 
@@ -250,5 +261,22 @@ public class Main {
         System.out.println();
       }
     }
+  }
+
+  private static String calculateWorkingHours(Shift shift, long actualMinutes) {
+    int startMinutes = shift.type().heureDebutMinutes();
+    int endMinutes = startMinutes + (int) actualMinutes;
+    
+    // Convertir en format HH:MM
+    String startTime = formatTime(startMinutes);
+    String endTime = formatTime(endMinutes);
+    
+    return startTime + " - " + endTime;
+  }
+  
+  private static String formatTime(int minutes) {
+    int hours = minutes / 60;
+    int mins = minutes % 60;
+    return String.format("%02d:%02d", hours, mins);
   }
 }

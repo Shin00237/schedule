@@ -20,9 +20,11 @@ public class ShiftScheduler {
   private Map<String, Integer> shiftIndexMap; // pour retrouver facilement l'index d'un shift
   private int maxHoursPerWeek = 40 * 60; // 40h en minutes par défaut
   private int minRestHours = 11; // repos minimum entre shifts en heures
+  private int minHoursPerShift = 5 * 60; // durée minimum par shift (5h par défaut)
 
   // Variables OR-Tools
   private BoolVar[][] assignments;
+  private IntVar[][] actualHours; // [employé][shift] - durée réelle travaillée en minutes
   private IntVar[] employeesPerShift;
   private BoolVar[][][] workingDays; // [employé][semaine][jour_semaine] (0-6 pour lundi-dimanche)
   private IntVar[][] workingDaysPerWeek; // [employé][semaine] - nombre de jours travaillés
@@ -34,9 +36,13 @@ public class ShiftScheduler {
 
     // Créer les variables
     assignments = new BoolVar[employees.size()][shifts.size()];
+    actualHours = new IntVar[employees.size()][shifts.size()];
     for (int e = 0; e < employees.size(); e++) {
       for (int s = 0; s < shifts.size(); s++) {
         assignments[e][s] = model.newBoolVar("assign_e" + e + "_s" + s);
+        // Durée réelle travaillée: 0 si non assigné, sinon entre 1 minute et durée complète du shift
+        int maxShiftDuration = shifts.get(s).type().dureeMinutes();
+        actualHours[e][s] = model.newIntVar(0, maxShiftDuration, "hours_e" + e + "_s" + s);
       }
     }
 
@@ -83,6 +89,7 @@ public class ShiftScheduler {
 
     // Contraintes
     addMinimumEmployeesConstraint();
+    addAssignmentHoursConstraint();
     addMaxHoursPerWeekConstraint();
     addMinimumRestConstraint();
     addWorkingDaysConstraints();
@@ -116,6 +123,25 @@ public class ShiftScheduler {
     }
   }
 
+  public void addAssignmentHoursConstraint() {
+    // Si un employé n'est pas assigné à un shift, ses heures réelles doivent être 0
+    // Si un employé est assigné à un shift, ses heures réelles doivent être > 0
+    for (int e = 0; e < employees.size(); e++) {
+      for (int s = 0; s < shifts.size(); s++) {
+        int maxShiftDuration = shifts.get(s).type().dureeMinutes();
+
+        // Contrainte de cohérence : si assigné, minimum minHoursPerShift, sinon 0
+        // actualHours[e][s] >= assignments[e][s] * minHoursPerShift
+        model.addGreaterOrEqual(actualHours[e][s],
+            LinearExpr.newBuilder().addTerm(assignments[e][s], minHoursPerShift).build());
+
+        // actualHours[e][s] <= assignments[e][s] * maxShiftDuration (si non assigné, alors 0)
+        model.addLessOrEqual(actualHours[e][s],
+            LinearExpr.newBuilder().addTerm(assignments[e][s], maxShiftDuration).build());
+      }
+    }
+  }
+
   public void addMaxHoursPerWeekConstraint() {
     int nbWeeks = calculateNumberOfWeeks();
 
@@ -129,8 +155,8 @@ public class ShiftScheduler {
           int shiftWeek = shift.day().getWeekNumber();
 
           if (shiftWeek == w) {
-            // Ajouter les minutes de ce shift si l'employé y est assigné
-            hoursInWeek.addTerm(assignments[e][s], shift.type().dureeMinutes());
+            // Ajouter les heures réelles travaillées pour ce shift
+            hoursInWeek.add(actualHours[e][s]);
           }
         }
 
@@ -199,17 +225,24 @@ public class ShiftScheduler {
   public void addWeekdayStaffingObjective() {
     LinearExprBuilder objective = LinearExpr.newBuilder();
 
+    // Objectif principal : maximiser les heures réelles travaillées
+    for (int e = 0; e < employees.size(); e++) {
+      for (int s = 0; s < shifts.size(); s++) {
+        objective.add(actualHours[e][s]); // Encourager plus d'heures
+      }
+    }
+
+    // Objectif secondaire : favoriser les jours de semaine
     for (int s = 0; s < shifts.size(); s++) {
       Shift shift = shifts.get(s);
       if (!shift.day().isWeekend()) {
-        // Pour chaque shift en semaine, ajouter le nombre d'employés à l'objectif
         for (int e = 0; e < employees.size(); e++) {
-          objective.add(assignments[e][s]); // +1 par employé assigné
+          objective.addTerm(actualHours[e][s], 2); // Pondération × 2 pour semaine
         }
       }
     }
 
-    model.maximize(objective); // Maximiser le nombre d'employés en semaine
+    model.maximize(objective); // Maximiser les heures totales
   }
 
   private int calculateNumberOfWeeks() {
@@ -246,5 +279,19 @@ public class ShiftScheduler {
     // Convertir en temps absolu : (jour-1) * 24h * 60min + heureMinutes
     int absoluteDay = day.getWeekNumber() * 7 + day.getDayNumber();
     return absoluteDay * 24 * 60 + heureMinutes;
+  }
+
+  // Getter pour accéder aux heures réelles
+  public IntVar[][] getActualHours() {
+    return actualHours;
+  }
+
+  // Getter/Setter pour la durée minimum par shift
+  public int getMinHoursPerShift() {
+    return minHoursPerShift;
+  }
+
+  public void setMinHoursPerShift(int minHoursPerShift) {
+    this.minHoursPerShift = minHoursPerShift;
   }
 }
