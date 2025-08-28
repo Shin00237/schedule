@@ -1,5 +1,7 @@
 package com.cricri;
 
+import java.util.Arrays;
+import java.util.List;
 import com.cricri.constraints.ConstraintConfig;
 import com.cricri.constraints.ConstraintFactory;
 import com.cricri.constraints.ConstraintNature;
@@ -14,13 +16,10 @@ import com.cricri.service.ModularShiftScheduler;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
 import com.google.ortools.sat.CpSolverStatus;
-import java.util.Arrays;
-import java.util.List;
 
 public class Main {
 
   // Configuration du modèle
-  private static final int NB_EMPLOYES = 5;
   private static final int MIN_EMPLOYES_PAR_SHIFT = 1;
   private static final int MAX_EMPLOYES_PAR_SHIFT = 2;
   private static final int MAX_HEURES_PAR_SEMAINE = 39 * 60; // 40h en minutes
