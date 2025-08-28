@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.cricri.constraints.*;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.service.ModularShiftScheduler;
@@ -33,8 +34,7 @@ class SchedulingRobustnessTest {
     
     // Le scheduler devrait pouvoir être créé mais pas résolu
     assertDoesNotThrow(() -> {
-      ModularShiftScheduler scheduler = new ModularShiftScheduler(emptyEmployees, shifts);
-      scheduler.withMinimumCoverage();
+      ModularShiftScheduler scheduler = TestDataFactory.createMinimumCoverageScheduler(emptyEmployees, shifts);
       // Ne pas appeler buildModel() car cela échouerait logiquement
     });
   }
@@ -45,8 +45,7 @@ class SchedulingRobustnessTest {
     List<Shift> emptyShifts = Collections.emptyList();
     
     assertDoesNotThrow(() -> {
-      ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, emptyShifts);
-      scheduler.withMinimumCoverage();
+      ModularShiftScheduler scheduler = TestDataFactory.createMinimumCoverageScheduler(employees, emptyShifts);
       scheduler.buildModel(); // Devrait fonctionner avec 0 shift
     });
   }
@@ -74,10 +73,18 @@ class SchedulingRobustnessTest {
     // Test avec des valeurs extrêmes mais techniquement valides
     assertDoesNotThrow(() -> {
       ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts)
-          .withMinimumCoverage()
-          .withMaxHoursPerWeek(1)          // Très restrictif
-          .withMinimumRest(23)             // Presque toute la journée
-          .withAssignmentHours(1);         // Minimum très bas
+          .withConstraint(ConstraintFactory.create(
+              ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD, ConstraintPriority.FUNDAMENTAL)
+          ))
+          .withConstraint(ConstraintFactory.create(
+              ConstraintConfig.of(ConstraintType.MAX_HOURS_PER_WEEK, ConstraintNature.HARD, ConstraintPriority.NORMAL, "maxHoursPerWeek", 1)
+          ))
+          .withConstraint(ConstraintFactory.create(
+              ConstraintConfig.of(ConstraintType.MINIMUM_REST, ConstraintNature.HARD, ConstraintPriority.SAFETY, "minimumRest", 23)
+          ))
+          .withConstraint(ConstraintFactory.create(
+              ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ConstraintPriority.CONSISTENCY, "assignmentHours", 1)
+          ));
       
       scheduler.buildModel();
       // Note: peut ne pas avoir de solution, mais ne devrait pas crasher
@@ -92,9 +99,15 @@ class SchedulingRobustnessTest {
     // Test avec des valeurs de contrainte incohérentes
     assertDoesNotThrow(() -> {
       ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts)
-          .withMinimumCoverage()
-          .withMaxHoursPerWeek(0)          // 0h par semaine
-          .withAssignmentHours(8 * 60);    // Mais 8h minimum par shift
+          .withConstraint(ConstraintFactory.create(
+              ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD, ConstraintPriority.FUNDAMENTAL)
+          ))
+          .withConstraint(ConstraintFactory.create(
+              ConstraintConfig.of(ConstraintType.MAX_HOURS_PER_WEEK, ConstraintNature.HARD, ConstraintPriority.NORMAL, "maxHoursPerWeek", 0)
+          ))
+          .withConstraint(ConstraintFactory.create(
+              ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ConstraintPriority.CONSISTENCY, "assignmentHours", 8 * 60)
+          ));
       
       scheduler.buildModel();
       // Scénario impossible mais ne devrait pas crasher
@@ -109,9 +122,15 @@ class SchedulingRobustnessTest {
     // Test avec de très grandes valeurs
     assertDoesNotThrow(() -> {
       ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts)
-          .withMinimumCoverage()
-          .withMaxHoursPerWeek(Integer.MAX_VALUE / 1000)
-          .withAssignmentHours(0);
+          .withConstraint(ConstraintFactory.create(
+              ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD, ConstraintPriority.FUNDAMENTAL)
+          ))
+          .withConstraint(ConstraintFactory.create(
+              ConstraintConfig.of(ConstraintType.MAX_HOURS_PER_WEEK, ConstraintNature.HARD, ConstraintPriority.NORMAL, "maxHoursPerWeek", Integer.MAX_VALUE / 1000)
+          ))
+          .withConstraint(ConstraintFactory.create(
+              ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ConstraintPriority.CONSISTENCY, "assignmentHours", 0)
+          ));
       
       scheduler.buildModel();
     });
@@ -122,8 +141,7 @@ class SchedulingRobustnessTest {
     List<Employee> employees = TestDataFactory.createStandardEmployees();
     List<Shift> shifts = TestDataFactory.createStandardWeekShifts(TestDataFactory.createStandardWeeks()[0]);
     
-    ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts)
-        .withMinimumCoverage();
+    ModularShiftScheduler scheduler = TestDataFactory.createMinimumCoverageScheduler(employees, shifts);
     
     // Appeler buildModel() plusieurs fois ne devrait pas poser problème
     assertDoesNotThrow(() -> {
@@ -141,11 +159,15 @@ class SchedulingRobustnessTest {
     ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts);
     
     // Vérifier que l'état reste cohérent après ajout de contraintes
-    scheduler.withMinimumCoverage();
+    scheduler.withConstraint(ConstraintFactory.create(
+        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD, ConstraintPriority.FUNDAMENTAL)
+    ));
     assert scheduler.getEmployees().size() == employees.size();
     assert scheduler.getShifts().size() == shifts.size();
     
-    scheduler.withMaxHoursPerWeek(40 * 60);
+    scheduler.withConstraint(ConstraintFactory.create(
+        ConstraintConfig.of(ConstraintType.MAX_HOURS_PER_WEEK, ConstraintNature.HARD, ConstraintPriority.NORMAL, "maxHoursPerWeek", 40 * 60)
+    ));
     assert scheduler.getEmployees().size() == employees.size();
     
     scheduler.buildModel();
@@ -161,8 +183,7 @@ class SchedulingRobustnessTest {
     List<Employee> originalEmployees = List.copyOf(employees);
     List<Shift> originalShifts = List.copyOf(shifts);
     
-    ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts)
-        .withStandardConstraints(40 * 60, 11, 5 * 60);
+    ModularShiftScheduler scheduler = TestDataFactory.createStandardSchedulerWithConfig(employees, shifts, 40 * 60, 11, 5 * 60);
     
     scheduler.buildModel();
     

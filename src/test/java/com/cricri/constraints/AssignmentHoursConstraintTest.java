@@ -35,7 +35,7 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
   void testConstraintProperties() {
     testConstraintProperties(constraint);
     
-    assertEquals("AssignmentHours(min=" + (minHoursPerShift / 60.0) + "h)", constraint.getName());
+    assertEquals("AssignmentHours(min=" + (minHoursPerShift / 60.0) + "h, HARD)", constraint.getName());
     assertEquals(ConstraintPriority.CONSISTENCY, constraint.getPriority());
   }
 

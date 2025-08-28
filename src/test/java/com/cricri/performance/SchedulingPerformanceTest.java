@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
+import com.cricri.constraints.*;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.model.Week;
@@ -72,8 +73,7 @@ class SchedulingPerformanceTest {
     
     long startTime = System.nanoTime();
     
-    ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts)
-        .withStandardConstraints(40 * 60, 11, 5 * 60);
+    ModularShiftScheduler scheduler = TestDataFactory.createStandardSchedulerWithConfig(employees, shifts, 40 * 60, 11, 5 * 60);
     
     scheduler.buildModel();
     CpSolver solver = SolverAssertions.solveAndAssertSolution(scheduler);
@@ -96,13 +96,27 @@ class SchedulingPerformanceTest {
     long startTime = System.nanoTime();
     
     ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts)
-        .withMinimumCoverage()
-        .withAssignmentHours(5 * 60)
-        .withMaxHoursPerWeek(35 * 60)
-        .withMinimumRest(11)
-        .withMinimumRestDays(2)
-        .withWorkingDays()
-        .withWeekdayPreference(3);
+        .withConstraint(ConstraintFactory.create(
+            ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD, ConstraintPriority.FUNDAMENTAL)
+        ))
+        .withConstraint(ConstraintFactory.create(
+            ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ConstraintPriority.CONSISTENCY, "assignmentHours", 5 * 60)
+        ))
+        .withConstraint(ConstraintFactory.create(
+            ConstraintConfig.of(ConstraintType.MAX_HOURS_PER_WEEK, ConstraintNature.HARD, ConstraintPriority.NORMAL, "maxHoursPerWeek", 35 * 60)
+        ))
+        .withConstraint(ConstraintFactory.create(
+            ConstraintConfig.of(ConstraintType.MINIMUM_REST, ConstraintNature.HARD, ConstraintPriority.SAFETY, "minimumRest", 11)
+        ))
+        .withConstraint(ConstraintFactory.create(
+            ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.HARD, ConstraintPriority.COMFORT, "minimumRestDays", 2)
+        ))
+        .withConstraint(ConstraintFactory.create(
+            ConstraintConfig.of(ConstraintType.WORKING_DAYS, ConstraintNature.HARD, ConstraintPriority.COMFORT)
+        ))
+        .withConstraint(ConstraintFactory.create(
+            ConstraintConfig.of(ConstraintType.WEEKDAY_PREFERENCE, ConstraintNature.SOFT, ConstraintPriority.COMFORT, "bonusWeight", 3)
+        ));
     
     scheduler.buildModel();
     CpSolver solver = SolverAssertions.solveAndAssertSolution(scheduler);

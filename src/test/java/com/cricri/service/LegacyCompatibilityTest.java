@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.cricri.constraints.*;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.testutils.SolverAssertions;
@@ -37,12 +38,11 @@ class LegacyCompatibilityTest {
   @Test
   void testLegacyStandardConfigurationStillWorks() {
     // Recréer la configuration "standard" de l'ancien test
-    ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts)
-        .withStandardConstraints(
-            40 * 60, // 40h par semaine
-            11,      // 11h de repos minimum  
-            5 * 60   // 5h minimum par shift
-        );
+    ModularShiftScheduler scheduler = TestDataFactory.createStandardSchedulerWithConfig(employees, shifts,
+        40 * 60, // 40h par semaine
+        11,      // 11h de repos minimum  
+        5 * 60   // 5h minimum par shift
+    );
 
     scheduler.buildModel();
     CpSolver solver = SolverAssertions.solveAndAssertSolution(scheduler);
@@ -58,12 +58,24 @@ class LegacyCompatibilityTest {
   void testLegacyWeekdayOptimizationStillWorks() {
     // Test similaire à testWeekdayStaffingObjective de l'ancien code
     ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts)
-        .withMinimumCoverage()
-        .withAssignmentHours(5 * 60)
-        .withMaxHoursPerWeek(40 * 60)
-        .withWorkingDays()
-        .withMinimumRestDays(1)
-        .withWeekdayPreference();
+        .withConstraint(ConstraintFactory.create(
+            ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD, ConstraintPriority.FUNDAMENTAL)
+        ))
+        .withConstraint(ConstraintFactory.create(
+            ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ConstraintPriority.CONSISTENCY, "assignmentHours", 5 * 60)
+        ))
+        .withConstraint(ConstraintFactory.create(
+            ConstraintConfig.of(ConstraintType.MAX_HOURS_PER_WEEK, ConstraintNature.HARD, ConstraintPriority.NORMAL, "maxHoursPerWeek", 40 * 60)
+        ))
+        .withConstraint(ConstraintFactory.create(
+            ConstraintConfig.of(ConstraintType.WORKING_DAYS, ConstraintNature.HARD, ConstraintPriority.COMFORT)
+        ))
+        .withConstraint(ConstraintFactory.create(
+            ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.HARD, ConstraintPriority.COMFORT, "minimumRestDays", 1)
+        ))
+        .withConstraint(ConstraintFactory.create(
+            ConstraintConfig.of(ConstraintType.WEEKDAY_PREFERENCE, ConstraintNature.SOFT, ConstraintPriority.COMFORT)
+        ));
 
     scheduler.buildModel();
     CpSolver solver = SolverAssertions.solveAndAssertSolution(scheduler);
@@ -104,8 +116,7 @@ class LegacyCompatibilityTest {
   @Test
   void testLegacyMethodsStillAccessible() {
     // Vérifier que les méthodes utilisées dans l'ancien test sont toujours disponibles
-    ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts)
-        .withStandardConstraints(40 * 60, 11, 5 * 60);
+    ModularShiftScheduler scheduler = TestDataFactory.createStandardSchedulerWithConfig(employees, shifts, 40 * 60, 11, 5 * 60);
 
     scheduler.buildModel();
 
@@ -133,10 +144,18 @@ class LegacyCompatibilityTest {
         TestDataFactory.createStandardWeeks()[1]);
 
     ModularShiftScheduler scheduler = new ModularShiftScheduler(employees.subList(0, 2), twoWeekShifts)
-        .withMinimumCoverage()
-        .withAssignmentHours(5 * 60)
-        .withMaxHoursPerWeek(40 * 60)
-        .withWorkingDays();
+        .withConstraint(ConstraintFactory.create(
+            ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD, ConstraintPriority.FUNDAMENTAL)
+        ))
+        .withConstraint(ConstraintFactory.create(
+            ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ConstraintPriority.CONSISTENCY, "assignmentHours", 5 * 60)
+        ))
+        .withConstraint(ConstraintFactory.create(
+            ConstraintConfig.of(ConstraintType.MAX_HOURS_PER_WEEK, ConstraintNature.HARD, ConstraintPriority.NORMAL, "maxHoursPerWeek", 40 * 60)
+        ))
+        .withConstraint(ConstraintFactory.create(
+            ConstraintConfig.of(ConstraintType.WORKING_DAYS, ConstraintNature.HARD, ConstraintPriority.COMFORT)
+        ));
 
     scheduler.buildModel();
     CpSolver solver = SolverAssertions.solveAndAssertSolution(scheduler);
@@ -162,9 +181,15 @@ class LegacyCompatibilityTest {
         TestDataFactory.createStandardWeeks()[0]);
 
     ModularShiftScheduler scheduler = new ModularShiftScheduler(employees.subList(0, 2), conflictShifts)
-        .withMinimumCoverage()
-        .withAssignmentHours(5 * 60)
-        .withMinimumRest(11);
+        .withConstraint(ConstraintFactory.create(
+            ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD, ConstraintPriority.FUNDAMENTAL)
+        ))
+        .withConstraint(ConstraintFactory.create(
+            ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ConstraintPriority.CONSISTENCY, "assignmentHours", 5 * 60)
+        ))
+        .withConstraint(ConstraintFactory.create(
+            ConstraintConfig.of(ConstraintType.MINIMUM_REST, ConstraintNature.HARD, ConstraintPriority.SAFETY, "minimumRest", 11)
+        ));
 
     scheduler.buildModel();
     CpSolver solver = SolverAssertions.solveAndAssertSolution(scheduler);

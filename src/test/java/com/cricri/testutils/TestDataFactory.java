@@ -13,6 +13,11 @@ import com.cricri.model.Week;
 import com.cricri.service.ModularShiftScheduler;
 import com.cricri.service.SchedulingContext;
 import com.cricri.service.SchedulingConfiguration;
+import com.cricri.constraints.ConstraintConfig;
+import com.cricri.constraints.ConstraintFactory;
+import com.cricri.constraints.ConstraintNature;
+import com.cricri.constraints.ConstraintPriority;
+import com.cricri.constraints.ConstraintType;
 
 /**
  * Factory pour créer des données de test standardisées et réutilisables.
@@ -186,12 +191,52 @@ public class TestDataFactory {
    */
   public static ModularShiftScheduler createStandardScheduler(
       List<Employee> employees, List<Shift> shifts) {
-    return new ModularShiftScheduler(employees, shifts)
-        .withStandardConstraints(
-            40 * 60,  // 40h par semaine
-            11,       // 11h de repos minimum
-            5 * 60    // 5h minimum par shift
-        );
+    return createStandardSchedulerWithConfig(employees, shifts, 40 * 60, 11, 5 * 60);
+  }
+
+  /**
+   * Crée un scheduler avec contraintes standard configurables.
+   * Remplace l'ancienne méthode withStandardConstraints().
+   */
+  public static ModularShiftScheduler createStandardSchedulerWithConfig(
+      List<Employee> employees, List<Shift> shifts, 
+      int maxHoursPerWeek, int minRestHours, int minHoursPerShift) {
+    
+    ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts);
+    
+    // Reproduire exactement la logique de withStandardConstraints()
+    List<ConstraintConfig> constraintConfigs = Arrays.asList(
+        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD, ConstraintPriority.FUNDAMENTAL),
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ConstraintPriority.CONSISTENCY, "minHoursPerShift", minHoursPerShift),
+        ConstraintConfig.of(ConstraintType.MAX_HOURS_PER_WEEK, ConstraintNature.HARD, ConstraintPriority.NORMAL, "maxHoursPerWeek", maxHoursPerWeek),
+        ConstraintConfig.of(ConstraintType.MINIMUM_REST, ConstraintNature.HARD, ConstraintPriority.SAFETY, "minRestHours", minRestHours),
+        ConstraintConfig.of(ConstraintType.WORKING_DAYS, ConstraintNature.HARD, ConstraintPriority.CONSISTENCY),
+        ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, ConstraintPriority.COMFORT, "minRestDaysPerWeek", 1),
+        ConstraintConfig.of(ConstraintType.WEEKDAY_PREFERENCE, ConstraintNature.SOFT, ConstraintPriority.COMFORT, "multiplier", 1)
+    );
+    
+    for (ConstraintConfig config : constraintConfigs) {
+        scheduler.withConstraint(ConstraintFactory.create(config));
+    }
+    
+    return scheduler;
+  }
+
+  /**
+   * Crée un scheduler avec uniquement la contrainte de couverture minimum.
+   * Remplace l'ancienne méthode withMinimumCoverage().
+   */
+  public static ModularShiftScheduler createMinimumCoverageScheduler(
+      List<Employee> employees, List<Shift> shifts) {
+    
+    ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts);
+    ConstraintConfig config = ConstraintConfig.of(
+        ConstraintType.MINIMUM_COVERAGE, 
+        ConstraintNature.HARD, 
+        ConstraintPriority.FUNDAMENTAL
+    );
+    scheduler.withConstraint(ConstraintFactory.create(config));
+    return scheduler;
   }
 
   /**

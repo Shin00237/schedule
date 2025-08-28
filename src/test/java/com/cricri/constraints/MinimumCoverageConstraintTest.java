@@ -30,7 +30,7 @@ class MinimumCoverageConstraintTest extends ConstraintTestBase {
   void testConstraintProperties() {
     testConstraintProperties(constraint);
 
-    assertEquals("MinimumCoverage", constraint.getName());
+    assertEquals("MinimumCoverage(HARD)", constraint.getName());
     assertEquals(ConstraintPriority.FUNDAMENTAL, constraint.getPriority());
   }
 

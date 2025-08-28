@@ -112,7 +112,7 @@ public abstract class ConstraintTestBase {
     assert !name.trim().isEmpty() : "Le nom de la contrainte ne doit pas être vide";
     
     // Vérifier que la priorité est dans une plage raisonnable
-    int priority = constraint.getPriority();
+    int priority = constraint.getPriority().getValue();
     assert priority >= -20 && priority <= 20 : 
         "La priorité devrait être dans une plage raisonnable (-20 à 20), mais est: " + priority;
     
