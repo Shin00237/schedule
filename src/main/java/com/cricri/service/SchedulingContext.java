@@ -15,6 +15,7 @@ public class SchedulingContext {
   private final List<Employee> employees;
   private final List<Shift> shifts;
   private final Map<String, Integer> shiftIndexMap;
+  private final SchedulingConfiguration config;
 
   // Modèle OR-Tools
   private final CpModel model;
@@ -33,11 +34,18 @@ public class SchedulingContext {
   private boolean variablesInitialized = false;
 
   public SchedulingContext(
-      List<Employee> employees, List<Shift> shifts, Map<String, Integer> shiftIndexMap) {
+      List<Employee> employees, List<Shift> shifts, Map<String, Integer> shiftIndexMap, SchedulingConfiguration config) {
     this.employees = employees;
     this.shifts = shifts;
     this.shiftIndexMap = shiftIndexMap;
+    this.config = config;
     this.model = new CpModel();
+  }
+  
+  // Constructeur avec configuration par défaut pour compatibilité
+  public SchedulingContext(
+      List<Employee> employees, List<Shift> shifts, Map<String, Integer> shiftIndexMap) {
+    this(employees, shifts, shiftIndexMap, SchedulingConfiguration.STANDARD_WEEK);
   }
 
   // Méthodes utilitaires
@@ -94,10 +102,11 @@ public class SchedulingContext {
     }
 
     // Variables pour les jours travaillés
-    workingDays = new BoolVar[getEmployeeCount()][nbWeeks][7];
+    int daysPerCycle = config.getDaysPerCycle();
+    workingDays = new BoolVar[getEmployeeCount()][nbWeeks][daysPerCycle];
     for (int e = 0; e < getEmployeeCount(); e++) {
       for (int w = 0; w < nbWeeks; w++) {
-        for (int d = 0; d < 7; d++) {
+        for (int d = 0; d < daysPerCycle; d++) {
           workingDays[e][w][d] = model.newBoolVar("workDay_e" + e + "_w" + w + "_d" + d);
         }
       }
@@ -107,7 +116,7 @@ public class SchedulingContext {
     workingDaysPerWeek = new IntVar[getEmployeeCount()][nbWeeks];
     for (int e = 0; e < getEmployeeCount(); e++) {
       for (int w = 0; w < nbWeeks; w++) {
-        workingDaysPerWeek[e][w] = model.newIntVar(0, 7, "workDaysPerWeek_e" + e + "_w" + w);
+        workingDaysPerWeek[e][w] = model.newIntVar(0, config.getDaysPerCycle(), "workDaysPerWeek_e" + e + "_w" + w);
       }
     }
   }

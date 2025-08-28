@@ -12,6 +12,7 @@ import com.cricri.model.ShiftType;
 import com.cricri.model.Week;
 import com.cricri.service.ModularShiftScheduler;
 import com.cricri.service.SchedulingContext;
+import com.cricri.service.SchedulingConfiguration;
 
 /**
  * Factory pour créer des données de test standardisées et réutilisables.
@@ -75,10 +76,11 @@ public class TestDataFactory {
    */
   public static List<Shift> createWeekShifts(Week week, int minEmployees, int maxEmployees) {
     String[] dayNames = {"Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"};
+    int daysInWeek = week.config().getDaysPerCycle();
     
-    return IntStream.range(0, 7)
+    return IntStream.range(0, daysInWeek)
         .mapToObj(dayIndex -> new Shift(
-            dayNames[dayIndex] + "-NORMAL",
+            dayNames[dayIndex % dayNames.length] + "-NORMAL",
             week.getDay(dayIndex),
             NORMAL_SHIFT,
             minEmployees,
@@ -156,11 +158,23 @@ public class TestDataFactory {
    * @return Contexte prêt à utiliser
    */
   public static SchedulingContext createContext(List<Employee> employees, List<Shift> shifts) {
+    return createContext(employees, shifts, SchedulingConfiguration.STANDARD_WEEK);
+  }
+  
+  /**
+   * Crée un contexte de planification avec configuration spécifique.
+   * 
+   * @param employees Liste des employés
+   * @param shifts Liste des shifts
+   * @param config Configuration temporelle
+   * @return Contexte prêt à utiliser
+   */
+  public static SchedulingContext createContext(List<Employee> employees, List<Shift> shifts, SchedulingConfiguration config) {
     Map<String, Integer> shiftIndexMap = new HashMap<>();
     for (int i = 0; i < shifts.size(); i++) {
       shiftIndexMap.put(shifts.get(i).id(), i);
     }
-    return new SchedulingContext(employees, shifts, shiftIndexMap);
+    return new SchedulingContext(employees, shifts, shiftIndexMap, config);
   }
 
   /**

@@ -12,7 +12,7 @@ public record Day(
   }
 
   public int getDayInWeek() {
-    return dayNumber % 7; // 0-6 (lundi=0, dimanche=6)
+    return dayNumber % week.config().getDaysPerCycle(); // 0-n selon configuration
   }
 
   public boolean isWeekend() {

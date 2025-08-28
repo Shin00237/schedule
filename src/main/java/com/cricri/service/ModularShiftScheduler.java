@@ -29,6 +29,13 @@ public class ModularShiftScheduler {
   private final List<ObjectiveFunction> objectives = new ArrayList<>();
 
   public ModularShiftScheduler(List<Employee> employees, List<Shift> shifts) {
+    if (employees == null) {
+      throw new IllegalArgumentException("La liste des employés ne peut pas être null");
+    }
+    if (shifts == null) {
+      throw new IllegalArgumentException("La liste des shifts ne peut pas être null");
+    }
+    
     Map<String, Integer> shiftIndexMap = new HashMap<>();
     for (int i = 0; i < shifts.size(); i++) {
       shiftIndexMap.put(shifts.get(i).id(), i);

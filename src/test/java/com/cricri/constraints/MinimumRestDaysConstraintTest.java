@@ -35,7 +35,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
   void testConstraintProperties() {
     testConstraintProperties(constraint);
     
-    assertEquals("MinimumRestDays(max " + (7 - minimumRestDays) + " working days)", 
+    assertEquals("MinimumRestDays(" + minimumRestDays + " rest days min)", 
         constraint.getName());
     assertEquals(ConstraintPriority.COMFORT, constraint.getPriority());
   }
@@ -115,7 +115,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
     SolverAssertions.assertWorkingDaysRespected(
         solver, strictContext.getWorkingDaysPerWeek(), twoEmployees, 5);
 
-    assertEquals("MinimumRestDays(max 5 working days)", strictConstraint.getName());
+    assertEquals("MinimumRestDays(2 rest days min)", strictConstraint.getName());
   }
 
   @Test
@@ -254,6 +254,6 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
     SolverAssertions.assertWorkingDaysRespected(
         solver, extremeContext.getWorkingDaysPerWeek(), manyEmployees, 1);
 
-    assertEquals("MinimumRestDays(max 1 working days)", extremeConstraint.getName());
+    assertEquals("MinimumRestDays(6 rest days min)", extremeConstraint.getName());
   }
 }

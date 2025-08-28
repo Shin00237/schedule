@@ -32,7 +32,8 @@ public class WorkingDaysConstraint implements Constraint {
     for (int e = 0; e < context.getEmployeeCount(); e++) {
       for (int w = 0; w < context.getWorkingDaysPerWeek()[e].length; w++) {
         LinearExprBuilder sumDaysWorked = LinearExpr.newBuilder();
-        for (int d = 0; d < 7; d++) {
+        int daysPerCycle = context.getConfig().getDaysPerCycle();
+        for (int d = 0; d < daysPerCycle; d++) {
           sumDaysWorked.add(context.getWorkingDays()[e][w][d]);
         }
         context.getModel().addEquality(context.getWorkingDaysPerWeek()[e][w], sumDaysWorked);
