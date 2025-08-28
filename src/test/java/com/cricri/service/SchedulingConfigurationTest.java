@@ -4,11 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.cricri.model.Week;
+import com.cricri.testutils.TestDataFactory;
 import java.time.DayOfWeek;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import com.cricri.model.Week;
-import com.cricri.testutils.TestDataFactory;
 
 /**
  * Tests unitaires pour SchedulingConfiguration.

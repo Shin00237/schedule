@@ -1,7 +1,5 @@
 package com.cricri;
 
-import java.util.Arrays;
-import java.util.List;
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintPriority;
@@ -16,6 +14,8 @@ import com.cricri.service.ModularShiftScheduler;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
 import com.google.ortools.sat.CpSolverStatus;
+import java.util.Arrays;
+import java.util.List;
 
 public class Main {
 
