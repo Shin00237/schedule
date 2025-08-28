@@ -46,7 +46,7 @@ class ShiftSchedulerTest {
     baseEmployees = Arrays.asList(alice, bob, charlie, david);
 
     // Types de shifts courants
-    normalShift = new ShiftType("NORMAL", 480, 960, 480); // 8h-16h = 8h
+    normalShift = new ShiftType("NORMAL", 480, 960, 480, 45); // 8h-16h = 8h (45min pause)
 
     // Semaines de base
     baseWeek = Week.create(0);
@@ -101,8 +101,8 @@ class ShiftSchedulerTest {
     );
 
     // Shifts avec conflits - pour tests de repos minimum
-    ShiftType matinLong = new ShiftType("MATIN_LONG", 420, 945, 525); // 7h00-15h45
-    ShiftType soirLong = new ShiftType("SOIR_LONG", 900, 1425, 525); // 15h00-23h45
+    ShiftType matinLong = new ShiftType("MATIN_LONG", 420, 945, 525, 45); // 7h00-15h45
+    ShiftType soirLong = new ShiftType("SOIR_LONG", 900, 1425, 525, 45); // 15h00-23h45
     conflictShifts = Arrays.asList(
         new Shift("Vendredi-MATIN", baseWeek.getDay(4), matinLong, 1, 1),
         new Shift("Vendredi-SOIR", baseWeek.getDay(4), soirLong, 1, 1), // Conflit avec matin
@@ -170,7 +170,7 @@ class ShiftSchedulerTest {
         if (solver.value(testScheduler.getAssignments()[e][s]) == 1) {
           Shift shift = twoWeekShifts.get(s);
           int week = shift.day().getWeekNumber();
-          hoursPerEmployeePerWeek[e][week] += shift.type().dureeMinutes();
+          hoursPerEmployeePerWeek[e][week] += shift.type().dureeEffectiveMinutes();
         }
       }
     }

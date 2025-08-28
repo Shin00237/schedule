@@ -40,8 +40,8 @@ public class ShiftScheduler {
     for (int e = 0; e < employees.size(); e++) {
       for (int s = 0; s < shifts.size(); s++) {
         assignments[e][s] = model.newBoolVar("assign_e" + e + "_s" + s);
-        // Durée réelle travaillée: 0 si non assigné, sinon entre 1 minute et durée complète du shift
-        int maxShiftDuration = shifts.get(s).type().dureeMinutes();
+        // Durée réelle travaillée: 0 si non assigné, sinon entre 1 minute et durée effective du shift (sans pause)
+        int maxShiftDuration = shifts.get(s).type().dureeEffectiveMinutes();
         actualHours[e][s] = model.newIntVar(0, maxShiftDuration, "hours_e" + e + "_s" + s);
       }
     }
@@ -128,7 +128,7 @@ public class ShiftScheduler {
     // Si un employé est assigné à un shift, ses heures réelles doivent être > 0
     for (int e = 0; e < employees.size(); e++) {
       for (int s = 0; s < shifts.size(); s++) {
-        int maxShiftDuration = shifts.get(s).type().dureeMinutes();
+        int maxShiftDuration = shifts.get(s).type().dureeEffectiveMinutes();
 
         // Contrainte de cohérence : si assigné, minimum minHoursPerShift, sinon 0
         // actualHours[e][s] >= assignments[e][s] * minHoursPerShift

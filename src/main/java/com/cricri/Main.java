@@ -1,5 +1,8 @@
 package com.cricri;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import com.cricri.model.Day;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
@@ -9,9 +12,6 @@ import com.cricri.service.ShiftScheduler;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
 import com.google.ortools.sat.CpSolverStatus;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 
 public class Main {
 
@@ -26,6 +26,7 @@ public class Main {
   private static final int HEURE_DEBUT_SOIR = 900; // 15h00
   private static final int HEURE_FIN_SOIR = 1425; // 23h45
   private static final int DUREE_SHIFT_SOIR = 525; // 8h45
+  private static final int DUREE_PAUSE = 45; // 4h en minutes
   private static final String[] JOURS = {
     "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"
   };
@@ -66,9 +67,9 @@ public class Main {
     Employee eva = new Employee("E5", "Eva");
     List<Employee> employees = Arrays.asList(alice, bob, charlie, david, eva);
 
-    // Créer des types de shift
-    ShiftType matin = new ShiftType("MATIN", HEURE_DEBUT_MATIN, HEURE_FIN_MATIN, DUREE_SHIFT_MATIN);
-    ShiftType soir = new ShiftType("SOIR", HEURE_DEBUT_SOIR, HEURE_FIN_SOIR, DUREE_SHIFT_SOIR);
+    // Créer des types de shift (avec 45 minutes de pause)
+    ShiftType matin = new ShiftType("MATIN", HEURE_DEBUT_MATIN, HEURE_FIN_MATIN, DUREE_SHIFT_MATIN, DUREE_PAUSE);
+    ShiftType soir = new ShiftType("SOIR", HEURE_DEBUT_SOIR, HEURE_FIN_SOIR, DUREE_SHIFT_SOIR, DUREE_PAUSE);
 
     // Créer une semaine
     Week week = Week.create(0);
@@ -147,12 +148,12 @@ public class Main {
         if (solver.value(scheduler.getAssignments()[e][s]) == 1) {
           long actualMinutes = solver.value(scheduler.getActualHours()[e][s]);
           double actualHours = actualMinutes / 60.0;
-          
+
           // Calculer les heures de début et fin réelles
           String startEndTime = calculateWorkingHours(shift, actualMinutes);
-          
-          System.out.printf("  [OK] %s (%.1fh sur %.1fh) - %s%n", 
-              employees.get(e).nom(), 
+
+          System.out.printf("  [OK] %s (%.1fh effective / %.1fh présence) - %s%n",
+              employees.get(e).nom(),
               actualHours,
               shift.type().dureeMinutes() / 60.0,
               startEndTime);
@@ -172,7 +173,7 @@ public class Main {
 
     // Afficher les heures par employé par semaine
     printHoursPerEmployee(scheduler, solver, employees, shifts);
-    
+
     // Afficher les jours de repos par employé
     printRestDaysPerEmployee(scheduler, solver, employees);
   }
@@ -266,14 +267,14 @@ public class Main {
   private static String calculateWorkingHours(Shift shift, long actualMinutes) {
     int startMinutes = shift.type().heureDebutMinutes();
     int endMinutes = startMinutes + (int) actualMinutes;
-    
+
     // Convertir en format HH:MM
     String startTime = formatTime(startMinutes);
     String endTime = formatTime(endMinutes);
-    
+
     return startTime + " - " + endTime;
   }
-  
+
   private static String formatTime(int minutes) {
     int hours = minutes / 60;
     int mins = minutes % 60;
