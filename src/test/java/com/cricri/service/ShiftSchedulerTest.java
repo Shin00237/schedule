@@ -19,7 +19,7 @@ import com.google.ortools.sat.CpSolverStatus;
 class ShiftSchedulerTest {
 
   // Éléments communs
-  private ShiftScheduler scheduler;
+  private ModularShiftScheduler scheduler;
   private List<Employee> baseEmployees;
   private Week baseWeek;
   private Week baseWeek2;
@@ -63,17 +63,22 @@ class ShiftSchedulerTest {
     scheduler = createScheduler(employees, shifts);
   }
 
-  // Méthode utilitaire pour créer un scheduler
-  private ShiftScheduler createScheduler(List<Employee> employees, List<Shift> shifts) {
-    ShiftScheduler scheduler = new ShiftScheduler();
-    scheduler.setEmployees(employees);
-    scheduler.setShifts(shifts);
-    scheduler.setShiftIndexMap(new HashMap<>());
+  // Méthode utilitaire pour créer un scheduler modulaire
+  private ModularShiftScheduler createScheduler(List<Employee> employees, List<Shift> shifts) {
+    return new ModularShiftScheduler(employees, shifts)
+        .withStandardConstraints(
+            40 * 60, // 40h par semaine
+            11, // 11h de repos minimum
+            5 * 60); // 5h minimum par shift
+  }
 
-    for (int i = 0; i < shifts.size(); i++) {
-      scheduler.getShiftIndexMap().put(shifts.get(i).id(), i);
+  // Méthode pour créer un scheduler avec contraintes spécifiques
+  private ModularShiftScheduler createSchedulerWithConstraints(
+      List<Employee> employees, List<Shift> shifts, boolean withStandard) {
+    ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts);
+    if (withStandard) {
+      scheduler.withStandardConstraints(40 * 60, 11, 5 * 60);
     }
-
     return scheduler;
   }
 
@@ -146,9 +151,12 @@ class ShiftSchedulerTest {
     // Utiliser les employés de base et les shifts prédéfinis
     List<Employee> testEmployees = baseEmployees.subList(0, 2);
 
-    // Créer un scheduler avec limite réaliste
-    ShiftScheduler testScheduler = createScheduler(testEmployees, twoWeekShifts);
-    testScheduler.setMaxHoursPerWeek(40 * 60); // Limite: 40h par semaine (5 shifts max)
+    // Créer un scheduler avec contraintes personnalisées
+    ModularShiftScheduler testScheduler = createSchedulerWithConstraints(testEmployees, twoWeekShifts, false)
+        .withMinimumCoverage()
+        .withAssignmentHours(5 * 60)
+        .withMaxHoursPerWeek(40 * 60) // Limite: 40h par semaine
+        .withWorkingDays();
 
     // Construire le modèle
     testScheduler.buildModel();
@@ -170,7 +178,7 @@ class ShiftSchedulerTest {
         if (solver.value(testScheduler.getAssignments()[e][s]) == 1) {
           Shift shift = twoWeekShifts.get(s);
           int week = shift.day().getWeekNumber();
-          hoursPerEmployeePerWeek[e][week] += shift.type().dureeEffectiveMinutes();
+          hoursPerEmployeePerWeek[e][week] += solver.value(testScheduler.getActualHours()[e][s]);
         }
       }
     }
@@ -208,9 +216,11 @@ class ShiftSchedulerTest {
     // Utiliser les employés de base et les shifts avec conflits
     List<Employee> testEmployees = baseEmployees.subList(0, 2);
 
-    // Créer le scheduler
-    ShiftScheduler testScheduler = createScheduler(testEmployees, conflictShifts);
-    testScheduler.setMinRestHours(11); // 11h de repos minimum
+    // Créer le scheduler avec contrainte de repos
+    ModularShiftScheduler testScheduler = createSchedulerWithConstraints(testEmployees, conflictShifts, false)
+        .withMinimumCoverage()
+        .withAssignmentHours(5 * 60)
+        .withMinimumRest(11); // 11h de repos minimum
 
     // Construire le modèle
     testScheduler.buildModel();
@@ -263,8 +273,11 @@ class ShiftSchedulerTest {
 
     List<Shift> testShifts = Arrays.asList(lundiMatin, lundiSoir, mardiMatin, mercrediMatin);
 
-    // Créer le scheduler
-    ShiftScheduler testScheduler = createScheduler(testEmployees, testShifts);
+    // Créer le scheduler avec contraintes de jours de travail
+    ModularShiftScheduler testScheduler = createSchedulerWithConstraints(testEmployees, testShifts, false)
+        .withMinimumCoverage()
+        .withAssignmentHours(5 * 60)
+        .withWorkingDays();
 
     // Construire le modèle
     testScheduler.buildModel();
@@ -332,8 +345,12 @@ class ShiftSchedulerTest {
         .map(s -> new Shift(s.id(), s.day(), s.type(), 1, 1)) // min=1, max=1
         .toList();
 
-    // Créer le scheduler
-    ShiftScheduler testScheduler = createScheduler(testEmployees, testShifts);
+    // Créer le scheduler avec contraintes de jours de repos
+    ModularShiftScheduler testScheduler = createSchedulerWithConstraints(testEmployees, testShifts, false)
+        .withMinimumCoverage()
+        .withAssignmentHours(5 * 60)
+        .withWorkingDays()
+        .withMinimumRestDays(1);
 
     // Construire le modèle
     testScheduler.buildModel();
@@ -352,7 +369,11 @@ class ShiftSchedulerTest {
     // Test avec 2 employés - devrait être faisable
     testEmployees = baseEmployees.subList(0, 2);
 
-    testScheduler.setEmployees(testEmployees);
+    testScheduler = createSchedulerWithConstraints(testEmployees, testShifts, false)
+        .withMinimumCoverage()
+        .withAssignmentHours(5 * 60)
+        .withWorkingDays()
+        .withMinimumRestDays(1);
     testScheduler.buildModel();
 
     status = solver.solve(testScheduler.getModel());
@@ -392,10 +413,14 @@ class ShiftSchedulerTest {
     // Utiliser tous les employés de base pour l'optimisation
     List<Employee> testEmployees = baseEmployees;
 
-    // Utiliser les shifts de la semaine complète (déjà configurés avec min=1, max=2)
-    // Créer le scheduler
-    ShiftScheduler testScheduler = createScheduler(testEmployees, weekShifts);
-    testScheduler.setMaxHoursPerWeek(40 * 60); // 40h par semaine
+    // Créer le scheduler avec objectif weekday
+    ModularShiftScheduler testScheduler = createSchedulerWithConstraints(testEmployees, weekShifts, false)
+        .withMinimumCoverage()
+        .withAssignmentHours(5 * 60)
+        .withMaxHoursPerWeek(40 * 60)
+        .withWorkingDays()
+        .withMinimumRestDays(1)
+        .withWeekdayPreference();
 
     // Construire le modèle
     testScheduler.buildModel();

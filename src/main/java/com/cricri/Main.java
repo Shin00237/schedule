@@ -1,14 +1,13 @@
 package com.cricri;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import com.cricri.model.Day;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.model.ShiftType;
 import com.cricri.model.Week;
-import com.cricri.service.ShiftScheduler;
+import com.cricri.service.ModularShiftScheduler;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
 import com.google.ortools.sat.CpSolverStatus;
@@ -19,7 +18,7 @@ public class Main {
   private static final int NB_EMPLOYES = 5;
   private static final int MIN_EMPLOYES_PAR_SHIFT = 1;
   private static final int MAX_EMPLOYES_PAR_SHIFT = 2;
-  private static final int MAX_HEURES_PAR_SEMAINE = 40 * 60; // 40h en minutes
+  private static final int MAX_HEURES_PAR_SEMAINE = 39 * 60; // 40h en minutes
   private static final int HEURE_DEBUT_MATIN = 420; // 7h00
   private static final int HEURE_FIN_MATIN = 945; // 15h45
   private static final int DUREE_SHIFT_MATIN = 525; // 8h45
@@ -36,11 +35,12 @@ public class Main {
     Loader.loadNativeLibraries();
 
     // Configuration
-    ShiftScheduler scheduler = createTestScheduler();
+    ModularShiftScheduler scheduler = createTestScheduler();
     printConfiguration(scheduler);
+    scheduler.printConstraints();
+    scheduler.printObjectives();
 
     // Construire le modèle
-    System.out.println("\n=== Construction du modèle ===");
     scheduler.buildModel();
     System.out.println("Modèle construit avec contraintes de couverture minimale");
 
@@ -58,7 +58,7 @@ public class Main {
     }
   }
 
-  private static ShiftScheduler createTestScheduler() {
+  private static ModularShiftScheduler createTestScheduler() {
     // Créer des employés
     Employee alice = new Employee("E1", "Alice");
     Employee bob = new Employee("E2", "Bob");
@@ -88,22 +88,17 @@ public class Main {
           new Shift(JOURS[i] + "-SOIR", day, soir, MIN_EMPLOYES_PAR_SHIFT, MAX_EMPLOYES_PAR_SHIFT));
     }
 
-    // Créer le scheduler
-    ShiftScheduler scheduler = new ShiftScheduler();
-    scheduler.setEmployees(employees);
-    scheduler.setShifts(shifts);
-    scheduler.setMaxHoursPerWeek(MAX_HEURES_PAR_SEMAINE);
-    scheduler.setShiftIndexMap(new HashMap<>());
-
-    // Indexer les shifts
-    for (int i = 0; i < shifts.size(); i++) {
-      scheduler.getShiftIndexMap().put(shifts.get(i).id(), i);
-    }
+    // Créer le scheduler modulaire avec contraintes standard
+    ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts)
+        .withStandardConstraints(
+            MAX_HEURES_PAR_SEMAINE, // 39h par semaine
+            11, // 11h de repos minimum
+            5 * 60); // 5h minimum par shift
 
     return scheduler;
   }
 
-  private static void printConfiguration(ShiftScheduler scheduler) {
+  private static void printConfiguration(ModularShiftScheduler scheduler) {
     System.out.println("=== Configuration ===");
     System.out.println("Employés : " + scheduler.getEmployees().size());
     scheduler
@@ -125,7 +120,7 @@ public class Main {
                         + " employés"));
   }
 
-  private static void printSolution(ShiftScheduler scheduler, CpSolver solver) {
+  private static void printSolution(ModularShiftScheduler scheduler, CpSolver solver) {
     List<Employee> employees = scheduler.getEmployees();
     List<Shift> shifts = scheduler.getShifts();
 
@@ -179,7 +174,7 @@ public class Main {
   }
 
   private static void printHoursPerEmployee(
-      ShiftScheduler scheduler, CpSolver solver, List<Employee> employees, List<Shift> shifts) {
+      ModularShiftScheduler scheduler, CpSolver solver, List<Employee> employees, List<Shift> shifts) {
     System.out.println("\n=== Heures par employé par semaine ===");
 
     // Calculer le nombre de semaines
@@ -226,7 +221,7 @@ public class Main {
   }
 
   private static void printRestDaysPerEmployee(
-      ShiftScheduler scheduler, CpSolver solver, List<Employee> employees) {
+      ModularShiftScheduler scheduler, CpSolver solver, List<Employee> employees) {
     System.out.println("\n=== Jours de repos par employé par semaine ===");
 
     int nbWeeks = scheduler.getWorkingDaysPerWeek()[0].length;
