@@ -128,8 +128,6 @@ public abstract class ConstraintTestBase {
     String name = constraint.getName();
     assert name != null : "Le nom de la contrainte ne doit pas être null";
     assert !name.trim().isEmpty() : "Le nom de la contrainte ne doit pas être vide";
-    // Vérifier que la validation passe avec un contexte valide
-    assert constraint.validate(context) : "La validation devrait passer avec un contexte valide";
   }
 
   /**

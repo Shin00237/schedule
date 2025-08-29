@@ -35,7 +35,7 @@ class ObjectiveCollectorTest {
   void testCollectorStartsEmpty() {
     assertTrue(collector.isEmpty());
     assertEquals(0, collector.getTermCount());
-    
+
     LinearExpr result = collector.build();
     assertNotNull(result);
     // Vérifier que c'est une expression constante avec valeur 0

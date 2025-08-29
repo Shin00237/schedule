@@ -11,7 +11,7 @@ import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.factory.ConstraintFactory;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
-import com.cricri.service.ModularShiftScheduler;
+import com.cricri.service.ShiftScheduler;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.sat.CpSolver;
 import com.google.ortools.sat.CpSolverStatus;
@@ -50,7 +50,7 @@ class UnifiedObjectiveIntegrationTest {
                 2));
 
     // When
-    ModularShiftScheduler scheduler = buildSchedulerWithConfigs(configs);
+    ShiftScheduler scheduler = buildSchedulerWithConfigs(configs);
 
     // Then
     assertDoesNotThrow(() -> scheduler.buildModel());
@@ -80,7 +80,7 @@ class UnifiedObjectiveIntegrationTest {
                 45 * 60));
 
     // When
-    ModularShiftScheduler scheduler = buildSchedulerWithConfigs(configs);
+    ShiftScheduler scheduler = buildSchedulerWithConfigs(configs);
 
     // Then
     assertDoesNotThrow(() -> scheduler.buildModel());
@@ -110,7 +110,7 @@ class UnifiedObjectiveIntegrationTest {
                 40 * 60));
 
     // When
-    ModularShiftScheduler scheduler = buildSchedulerWithConfigs(configs);
+    ShiftScheduler scheduler = buildSchedulerWithConfigs(configs);
 
     // Then
     assertDoesNotThrow(() -> scheduler.buildModel());
@@ -132,7 +132,7 @@ class UnifiedObjectiveIntegrationTest {
                 ConstraintType.MINIMUM_REST, ConstraintNature.HARD, "minRestHours", 11));
 
     // When
-    ModularShiftScheduler scheduler = buildSchedulerWithConfigs(configs);
+    ShiftScheduler scheduler = buildSchedulerWithConfigs(configs);
 
     // Then - Devrait fonctionner même sans contraintes SOFT
     assertDoesNotThrow(() -> scheduler.buildModel());
@@ -159,7 +159,7 @@ class UnifiedObjectiveIntegrationTest {
                 2));
 
     // When
-    ModularShiftScheduler scheduler = buildSchedulerWithConfigs(configs);
+    ShiftScheduler scheduler = buildSchedulerWithConfigs(configs);
 
     // Then - L'ordre d'application devrait être respecté (FUNDAMENTAL -> SAFETY -> NORMAL ->
     // OPTIMIZATION)
@@ -181,7 +181,7 @@ class UnifiedObjectiveIntegrationTest {
                 ));
 
     // When
-    ModularShiftScheduler scheduler = buildSchedulerWithConfigs(configs);
+    ShiftScheduler scheduler = buildSchedulerWithConfigs(configs);
     scheduler.buildModel();
 
     CpSolver solver = new CpSolver();
@@ -241,7 +241,7 @@ class UnifiedObjectiveIntegrationTest {
                 ));
 
     // When/Then - Doit gérer les conflits gracieusement
-    ModularShiftScheduler scheduler = buildSchedulerWithConfigs(configs);
+    ShiftScheduler scheduler = buildSchedulerWithConfigs(configs);
     assertDoesNotThrow(() -> scheduler.buildModel());
 
     // Le solveur devrait trouver un compromis, même si pas optimal
@@ -254,8 +254,8 @@ class UnifiedObjectiveIntegrationTest {
         "Même avec des conflits, une solution devrait être trouvée");
   }
 
-  private ModularShiftScheduler buildSchedulerWithConfigs(List<ConstraintConfig> configs) {
-    ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts);
+  private ShiftScheduler buildSchedulerWithConfigs(List<ConstraintConfig> configs) {
+    ShiftScheduler scheduler = new ShiftScheduler(employees, shifts);
 
     for (ConstraintConfig config : configs) {
       Constraint constraint = ConstraintFactory.create(config);

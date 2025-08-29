@@ -140,7 +140,7 @@ class ObjectiveWeightScenariosTest {
         0,
         totalObjective,
         "Une violation CRITICAL devrait exactement contrebalancer un gain CRITICAL");
-        
+
     // Test avec plus de violations que de gains
     long moreViolationsObjective = maximizeContribution + 2 * criticalViolationWeight;
     assertTrue(

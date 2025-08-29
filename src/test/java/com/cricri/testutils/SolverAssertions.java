@@ -6,8 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
-import com.cricri.service.ModularShiftScheduler;
 import com.cricri.service.SchedulingContext;
+import com.cricri.service.ShiftScheduler;
 import com.google.ortools.sat.BoolVar;
 import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.CpSolver;
@@ -239,7 +239,7 @@ public class SolverAssertions {
    * @param solver Le solver (après résolution)
    * @param scheduler Le scheduler utilisé
    */
-  public static void assertSolutionStats(CpSolver solver, ModularShiftScheduler scheduler) {
+  public static void assertSolutionStats(CpSolver solver, ShiftScheduler scheduler) {
     System.out.printf("=== Statistiques de la solution ===%n");
     System.out.printf("Statut: %s%n", solver.responseStats());
     System.out.printf("Temps de résolution: %.2fs%n", solver.wallTime());
@@ -270,7 +270,7 @@ public class SolverAssertions {
    * @param scheduler Le scheduler configuré
    * @return Le solver après résolution
    */
-  public static CpSolver solveAndAssertSolution(ModularShiftScheduler scheduler) {
+  public static CpSolver solveAndAssertSolution(ShiftScheduler scheduler) {
     scheduler.buildModel();
     CpSolver solver = new CpSolver();
     assertSolutionExists(solver, scheduler.getModel());

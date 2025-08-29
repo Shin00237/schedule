@@ -9,7 +9,7 @@ import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.model.ShiftType;
 import com.cricri.model.Week;
-import com.cricri.service.ModularShiftScheduler;
+import com.cricri.service.ShiftScheduler;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
 import com.google.ortools.sat.CpSolverStatus;
@@ -47,7 +47,7 @@ public class ScheduleApplication {
     Loader.loadNativeLibraries();
 
     // Configuration
-    ModularShiftScheduler scheduler = createTestScheduler();
+    ShiftScheduler scheduler = createTestScheduler();
     printConfiguration(scheduler);
     scheduler.printConstraints();
 
@@ -69,7 +69,7 @@ public class ScheduleApplication {
     }
   }
 
-  private static ModularShiftScheduler createTestScheduler() {
+  private static ShiftScheduler createTestScheduler() {
     // Créer des employés
     Employee alice = new Employee("E1", "Alice");
     Employee bob = new Employee("E2", "Bob");
@@ -102,7 +102,7 @@ public class ScheduleApplication {
     }
 
     // Créer le scheduler modulaire
-    ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts);
+    ShiftScheduler scheduler = new ShiftScheduler(employees, shifts);
 
     // Ajouter les contraintes exactement comme dans withStandardConstraints()
     List<ConstraintConfig> constraintConfigs =
@@ -153,7 +153,7 @@ public class ScheduleApplication {
     return scheduler;
   }
 
-  private static void printConfiguration(ModularShiftScheduler scheduler) {
+  private static void printConfiguration(ShiftScheduler scheduler) {
     logger.info("=== Configuration ===");
     logger.info("Employés : {}", scheduler.getEmployees().size());
     scheduler.getEmployees().forEach(e -> logger.info("  - {} ({})", e.nom(), e.id()));
@@ -165,7 +165,7 @@ public class ScheduleApplication {
             s -> logger.info("  - {} : {}-{} employés", s.id(), s.minEmployes(), s.maxEmployes()));
   }
 
-  private static void printSolution(ModularShiftScheduler scheduler, CpSolver solver) {
+  private static void printSolution(ShiftScheduler scheduler, CpSolver solver) {
     List<Employee> employees = scheduler.getEmployees();
     List<Shift> shifts = scheduler.getShifts();
 
@@ -214,10 +214,7 @@ public class ScheduleApplication {
   }
 
   private static void printHoursPerEmployee(
-      ModularShiftScheduler scheduler,
-      CpSolver solver,
-      List<Employee> employees,
-      List<Shift> shifts) {
+      ShiftScheduler scheduler, CpSolver solver, List<Employee> employees, List<Shift> shifts) {
     logger.info("\n=== Heures par employé par semaine ===");
 
     // Calculer le nombre de semaines
@@ -265,7 +262,7 @@ public class ScheduleApplication {
   }
 
   private static void printRestDaysPerEmployee(
-      ModularShiftScheduler scheduler, CpSolver solver, List<Employee> employees) {
+      ShiftScheduler scheduler, CpSolver solver, List<Employee> employees) {
     logger.info("\n=== Jours de repos par employé par semaine ===");
 
     int nbWeeks = scheduler.getWorkingDaysPerWeek()[0].length;

@@ -2,6 +2,7 @@ package com.cricri.service;
 
 import com.cricri.constraints.Constraint;
 import com.cricri.constraints.enums.ConstraintNature;
+import com.cricri.constraints.exceptions.EmptyParameterException;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.google.ortools.sat.BoolVar;
@@ -12,24 +13,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Getter
-public class ModularShiftScheduler {
+public class ShiftScheduler {
 
-  private static final Logger logger = LoggerFactory.getLogger(ModularShiftScheduler.class);
+  private static final Logger logger = LoggerFactory.getLogger(ShiftScheduler.class);
   private final SchedulingContext context;
   private final List<Constraint> constraints = new ArrayList<>();
 
-  public ModularShiftScheduler(List<Employee> employees, List<Shift> shifts) {
-    if (employees == null) {
-      throw new IllegalArgumentException("La liste des employés ne peut pas être null");
-    }
-    if (shifts == null) {
-      throw new IllegalArgumentException("La liste des shifts ne peut pas être null");
-    }
+  public ShiftScheduler(List<Employee> employees, List<Shift> shifts) {
+    verifyParameters(employees, shifts);
 
     Map<String, Integer> shiftIndexMap = new HashMap<>();
     for (int i = 0; i < shifts.size(); i++) {
@@ -38,8 +35,17 @@ public class ModularShiftScheduler {
     this.context = new SchedulingContext(employees, shifts, shiftIndexMap);
   }
 
+  private void verifyParameters(List<Employee> employees, List<Shift> shifts) {
+    if (employees == null) {
+      throw new EmptyParameterException("employees");
+    }
+    if (shifts == null) {
+      throw new EmptyParameterException("shifts");
+    }
+  }
+
   // API fluide pour ajouter contraintes
-  public ModularShiftScheduler withConstraint(Constraint constraint) {
+  public ShiftScheduler withConstraint(Constraint constraint) {
     constraints.add(constraint);
     return this;
   }
@@ -51,21 +57,7 @@ public class ModularShiftScheduler {
     ObjectiveCollector sharedCollector = new ObjectiveCollector();
 
     // Appliquer toutes les contraintes triées par priorité
-    constraints.stream()
-        .forEach(
-            constraint -> {
-              if (constraint.validate(context)) {
-                if (constraint.getNature() == ConstraintNature.HARD) {
-                  constraint.applyHardConstraint(context);
-                } else {
-                  // Chaque contrainte SOFT ajoute ses termes au collecteur partagé
-                  constraint.applySoftConstraint(context, sharedCollector);
-                }
-                logger.info("✓ Appliqué: {}", constraint.getName());
-              } else {
-                logger.warn("✗ Ignoré: {} (validation échouée)", constraint.getName());
-              }
-            });
+    constraints.stream().forEach(addConstraint(sharedCollector));
 
     // À la fin : un seul objectif unifié, pas d'état global !
     LinearExpr globalObjective = sharedCollector.build();
@@ -76,6 +68,17 @@ public class ModularShiftScheduler {
     }
 
     logger.info("Modèle construit avec {} contraintes", constraints.size());
+  }
+
+  private Consumer<? super Constraint> addConstraint(ObjectiveCollector sharedCollector) {
+    return constraint -> {
+      if (constraint.getNature() == ConstraintNature.HARD) {
+        constraint.applyHardConstraint(context);
+      } else {
+        // Chaque contrainte SOFT ajoute ses termes au collecteur partagé
+        constraint.applySoftConstraint(context, sharedCollector);
+      }
+    };
   }
 
   // Méthodes de compatibilité avec l'ancien code

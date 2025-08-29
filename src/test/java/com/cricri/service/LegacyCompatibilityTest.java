@@ -38,7 +38,7 @@ class LegacyCompatibilityTest {
   @Test
   void legacyStandardConfigurationStillWorksTest() {
     // Recréer la configuration "standard" de l'ancien test
-    ModularShiftScheduler scheduler =
+    ShiftScheduler scheduler =
         TestDataFactory.createStandardSchedulerWithConfig(
             employees,
             shifts,
@@ -59,8 +59,8 @@ class LegacyCompatibilityTest {
   @Test
   void legacyWeekdayOptimizationStillWorksTest() {
     // Test similaire à testWeekdayStaffingObjective de l'ancien code
-    ModularShiftScheduler scheduler =
-        new ModularShiftScheduler(employees, shifts)
+    ShiftScheduler scheduler =
+        new ShiftScheduler(employees, shifts)
             .withConstraint(
                 ConstraintFactory.create(
                     ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)))
@@ -128,7 +128,7 @@ class LegacyCompatibilityTest {
   @Test
   void legacyMethodsStillAccessibleTest() {
     // Vérifier que les méthodes utilisées dans l'ancien test sont toujours disponibles
-    ModularShiftScheduler scheduler =
+    ShiftScheduler scheduler =
         TestDataFactory.createStandardSchedulerWithConfig(employees, shifts, 40 * 60, 11, 5 * 60);
 
     scheduler.buildModel();
@@ -157,8 +157,8 @@ class LegacyCompatibilityTest {
         TestDataFactory.createTwoWeekShifts(
             TestDataFactory.createStandardWeeks()[0], TestDataFactory.createStandardWeeks()[1]);
 
-    ModularShiftScheduler scheduler =
-        new ModularShiftScheduler(employees.subList(0, 2), twoWeekShifts)
+    ShiftScheduler scheduler =
+        new ShiftScheduler(employees.subList(0, 2), twoWeekShifts)
             .withConstraint(
                 ConstraintFactory.create(
                     ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)))
@@ -202,8 +202,8 @@ class LegacyCompatibilityTest {
     List<Shift> conflictShifts =
         TestDataFactory.createConflictingShifts(TestDataFactory.createStandardWeeks()[0]);
 
-    ModularShiftScheduler scheduler =
-        new ModularShiftScheduler(employees.subList(0, 2), conflictShifts)
+    ShiftScheduler scheduler =
+        new ShiftScheduler(employees.subList(0, 2), conflictShifts)
             .withConstraint(
                 ConstraintFactory.create(
                     ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)))

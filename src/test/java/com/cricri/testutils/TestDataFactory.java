@@ -8,9 +8,9 @@ import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.model.ShiftType;
 import com.cricri.model.Week;
-import com.cricri.service.ModularShiftScheduler;
 import com.cricri.service.SchedulingConfiguration;
 import com.cricri.service.SchedulingContext;
+import com.cricri.service.ShiftScheduler;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -254,7 +254,7 @@ public class TestDataFactory {
    * @param shifts Liste des shifts
    * @return Scheduler avec contraintes standard
    */
-  public static ModularShiftScheduler createStandardScheduler(
+  public static ShiftScheduler createStandardScheduler(
       List<Employee> employees, List<Shift> shifts) {
     return createStandardSchedulerWithConfig(employees, shifts, 40 * 60, 11, 5 * 60);
   }
@@ -263,14 +263,14 @@ public class TestDataFactory {
    * Crée un scheduler avec contraintes standard configurables. Remplace l'ancienne méthode
    * withStandardConstraints().
    */
-  public static ModularShiftScheduler createStandardSchedulerWithConfig(
+  public static ShiftScheduler createStandardSchedulerWithConfig(
       List<Employee> employees,
       List<Shift> shifts,
       int maxHoursPerWeek,
       int minRestHours,
       int minHoursPerShift) {
 
-    ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts);
+    ShiftScheduler scheduler = new ShiftScheduler(employees, shifts);
 
     // Reproduire exactement la logique de withStandardConstraints()
     List<ConstraintConfig> constraintConfigs =
@@ -302,10 +302,10 @@ public class TestDataFactory {
    * Crée un scheduler avec uniquement la contrainte de couverture minimum. Remplace l'ancienne
    * méthode withMinimumCoverage().
    */
-  public static ModularShiftScheduler createMinimumCoverageScheduler(
+  public static ShiftScheduler createMinimumCoverageScheduler(
       List<Employee> employees, List<Shift> shifts) {
 
-    ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts);
+    ShiftScheduler scheduler = new ShiftScheduler(employees, shifts);
     ConstraintConfig config =
         ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD);
     scheduler.withConstraint(ConstraintFactory.create(config));
@@ -319,9 +319,8 @@ public class TestDataFactory {
    * @param shifts Liste des shifts
    * @return Scheduler sans contraintes
    */
-  public static ModularShiftScheduler createEmptyScheduler(
-      List<Employee> employees, List<Shift> shifts) {
-    return new ModularShiftScheduler(employees, shifts);
+  public static ShiftScheduler createEmptyScheduler(List<Employee> employees, List<Shift> shifts) {
+    return new ShiftScheduler(employees, shifts);
   }
 
   /**
@@ -338,7 +337,7 @@ public class TestDataFactory {
    *
    * @return Scheduler prêt avec données de test cohérentes
    */
-  public static ModularShiftScheduler createCompleteTestScenario() {
+  public static ShiftScheduler createCompleteTestScenario() {
     List<Employee> employees = createStandardEmployees();
     Week[] weeks = createStandardWeeks();
     List<Shift> shifts = createStandardWeekShifts(weeks[0]);

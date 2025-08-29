@@ -1,5 +1,6 @@
 package com.cricri.service;
 
+import com.cricri.constraints.exceptions.NegativeParameterException;
 import java.time.DayOfWeek;
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class SchedulingConfiguration {
   public SchedulingConfiguration(
       int daysPerCycle, List<DayOfWeek> cyclePattern, String displayName) {
     if (daysPerCycle <= 0) {
-      throw new IllegalArgumentException("daysPerCycle doit être positif");
+      throw new NegativeParameterException("daysPerCycle");
     }
     if (cyclePattern.size() != daysPerCycle) {
       throw new IllegalArgumentException(

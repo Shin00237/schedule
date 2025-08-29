@@ -26,11 +26,6 @@ public interface Constraint {
   /** Nom unique de la contrainte pour debugging */
   String getName();
 
-  /** Validation des prérequis avant application */
-  default boolean validate(SchedulingContext context) {
-    return true;
-  }
-
   /**
    * Nature de la contrainte (HARD ou SOFT)
    *

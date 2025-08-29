@@ -40,12 +40,4 @@ public record Week(
     }
     return days.get(dayIndex);
   }
-
-  public List<Day> getWeekends() {
-    return days.stream().filter(Day::isWeekend).toList();
-  }
-
-  public List<Day> getWeekdays() {
-    return days.stream().filter(day -> !day.isWeekend()).toList();
-  }
 }

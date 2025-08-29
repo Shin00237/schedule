@@ -9,7 +9,7 @@ import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.factory.ConstraintFactory;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
-import com.cricri.service.ModularShiftScheduler;
+import com.cricri.service.ShiftScheduler;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.Loader;
 import java.util.Collections;
@@ -37,7 +37,7 @@ class SchedulingRobustnessTest {
     // Le scheduler devrait pouvoir être créé mais pas résolu
     assertDoesNotThrow(
         () -> {
-          ModularShiftScheduler scheduler =
+          ShiftScheduler scheduler =
               TestDataFactory.createMinimumCoverageScheduler(emptyEmployees, shifts);
           // Ne pas appeler buildModel() car cela échouerait logiquement
         });
@@ -50,7 +50,7 @@ class SchedulingRobustnessTest {
 
     assertDoesNotThrow(
         () -> {
-          ModularShiftScheduler scheduler =
+          ShiftScheduler scheduler =
               TestDataFactory.createMinimumCoverageScheduler(employees, emptyShifts);
           scheduler.buildModel(); // Devrait fonctionner avec 0 shift
         });
@@ -66,13 +66,13 @@ class SchedulingRobustnessTest {
     assertThrows(
         Exception.class,
         () -> {
-          new ModularShiftScheduler(null, shifts);
+          new ShiftScheduler(null, shifts);
         });
 
     assertThrows(
         Exception.class,
         () -> {
-          new ModularShiftScheduler(employees, null);
+          new ShiftScheduler(employees, null);
         });
   }
 
@@ -85,8 +85,8 @@ class SchedulingRobustnessTest {
     // Test avec des valeurs extrêmes mais techniquement valides
     assertDoesNotThrow(
         () -> {
-          ModularShiftScheduler scheduler =
-              new ModularShiftScheduler(employees, shifts)
+          ShiftScheduler scheduler =
+              new ShiftScheduler(employees, shifts)
                   .withConstraint(
                       ConstraintFactory.create(
                           ConstraintConfig.of(
@@ -127,8 +127,8 @@ class SchedulingRobustnessTest {
     // Test avec des valeurs de contrainte incohérentes
     assertDoesNotThrow(
         () -> {
-          ModularShiftScheduler scheduler =
-              new ModularShiftScheduler(employees, shifts)
+          ShiftScheduler scheduler =
+              new ShiftScheduler(employees, shifts)
                   .withConstraint(
                       ConstraintFactory.create(
                           ConstraintConfig.of(
@@ -162,8 +162,8 @@ class SchedulingRobustnessTest {
     // Test avec de très grandes valeurs
     assertDoesNotThrow(
         () -> {
-          ModularShiftScheduler scheduler =
-              new ModularShiftScheduler(employees, shifts)
+          ShiftScheduler scheduler =
+              new ShiftScheduler(employees, shifts)
                   .withConstraint(
                       ConstraintFactory.create(
                           ConstraintConfig.of(
@@ -193,8 +193,7 @@ class SchedulingRobustnessTest {
     List<Shift> shifts =
         TestDataFactory.createStandardWeekShifts(TestDataFactory.createStandardWeeks()[0]);
 
-    ModularShiftScheduler scheduler =
-        TestDataFactory.createMinimumCoverageScheduler(employees, shifts);
+    ShiftScheduler scheduler = TestDataFactory.createMinimumCoverageScheduler(employees, shifts);
 
     // Appeler buildModel() plusieurs fois ne devrait pas poser problème
     assertDoesNotThrow(
@@ -211,7 +210,7 @@ class SchedulingRobustnessTest {
     List<Shift> shifts =
         TestDataFactory.createStandardWeekShifts(TestDataFactory.createStandardWeeks()[0]);
 
-    ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts);
+    ShiftScheduler scheduler = new ShiftScheduler(employees, shifts);
 
     // Vérifier que l'état reste cohérent après ajout de contraintes
     scheduler.withConstraint(
@@ -243,7 +242,7 @@ class SchedulingRobustnessTest {
     List<Employee> originalEmployees = List.copyOf(employees);
     List<Shift> originalShifts = List.copyOf(shifts);
 
-    ModularShiftScheduler scheduler =
+    ShiftScheduler scheduler =
         TestDataFactory.createStandardSchedulerWithConfig(employees, shifts, 40 * 60, 11, 5 * 60);
 
     scheduler.buildModel();

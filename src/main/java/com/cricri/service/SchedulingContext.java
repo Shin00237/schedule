@@ -45,19 +45,9 @@ public class SchedulingContext {
     this.model = new CpModel();
   }
 
-  // Constructeur avec configuration par défaut pour compatibilité
   public SchedulingContext(
       List<Employee> employees, List<Shift> shifts, Map<String, Integer> shiftIndexMap) {
     this(employees, shifts, shiftIndexMap, SchedulingConfiguration.STANDARD_WEEK);
-  }
-
-  // Méthodes utilitaires
-  public int getEmployeeCount() {
-    return employees.size();
-  }
-
-  public int getShiftCount() {
-    return shifts.size();
   }
 
   public int getWeekCount() {
@@ -65,7 +55,6 @@ public class SchedulingContext {
     return shifts.stream().mapToInt(shift -> shift.day().getWeekNumber()).max().orElse(0) + 1;
   }
 
-  // Lazy initialization des variables
   public void ensureVariablesInitialized() {
     if (!variablesInitialized) {
       initializeVariables();
@@ -78,6 +67,20 @@ public class SchedulingContext {
     assignments = new BoolVar[getEmployeeCount()][getShiftCount()];
     actualHours = new IntVar[getEmployeeCount()][getShiftCount()];
 
+    employeeAssignationAndActualHoursWorksInit();
+    employePerShiftInit();
+
+    // Variables temporelles
+    int nbWeeks = getWeekCount();
+    hoursPerEmployePerWeekInit(nbWeeks);
+    daysWorksInit(nbWeeks);
+    countingDaysWorkPerWeekInit(nbWeeks);
+
+    // Établir les liens logiques entre variables
+    workingDaysLinksInit();
+  }
+
+  private void employeeAssignationAndActualHoursWorksInit() {
     for (int e = 0; e < getEmployeeCount(); e++) {
       for (int s = 0; s < getShiftCount(); s++) {
         assignments[e][s] = model.newBoolVar("assign_e" + e + "_s" + s);
@@ -85,17 +88,16 @@ public class SchedulingContext {
         actualHours[e][s] = model.newIntVar(0, maxShiftDuration, "hours_e" + e + "_s" + s);
       }
     }
+  }
 
-    // Variables de comptage employés par shift
+  private void employePerShiftInit() {
     employeesPerShift = new IntVar[getShiftCount()];
     for (int s = 0; s < getShiftCount(); s++) {
       employeesPerShift[s] = model.newIntVar(0, getEmployeeCount(), "nbEmployees_s" + s);
     }
+  }
 
-    // Variables temporelles
-    int nbWeeks = getWeekCount();
-
-    // Variables pour les heures par employé par semaine
+  private void hoursPerEmployePerWeekInit(int nbWeeks) {
     hoursPerEmployeePerWeek = new IntVar[getEmployeeCount()][nbWeeks];
     for (int e = 0; e < getEmployeeCount(); e++) {
       for (int w = 0; w < nbWeeks; w++) {
@@ -103,8 +105,9 @@ public class SchedulingContext {
             model.newIntVar(0, Integer.MAX_VALUE, "hours_e" + e + "_w" + w);
       }
     }
+  }
 
-    // Variables pour les jours travaillés
+  private void daysWorksInit(int nbWeeks) {
     int daysPerCycle = config.getDaysPerCycle();
     workingDays = new BoolVar[getEmployeeCount()][nbWeeks][daysPerCycle];
     for (int e = 0; e < getEmployeeCount(); e++) {
@@ -114,8 +117,9 @@ public class SchedulingContext {
         }
       }
     }
+  }
 
-    // Variables pour compter les jours travaillés par semaine
+  private void countingDaysWorkPerWeekInit(int nbWeeks) {
     workingDaysPerWeek = new IntVar[getEmployeeCount()][nbWeeks];
     for (int e = 0; e < getEmployeeCount(); e++) {
       for (int w = 0; w < nbWeeks; w++) {
@@ -123,9 +127,6 @@ public class SchedulingContext {
             model.newIntVar(0, config.getDaysPerCycle(), "workDaysPerWeek_e" + e + "_w" + w);
       }
     }
-
-    // Établir les liens logiques entre variables (anciennement dans WorkingDaysConstraint)
-    initializeWorkingDaysLinks();
   }
 
   /**
@@ -133,7 +134,7 @@ public class SchedulingContext {
    * logique était précédemment dans WorkingDaysConstraint mais appartient ici car elle représente
    * des contraintes techniques toujours nécessaires, pas des règles métier optionnelles.
    */
-  private void initializeWorkingDaysLinks() {
+  private void workingDaysLinksInit() {
     // Lien 1: Si assigné à un shift → alors travaille ce jour
     // workingDays[e][w][d] >= assignments[e][s] pour chaque shift
     for (int e = 0; e < getEmployeeCount(); e++) {
@@ -159,5 +160,13 @@ public class SchedulingContext {
         model.addEquality(workingDaysPerWeek[e][w], sumDaysWorked);
       }
     }
+  }
+
+  public int getEmployeeCount() {
+    return employees.size();
+  }
+
+  public int getShiftCount() {
+    return shifts.size();
   }
 }

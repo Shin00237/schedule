@@ -7,7 +7,7 @@ import com.cricri.factory.ConstraintFactory;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.model.Week;
-import com.cricri.service.ModularShiftScheduler;
+import com.cricri.service.ShiftScheduler;
 import com.cricri.testutils.SolverAssertions;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.Loader;
@@ -37,7 +37,7 @@ class SchedulingPerformanceTest {
 
     long startTime = System.nanoTime();
 
-    ModularShiftScheduler scheduler = TestDataFactory.createStandardScheduler(employees, shifts);
+    ShiftScheduler scheduler = TestDataFactory.createStandardScheduler(employees, shifts);
     scheduler.buildModel();
     CpSolver solver = SolverAssertions.solveAndAssertSolution(scheduler);
 
@@ -76,7 +76,7 @@ class SchedulingPerformanceTest {
 
     long startTime = System.nanoTime();
 
-    ModularShiftScheduler scheduler =
+    ShiftScheduler scheduler =
         TestDataFactory.createStandardSchedulerWithConfig(employees, shifts, 40 * 60, 11, 5 * 60);
 
     scheduler.buildModel();
@@ -101,8 +101,8 @@ class SchedulingPerformanceTest {
 
     long startTime = System.nanoTime();
 
-    ModularShiftScheduler scheduler =
-        new ModularShiftScheduler(employees, shifts)
+    ShiftScheduler scheduler =
+        new ShiftScheduler(employees, shifts)
             .withConstraint(
                 ConstraintFactory.create(
                     ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)))
@@ -162,7 +162,7 @@ class SchedulingPerformanceTest {
       List<Shift> shifts =
           TestDataFactory.createStandardWeekShifts(TestDataFactory.createStandardWeeks()[0]);
 
-      ModularShiftScheduler scheduler = TestDataFactory.createStandardScheduler(employees, shifts);
+      ShiftScheduler scheduler = TestDataFactory.createStandardScheduler(employees, shifts);
       scheduler.buildModel();
       SolverAssertions.solveAndAssertSolution(scheduler);
 
