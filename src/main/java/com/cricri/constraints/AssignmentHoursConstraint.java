@@ -12,18 +12,9 @@ public class AssignmentHoursConstraint implements Constraint {
   private final ConstraintNature nature;
   private final ConstraintConfig config;
 
-  public AssignmentHoursConstraint(int minHoursPerShift) {
-    this(minHoursPerShift, ConstraintNature.HARD, null);
-  }
-
-  public AssignmentHoursConstraint(int minHoursPerShift, ConstraintNature nature) {
-    this(minHoursPerShift, nature, null);
-  }
-
-  public AssignmentHoursConstraint(
-      int minHoursPerShift, ConstraintNature nature, ConstraintConfig config) {
-    this.minHoursPerShift = minHoursPerShift;
-    this.nature = nature;
+  public AssignmentHoursConstraint(ConstraintConfig config) {
+    this.minHoursPerShift = config.getIntParameter("minHoursPerShift", 240); // 4h par défaut
+    this.nature = config.nature();
     this.config = config;
   }
 

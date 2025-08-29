@@ -3,6 +3,9 @@ package com.cricri.constraints;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.cricri.constraints.config.ConstraintConfig;
+import com.cricri.constraints.enums.ConstraintNature;
+import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.model.ShiftType;
@@ -57,7 +60,9 @@ class MaxHoursPerWeekConstraintTest {
   void applyConstraintTest() {
     // Appliquer les contraintes nécessaires
     new MinimumCoverageConstraint().applyHardConstraint(context);
-    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(context);
+    new AssignmentHoursConstraint(
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+    ).applyHardConstraint(context);
     constraint.applyHardConstraint(context);
 
     // Résoudre
@@ -109,7 +114,9 @@ class MaxHoursPerWeekConstraintTest {
   void hoursCalculationTest() {
     // Appliquer les contraintes
     new MinimumCoverageConstraint().applyHardConstraint(context);
-    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(context);
+    new AssignmentHoursConstraint(
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+    ).applyHardConstraint(context);
     constraint.applyHardConstraint(context);
 
     CpSolver solver = new CpSolver();

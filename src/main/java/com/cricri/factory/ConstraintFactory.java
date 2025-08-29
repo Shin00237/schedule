@@ -59,8 +59,7 @@ public class ConstraintFactory {
    * <p>Paramètres attendus : - "minHoursPerShift" (Integer) : Heures minimum si assigné à un shift
    */
   private static Constraint createAssignmentHoursConstraint(ConstraintConfig config) {
-    int minHoursPerShift = config.getIntParameter("minHoursPerShift", 240); // 4h par défaut
-    return new AssignmentHoursConstraint(minHoursPerShift, config.nature(), config);
+    return new AssignmentHoursConstraint(config);
   }
 
   /**

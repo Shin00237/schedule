@@ -2,6 +2,9 @@ package com.cricri.constraints;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.cricri.constraints.config.ConstraintConfig;
+import com.cricri.constraints.enums.ConstraintNature;
+import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.model.Shift;
 import com.cricri.service.SchedulingContext;
 import com.cricri.testutils.ConstraintTestBase;
@@ -38,7 +41,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
   void noRestConflictWithNormalShiftsTest() {
     // Avec des shifts normaux (8h-16h) sur des jours différents, pas de conflit
     new MinimumCoverageConstraint().applyHardConstraint(context);
-    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(context);
+    new AssignmentHoursConstraint(
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+    ).applyHardConstraint(context);
     constraint.applyHardConstraint(context);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(context);
@@ -53,7 +58,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
     SchedulingContext conflictContext = createConflictingScenario();
 
     new MinimumCoverageConstraint().applyHardConstraint(conflictContext);
-    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(conflictContext);
+    new AssignmentHoursConstraint(
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+    ).applyHardConstraint(conflictContext);
     constraint.applyHardConstraint(conflictContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(conflictContext);
@@ -86,7 +93,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
         TestDataFactory.createContext(employees, consecutiveShifts);
 
     new MinimumCoverageConstraint().applyHardConstraint(adequateRestContext);
-    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(adequateRestContext);
+    new AssignmentHoursConstraint(
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+    ).applyHardConstraint(adequateRestContext);
     constraint.applyHardConstraint(adequateRestContext);
 
     // Une solution devrait exister car il y a assez de repos
@@ -111,7 +120,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
         TestDataFactory.createContext(employees, tooCloseShifts);
 
     new MinimumCoverageConstraint().applyHardConstraint(insufficientRestContext);
-    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(insufficientRestContext);
+    new AssignmentHoursConstraint(
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+    ).applyHardConstraint(insufficientRestContext);
     constraint.applyHardConstraint(insufficientRestContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(insufficientRestContext);
@@ -133,7 +144,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
 
     // Utiliser un contexte plus simple qui devrait être faisable
     new MinimumCoverageConstraint().applyHardConstraint(context);
-    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(context);
+    new AssignmentHoursConstraint(
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+    ).applyHardConstraint(context);
     strictConstraint.applyHardConstraint(context);
 
     // Vérifier que le contexte standard reste faisable avec repos strict
@@ -160,7 +173,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
     SchedulingContext flexibleContext = TestDataFactory.createContext(employees, flexibleShifts);
 
     new MinimumCoverageConstraint().applyHardConstraint(flexibleContext);
-    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(flexibleContext);
+    new AssignmentHoursConstraint(
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+    ).applyHardConstraint(flexibleContext);
     flexibleConstraint.applyHardConstraint(flexibleContext);
 
     // Devrait être faisable avec repos flexible
@@ -178,7 +193,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
             manyEmployees, TestDataFactory.createConflictingShifts(week1));
 
     new MinimumCoverageConstraint().applyHardConstraint(multiEmployeeContext);
-    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(multiEmployeeContext);
+    new AssignmentHoursConstraint(
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+    ).applyHardConstraint(multiEmployeeContext);
     constraint.applyHardConstraint(multiEmployeeContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(multiEmployeeContext);
@@ -216,7 +233,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
     SchedulingContext nightContext = TestDataFactory.createContext(employees, nightShifts);
 
     new MinimumCoverageConstraint().applyHardConstraint(nightContext);
-    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(nightContext);
+    new AssignmentHoursConstraint(
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+    ).applyHardConstraint(nightContext);
     constraint.applyHardConstraint(nightContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(nightContext);
@@ -244,7 +263,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
     SchedulingContext weekendContext = TestDataFactory.createContext(employees, weekendShifts);
 
     new MinimumCoverageConstraint().applyHardConstraint(weekendContext);
-    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(weekendContext);
+    new AssignmentHoursConstraint(
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+    ).applyHardConstraint(weekendContext);
     constraint.applyHardConstraint(weekendContext);
 
     // Devrait être faisable car weekend = beaucoup de repos
