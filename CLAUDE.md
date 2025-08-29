@@ -81,13 +81,13 @@ public class MaContrainte implements Constraint {
     @Override
     public void applySoftConstraint(SchedulingContext context, ObjectiveCollector collector) {
         context.ensureVariablesInitialized();
-        
+
         // Créer des variables de violation
         IntVar violationVar = context.getModel().newIntVar(0, 1000, "violation_" + getName());
-        
+
         // Logique SOFT : contraintes avec violations possibles
         // ...
-        
+
         // Ajouter la violation au collecteur avec le poids approprié
         ObjectiveWeight weight = (config != null) ? config.getObjectiveWeight() : ObjectiveWeight.MINIMIZE_MEDIUM;
         collector.addTerm(violationVar, weight.getWeight());
@@ -128,7 +128,7 @@ ConstraintConfig.of(
 **Avantages post-refacto :**
 - Compatible avec autres contraintes SOFT simultanément
 - Poids automatique depuis `config.getObjectiveWeight()`
-- Un seul `model.maximize()` global dans `ModularShiftScheduler.buildModel()`
+- Un seul `model.maximize()` global dans `ShiftScheduler.buildModel()`
 
 ### 3. Tests
 
@@ -151,11 +151,11 @@ void testMaContrainteSoft() {
 
     // Act
     constraint.applySoftConstraint(context, collector);
-    
+
     // Assert
     assertFalse(collector.isEmpty(), "La contrainte SOFT doit ajouter des termes d'objectif");
     assertTrue(collector.getTermCount() > 0, "Des termes doivent être ajoutés au collecteur");
-    
+
     // Test d'intégration avec solver
     context.getModel().maximize(collector.build());
     CpSolver solver = new CpSolver();
@@ -171,7 +171,7 @@ void testMaContrainteHard() {
 
     // Act
     constraint.applyHardConstraint(context);
-    
+
     // Assert - Vérifier que les contraintes HARD sont respectées
     CpSolver solver = new CpSolver();
     CpSolverStatus status = solver.solve(context.getModel());
@@ -193,7 +193,7 @@ List<ConstraintConfig> constraintConfigs = Arrays.asList(
     ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, "minRestDaysPerWeek", 2)
 );
 
-ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts);
+ShiftScheduler scheduler = new ShiftScheduler(employees, shifts);
 for (ConstraintConfig config : constraintConfigs) {
     scheduler.withConstraint(ConstraintFactory.create(config));
 }
@@ -206,7 +206,7 @@ scheduler.buildModel();
 **API Legacy (pour compatibilité avec les tests) :**
 ```java
 // Utiliser les méthodes utilitaires dans TestDataFactory
-ModularShiftScheduler scheduler = TestDataFactory.createStandardSchedulerWithConfig(
+ShiftScheduler scheduler = TestDataFactory.createStandardSchedulerWithConfig(
     employees, shifts, 39 * 60, 11, 5 * 60);
 ```
 
@@ -264,7 +264,7 @@ ConstraintConfig.of(ConstraintType.MA_CONTRAINTE, ConstraintNature.SOFT, "param"
 ### 7. Performance
 
 - Un seul `ObjectiveCollector` partagé pour toutes les contraintes SOFT
-- Un seul appel `model.maximize()` dans `ModularShiftScheduler.buildModel()`
+- Un seul appel `model.maximize()` dans `ShiftScheduler.buildModel()`
 - Éviter les boucles imbriquées O(n³) quand possible
 - Lazy loading des variables dans `SchedulingContext`
 - Réutiliser les expressions communes
@@ -299,7 +299,7 @@ public class MaxHoursPerWeekConstraint implements Constraint {
 
 - **Thread Safety** : Les contraintes doivent être thread-safe (stateless)
 - **ObjectiveCollector** : Thread-safe avec méthodes `synchronized`
-- **Un seul objectif** : `ModularShiftScheduler.buildModel()` appelle `model.maximize()` une seule fois
+- **Un seul objectif** : `ShiftScheduler.buildModel()` appelle `model.maximize()` une seule fois
 - **Pas de conflit OR-Tools** : Toutes les contraintes SOFT contribuent au même objectif global
 - **Validation** : Implémenter `validate()` pour vérifier les prérequis
 - **Debugging** : Le nom retourné par `getName()` apparaît dans les logs + nombre de termes d'objectif
@@ -337,7 +337,7 @@ src/test/java/com/cricri/
 **Héritage et Structure :**
 - Tests de contraintes DOIVENT étendre `ConstraintTestBase`
 - Utiliser `setupSpecific()` pour la configuration spécifique au test
-- Appeler `testConstraintProperties(constraint)` pour valider les propriétés de base
+- Appeler `constraintPropertiesTest(constraint)` pour valider les propriétés de base
 
 **Assertions Réutilisables :**
 - Utiliser `SolverAssertions.assertSolutionExists()` au lieu de code dupliqué

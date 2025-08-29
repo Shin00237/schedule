@@ -43,5 +43,12 @@ public enum ConstraintType {
    * logique addWeekdayStaffingObjective(). Généralement utilisé comme contrainte SOFT pour
    * optimisation.
    */
-  MAXIMIZE_WORKING_HOURS
+  MAXIMIZE_WORKING_HOURS,
+
+  /**
+   * Garantit qu'un nombre minimum d'employés de chaque équipe soit présent pendant les périodes 
+   * de chevauchement entre shifts pour assurer la transmission d'informations. Peut être HARD 
+   * (obligatoire) ou SOFT (optimisation).
+   */
+  SHIFT_OVERLAP
 }

@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx:*)",
+      "Bash(npm update:*)",
+      "Bash(npm ls:*)",
+      "Bash(npm install:*)",
+      "Bash(npm test)",
+      "Bash(npm test:*)",
+      "Bash(npm run lint)",
+      "Bash(rm:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(find:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npm run lint)",
+      "Bash(node:*)",
+      "Bash(rm:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm create:*)",
+      "Bash(touch:*)",
+      "Bash(curl:*)",
+      "Bash(ls:*)",
+      "Bash(mvn:*)",
+      "Bash(mvn clean)",
+      "Bash(mvn compile)",
+      "Bash(mvn test)",
+      "Bash(mvn install)",
+      "Bash(mvn package)",
+      "Bash(mvn verify)",
+      "Bash(mvn clean compile)",
+      "Bash(mvn clean test)",
+      "Bash(mvn clean install)",
+      "Bash(mvn clean package)",
+      "Bash(mvn clean:*)",
+      "Bash(mvn test:*)"
+    ],
+    "deny": []
+  }
+}

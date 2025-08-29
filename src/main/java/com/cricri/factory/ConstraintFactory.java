@@ -7,6 +7,7 @@ import com.cricri.constraints.MaximizeWorkingHoursConstraint;
 import com.cricri.constraints.MinimumCoverageConstraint;
 import com.cricri.constraints.MinimumRestConstraint;
 import com.cricri.constraints.MinimumRestDaysConstraint;
+import com.cricri.constraints.ShiftOverlapConstraint;
 import com.cricri.constraints.config.ConstraintConfig;
 
 /**
@@ -35,7 +36,12 @@ public class ConstraintFactory {
       case MINIMUM_REST_DAYS -> createMinimumRestDaysConstraint(config);
       case MAX_HOURS_PER_WEEK -> createMaxHoursPerWeekConstraint(config);
       case MAXIMIZE_WORKING_HOURS -> createMaximizeWorkingHoursConstraint(config);
+      case SHIFT_OVERLAP -> createShiftOverlapConstraint(config);
     };
+  }
+
+  private static Constraint createShiftOverlapConstraint(ConstraintConfig config) {
+    return new ShiftOverlapConstraint(config.nature(), config);
   }
 
   /**

@@ -1,9 +1,9 @@
 package com.cricri.constraints.config;
 
+import java.util.Map;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.constraints.enums.ObjectiveWeight;
-import java.util.Map;
 
 /**
  * Configuration complète d'une contrainte dans le système de planification.
@@ -138,7 +138,7 @@ public record ConstraintConfig(
     return switch (type) {
       case MAXIMIZE_WORKING_HOURS -> ObjectiveWeight.MAXIMIZE_CRITICAL;
       case MINIMUM_REST -> ObjectiveWeight.MINIMIZE_CRITICAL;
-      case MAX_HOURS_PER_WEEK -> ObjectiveWeight.MINIMIZE_HIGH;
+      case MAX_HOURS_PER_WEEK, SHIFT_OVERLAP -> ObjectiveWeight.MINIMIZE_HIGH;
       case MINIMUM_REST_DAYS -> ObjectiveWeight.MINIMIZE_MEDIUM;
       case MINIMUM_COVERAGE, ASSIGNMENT_HOURS -> ObjectiveWeight.MINIMIZE_LOW;
     };
