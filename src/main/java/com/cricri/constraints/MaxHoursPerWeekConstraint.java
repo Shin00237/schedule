@@ -14,18 +14,9 @@ public class MaxHoursPerWeekConstraint implements Constraint {
   private final ConstraintNature nature;
   private final ConstraintConfig config;
 
-  public MaxHoursPerWeekConstraint(int maxHoursPerWeek) {
-    this(maxHoursPerWeek, ConstraintNature.HARD, null);
-  }
-
-  public MaxHoursPerWeekConstraint(int maxHoursPerWeek, ConstraintNature nature) {
-    this(maxHoursPerWeek, nature, null);
-  }
-
-  public MaxHoursPerWeekConstraint(
-      int maxHoursPerWeek, ConstraintNature nature, ConstraintConfig config) {
-    this.maxHoursPerWeek = maxHoursPerWeek;
-    this.nature = nature;
+  public MaxHoursPerWeekConstraint(ConstraintConfig config) {
+    this.maxHoursPerWeek = config.getIntParameter("maxHoursPerWeek", 39 * 60); // 39h par défaut
+    this.nature = config.nature();
     this.config = config;
   }
 

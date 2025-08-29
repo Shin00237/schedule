@@ -89,8 +89,7 @@ public class ConstraintFactory {
    * <p>Paramètres attendus : - "maxHoursPerWeek" (Integer) : Heures maximum par semaine en minutes
    */
   private static Constraint createMaxHoursPerWeekConstraint(ConstraintConfig config) {
-    int maxHoursPerWeek = config.getIntParameter("maxHoursPerWeek", 39 * 60); // 39h par défaut
-    return new MaxHoursPerWeekConstraint(maxHoursPerWeek, config.nature(), config);
+    return new MaxHoursPerWeekConstraint(config);
   }
 
   /**

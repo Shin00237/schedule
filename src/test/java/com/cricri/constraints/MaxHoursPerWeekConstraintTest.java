@@ -53,7 +53,9 @@ class MaxHoursPerWeekConstraintTest {
 
     // Contexte de test
     context = new SchedulingContext(employees, shifts, new HashMap<>());
-    constraint = new MaxHoursPerWeekConstraint(maxHoursPerWeek);
+    constraint = new MaxHoursPerWeekConstraint(
+        ConstraintConfig.of(ConstraintType.MAX_HOURS_PER_WEEK, ConstraintNature.HARD, "maxHoursPerWeek", maxHoursPerWeek)
+    );
   }
 
   @Test

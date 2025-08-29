@@ -6,7 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.enums.ConstraintNature;
+import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.service.ObjectiveCollector;
@@ -81,8 +83,8 @@ class SoftConstraintViolationsTest {
     // Given - Limite très basse pour forcer des violations
     MaxHoursPerWeekConstraint constraint =
         new MaxHoursPerWeekConstraint(
-            10 * 60, // Seulement 10h par semaine (très bas)
-            ConstraintNature.SOFT);
+            ConstraintConfig.of(ConstraintType.MAX_HOURS_PER_WEEK, ConstraintNature.SOFT, "maxHoursPerWeek", 10 * 60)
+        );
 
     int termsBefore = collector.getTermCount();
 
@@ -120,7 +122,9 @@ class SoftConstraintViolationsTest {
     MinimumRestDaysConstraint restDaysConstraint =
         new MinimumRestDaysConstraint(4, ConstraintNature.SOFT);
     MaxHoursPerWeekConstraint maxHoursConstraint =
-        new MaxHoursPerWeekConstraint(20 * 60, ConstraintNature.SOFT);
+        new MaxHoursPerWeekConstraint(
+            ConstraintConfig.of(ConstraintType.MAX_HOURS_PER_WEEK, ConstraintNature.SOFT, "maxHoursPerWeek", 20 * 60)
+        );
     MaximizeWorkingHoursConstraint maximizeConstraint =
         new MaximizeWorkingHoursConstraint(2, ConstraintNature.SOFT);
 
