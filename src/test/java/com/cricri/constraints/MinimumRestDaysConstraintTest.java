@@ -44,7 +44,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
     // Test HARD : Avec des shifts normaux, la contrainte devrait être satisfaite
     new MinimumCoverageConstraint().applyHardConstraint(context);
     new AssignmentHoursConstraint(5 * 60).applyHardConstraint(context);
-    new WorkingDaysConstraint().applyHardConstraint(context);
+    // WorkingDaysConstraint supprimée - logique maintenant dans SchedulingContext
     constraint.applyHardConstraint(context);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(context);
@@ -59,7 +59,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
     // Test SOFT : Même avec des shifts normaux, devrait permettre une solution
     new MinimumCoverageConstraint().applyHardConstraint(context);
     new AssignmentHoursConstraint(5 * 60).applyHardConstraint(context);
-    new WorkingDaysConstraint().applyHardConstraint(context);
+    // WorkingDaysConstraint supprimée - logique maintenant dans SchedulingContext
     constraint.applySoftConstraint(context);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(context);
@@ -77,7 +77,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
 
     new MinimumCoverageConstraint().applyHardConstraint(impossibleContext);
     new AssignmentHoursConstraint(5 * 60).applyHardConstraint(impossibleContext);
-    new WorkingDaysConstraint().applyHardConstraint(impossibleContext);
+    // WorkingDaysConstraint supprimée - logique maintenant dans SchedulingContext
 
     // Le problème devrait être infaisable en mode HARD
     testConstraintMakesScenarioInfeasible(
@@ -95,7 +95,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
 
     new MinimumCoverageConstraint().applyHardConstraint(difficultContext);
     new AssignmentHoursConstraint(5 * 60).applyHardConstraint(difficultContext);
-    new WorkingDaysConstraint().applyHardConstraint(difficultContext);
+    // WorkingDaysConstraint supprimée - logique maintenant dans SchedulingContext
 
     testSoftConstraintAllowsSolution(
         constraint,
@@ -112,7 +112,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
 
     new MinimumCoverageConstraint().applyHardConstraint(feasibleContext);
     new AssignmentHoursConstraint(5 * 60).applyHardConstraint(feasibleContext);
-    new WorkingDaysConstraint().applyHardConstraint(feasibleContext);
+    // WorkingDaysConstraint supprimée - logique maintenant dans SchedulingContext
     constraint.applyHardConstraint(feasibleContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(feasibleContext);
@@ -138,7 +138,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
 
     new MinimumCoverageConstraint().applyHardConstraint(strictContext);
     new AssignmentHoursConstraint(5 * 60).applyHardConstraint(strictContext);
-    new WorkingDaysConstraint().applyHardConstraint(strictContext);
+    // WorkingDaysConstraint supprimée - logique maintenant dans SchedulingContext
     strictConstraint.applyHardConstraint(strictContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(strictContext);
@@ -161,7 +161,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
 
     new MinimumCoverageConstraint().applyHardConstraint(flexibleContext);
     new AssignmentHoursConstraint(5 * 60).applyHardConstraint(flexibleContext);
-    new WorkingDaysConstraint().applyHardConstraint(flexibleContext);
+    // WorkingDaysConstraint supprimée - logique maintenant dans SchedulingContext
     flexibleConstraint.applyHardConstraint(flexibleContext);
 
     // Maintenant, un employé devrait pouvoir couvrir tous les shifts
@@ -181,7 +181,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
 
     new MinimumCoverageConstraint().applyHardConstraint(twoWeekContext);
     new AssignmentHoursConstraint(5 * 60).applyHardConstraint(twoWeekContext);
-    new WorkingDaysConstraint().applyHardConstraint(twoWeekContext);
+    // WorkingDaysConstraint supprimée - logique maintenant dans SchedulingContext
     constraint.applyHardConstraint(twoWeekContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(twoWeekContext);
@@ -207,7 +207,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
 
     new MinimumCoverageConstraint().applyHardConstraint(mixedContext);
     new AssignmentHoursConstraint(5 * 60).applyHardConstraint(mixedContext);
-    new WorkingDaysConstraint().applyHardConstraint(mixedContext);
+    // WorkingDaysConstraint supprimée - logique maintenant dans SchedulingContext
     constraint.applyHardConstraint(mixedContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(mixedContext);
@@ -234,7 +234,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
 
     new MinimumCoverageConstraint().applyHardConstraint(multiShiftContext);
     new AssignmentHoursConstraint(5 * 60).applyHardConstraint(multiShiftContext);
-    new WorkingDaysConstraint().applyHardConstraint(multiShiftContext);
+    // WorkingDaysConstraint supprimée - logique maintenant dans SchedulingContext
     constraint.applyHardConstraint(multiShiftContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(multiShiftContext);
@@ -259,7 +259,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
 
     new MinimumCoverageConstraint().applyHardConstraint(fiveShiftContext);
     new AssignmentHoursConstraint(5 * 60).applyHardConstraint(fiveShiftContext);
-    new WorkingDaysConstraint().applyHardConstraint(fiveShiftContext);
+    // WorkingDaysConstraint supprimée - logique maintenant dans SchedulingContext
     constraint.applyHardConstraint(fiveShiftContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(fiveShiftContext);
@@ -284,7 +284,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
 
     new MinimumCoverageConstraint().applyHardConstraint(extremeContext);
     new AssignmentHoursConstraint(5 * 60).applyHardConstraint(extremeContext);
-    new WorkingDaysConstraint().applyHardConstraint(extremeContext);
+    // WorkingDaysConstraint supprimée - logique maintenant dans SchedulingContext
     extremeConstraint.applyHardConstraint(extremeContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(extremeContext);

@@ -123,5 +123,41 @@ public class SchedulingContext {
             model.newIntVar(0, config.getDaysPerCycle(), "workDaysPerWeek_e" + e + "_w" + w);
       }
     }
+
+    // Établir les liens logiques entre variables (anciennement dans WorkingDaysConstraint)
+    initializeWorkingDaysLinks();
+  }
+
+  /**
+   * Initialise les liens logiques entre les variables d'assignation et les jours travaillés. Cette
+   * logique était précédemment dans WorkingDaysConstraint mais appartient ici car elle représente
+   * des contraintes techniques toujours nécessaires, pas des règles métier optionnelles.
+   */
+  private void initializeWorkingDaysLinks() {
+    // Lien 1: Si assigné à un shift → alors travaille ce jour
+    // workingDays[e][w][d] >= assignments[e][s] pour chaque shift
+    for (int e = 0; e < getEmployeeCount(); e++) {
+      for (int s = 0; s < getShiftCount(); s++) {
+        Shift shift = shifts.get(s);
+        int weekNumber = shift.day().getWeekNumber();
+        int dayOfWeek = shift.day().getDayInWeek(); // 0-6 pour lundi-dimanche
+
+        // Si l'employé est assigné à ce shift, alors il travaille ce jour
+        model.addGreaterOrEqual(workingDays[e][weekNumber][dayOfWeek], assignments[e][s]);
+      }
+    }
+
+    // Lien 2: Calculer workingDaysPerWeek = somme des workingDays de la semaine
+    for (int e = 0; e < getEmployeeCount(); e++) {
+      for (int w = 0; w < workingDaysPerWeek[e].length; w++) {
+        com.google.ortools.sat.LinearExprBuilder sumDaysWorked =
+            com.google.ortools.sat.LinearExpr.newBuilder();
+        int daysPerCycle = config.getDaysPerCycle();
+        for (int d = 0; d < daysPerCycle; d++) {
+          sumDaysWorked.add(workingDays[e][w][d]);
+        }
+        model.addEquality(workingDaysPerWeek[e][w], sumDaysWorked);
+      }
+    }
   }
 }

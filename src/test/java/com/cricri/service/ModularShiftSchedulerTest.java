@@ -3,9 +3,7 @@ package com.cricri.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintPriority;
@@ -18,6 +16,9 @@ import com.cricri.testutils.SolverAssertions;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests unitaires pour ModularShiftScheduler.
@@ -95,13 +96,7 @@ class ModularShiftSchedulerTest {
                         ConstraintNature.HARD,
                         ConstraintPriority.CONSISTENCY,
                         "assignmentHours",
-                        5 * 60)))
-            .withConstraint(
-                ConstraintFactory.create(
-                    ConstraintConfig.of(
-                        ConstraintType.WORKING_DAYS,
-                        ConstraintNature.HARD,
-                        ConstraintPriority.COMFORT)));
+                        5 * 60)));
 
     // Vérifier que c'est le même objet (fluent)
     assertEquals(scheduler, configuredScheduler);
@@ -129,13 +124,7 @@ class ModularShiftSchedulerTest {
                         ConstraintNature.HARD,
                         ConstraintPriority.CONSISTENCY,
                         "assignmentHours",
-                        5 * 60)))
-            .withConstraint(
-                ConstraintFactory.create(
-                    ConstraintConfig.of(
-                        ConstraintType.WORKING_DAYS,
-                        ConstraintNature.HARD,
-                        ConstraintPriority.COMFORT))); // Test avec multiplier
+                        5 * 60))); // Test avec multiplier
 
     assertEquals(scheduler, configuredScheduler);
 
@@ -211,13 +200,7 @@ class ModularShiftSchedulerTest {
                         ConstraintNature.HARD,
                         ConstraintPriority.COMFORT,
                         "minimumRestDays",
-                        2)))
-            .withConstraint(
-                ConstraintFactory.create(
-                    ConstraintConfig.of(
-                        ConstraintType.WORKING_DAYS,
-                        ConstraintNature.HARD,
-                        ConstraintPriority.COMFORT)));
+                        2)));
 
     chainedScheduler.buildModel();
     CpSolver solver = SolverAssertions.solveAndAssertSolution(chainedScheduler);
@@ -407,13 +390,7 @@ class ModularShiftSchedulerTest {
                         ConstraintNature.HARD,
                         ConstraintPriority.COMFORT,
                         "minimumRestDays",
-                        0)))
-            .withConstraint(
-                ConstraintFactory.create(
-                    ConstraintConfig.of(
-                        ConstraintType.WORKING_DAYS,
-                        ConstraintNature.HARD,
-                        ConstraintPriority.COMFORT)));
+                        0)));
 
     validationScheduler.buildModel();
     CpSolver solver = SolverAssertions.solveAndAssertSolution(validationScheduler);

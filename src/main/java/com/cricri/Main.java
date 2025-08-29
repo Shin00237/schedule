@@ -1,7 +1,5 @@
 package com.cricri;
 
-import java.util.Arrays;
-import java.util.List;
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintPriority;
@@ -16,6 +14,8 @@ import com.cricri.service.ModularShiftScheduler;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
 import com.google.ortools.sat.CpSolverStatus;
+import java.util.Arrays;
+import java.util.List;
 
 public class Main {
 
@@ -129,11 +129,7 @@ public class Main {
                 "minRestHours",
                 11), // 11h de repos minimum
 
-            // 5. withWorkingDays() - par défaut HARD, CONSISTENCY
-            ConstraintConfig.of(
-                ConstraintType.WORKING_DAYS, ConstraintNature.HARD, ConstraintPriority.CONSISTENCY),
-
-            // 6. withMinimumRestDays(1) - par défaut SOFT, COMFORT dans la classe
+            // 5. withMinimumRestDays(1) - par défaut SOFT, COMFORT dans la classe
             ConstraintConfig.of(
                 ConstraintType.MINIMUM_REST_DAYS,
                 ConstraintNature.HARD,
@@ -141,7 +137,7 @@ public class Main {
                 "minRestDaysPerWeek",
                 2), // 1 jour de repos minimum
 
-            // 7. withMaximizeWorkingHours() - reproduit l'ancienne addWeekdayStaffingObjective()
+            // 6. withMaximizeWorkingHours() - reproduit l'ancienne addWeekdayStaffingObjective()
             ConstraintConfig.of(
                 ConstraintType.MAXIMIZE_WORKING_HOURS,
                 ConstraintNature.SOFT,

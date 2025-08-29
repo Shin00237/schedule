@@ -1,9 +1,5 @@
 package com.cricri.performance;
 
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintPriority;
@@ -17,6 +13,10 @@ import com.cricri.testutils.SolverAssertions;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 /**
  * Tests de performance pour s'assurer que le système reste performant même avec des volumes de
@@ -145,12 +145,6 @@ class SchedulingPerformanceTest {
             .withConstraint(
                 ConstraintFactory.create(
                     ConstraintConfig.of(
-                        ConstraintType.WORKING_DAYS,
-                        ConstraintNature.HARD,
-                        ConstraintPriority.COMFORT)))
-            .withConstraint(
-                ConstraintFactory.create(
-                    ConstraintConfig.of(
                         ConstraintType.MAXIMIZE_WORKING_HOURS,
                         ConstraintNature.SOFT,
                         ConstraintPriority.OPTIMIZATION,
@@ -164,7 +158,7 @@ class SchedulingPerformanceTest {
 
     System.out.printf(
         "Complexité maximale: %d contraintes, %d ms%n",
-        7, duration); // Nombre de contraintes appliquées
+        6, duration); // Nombre de contraintes appliquées
 
     SolverAssertions.assertAllShiftsCovered(solver, scheduler.getAssignments(), shifts);
   }

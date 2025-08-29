@@ -39,12 +39,6 @@ public enum ConstraintType {
   MAX_HOURS_PER_WEEK,
 
   /**
-   * Assure la cohérence des variables de jours travaillés. Généralement utilisé comme contrainte
-   * HARD pour l'intégrité du modèle.
-   */
-  WORKING_DAYS,
-
-  /**
    * Maximise les heures travaillées avec préférence pour les jours de semaine. Reproduit l'ancienne
    * logique addWeekdayStaffingObjective(). Généralement utilisé comme contrainte SOFT pour
    * optimisation.
