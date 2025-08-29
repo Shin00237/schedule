@@ -54,26 +54,54 @@ public abstract class ConstraintTestBase {
   }
 
   /**
-   * Teste une contrainte avec des données standard.
+   * Teste une contrainte avec des données standard en mode HARD.
    *
    * @param constraint La contrainte à tester
    */
   protected void testConstraintWithStandardData(Constraint constraint) {
-    // Appliquer la contrainte
-    constraint.apply(context);
+    testHardConstraintWithStandardData(constraint);
+  }
+
+  /**
+   * Teste une contrainte en mode HARD avec des données standard.
+   *
+   * @param constraint La contrainte à tester
+   */
+  protected void testHardConstraintWithStandardData(Constraint constraint) {
+    // Appliquer la contrainte en mode HARD
+    constraint.applyHardConstraint(context);
 
     // Vérifier que la solution existe
     SolverAssertions.assertSolutionExists(
         solver,
         context.getModel(),
-        "La contrainte " + constraint.getName() + " devrait permettre une solution");
+        "La contrainte HARD " + constraint.getName() + " devrait permettre une solution");
 
     // Vérifications de base
     SolverAssertions.assertAllShiftsCovered(solver, context.getAssignments(), shifts);
   }
 
   /**
-   * Teste qu'une contrainte rend un scénario infaisable.
+   * Teste une contrainte en mode SOFT avec des données standard.
+   *
+   * @param constraint La contrainte à tester
+   */
+  protected void testSoftConstraintWithStandardData(Constraint constraint) {
+    // Appliquer la contrainte en mode SOFT
+    constraint.applySoftConstraint(context);
+
+    // Vérifier que la solution existe
+    SolverAssertions.assertSolutionExists(
+        solver,
+        context.getModel(),
+        "La contrainte SOFT " + constraint.getName() + " devrait permettre une solution");
+
+    // Vérifications de base
+    SolverAssertions.assertAllShiftsCovered(solver, context.getAssignments(), shifts);
+  }
+
+  /**
+   * Teste qu'une contrainte rend un scénario infaisable en mode HARD.
    *
    * @param constraint La contrainte à tester
    * @param impossibleContext Contexte qui devrait être infaisable
@@ -82,14 +110,36 @@ public abstract class ConstraintTestBase {
   protected void testConstraintMakesScenarioInfeasible(
       Constraint constraint, SchedulingContext impossibleContext, String reason) {
 
-    constraint.apply(impossibleContext);
+    constraint.applyHardConstraint(impossibleContext);
 
     SolverAssertions.assertNoSolutionExists(
         solver,
         impossibleContext.getModel(),
-        "La contrainte "
+        "La contrainte HARD "
             + constraint.getName()
             + " devrait rendre ce scénario infaisable: "
+            + reason);
+  }
+
+  /**
+   * Teste qu'une contrainte en mode SOFT permet toujours une solution même dans un scénario
+   * difficile.
+   *
+   * @param constraint La contrainte à tester
+   * @param difficultContext Contexte difficile
+   * @param reason Raison pourquoi le scénario est difficile
+   */
+  protected void testSoftConstraintAllowsSolution(
+      Constraint constraint, SchedulingContext difficultContext, String reason) {
+
+    constraint.applySoftConstraint(difficultContext);
+
+    SolverAssertions.assertSolutionExists(
+        solver,
+        difficultContext.getModel(),
+        "La contrainte SOFT "
+            + constraint.getName()
+            + " devrait permettre une solution même dans un scénario difficile: "
             + reason);
   }
 

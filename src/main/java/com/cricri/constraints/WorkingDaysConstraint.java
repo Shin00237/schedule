@@ -21,7 +21,17 @@ public class WorkingDaysConstraint implements Constraint {
   }
 
   @Override
-  public void apply(SchedulingContext context) {
+  public void applyHardConstraint(SchedulingContext context) {
+    applyCommonLogic(context);
+  }
+
+  @Override
+  public void applySoftConstraint(SchedulingContext context) {
+    applyCommonLogic(context);
+  }
+
+  /** Logique commune pour HARD et SOFT (cette contrainte est toujours la même). */
+  private void applyCommonLogic(SchedulingContext context) {
     context.ensureVariablesInitialized();
 
     // Lier les assignments aux workingDays

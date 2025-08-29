@@ -35,21 +35,22 @@ public class WeekdayPreferenceConstraint implements Constraint {
     this.priority = priority;
   }
 
-  @Override
-  public void apply(SchedulingContext context) {
-    context.ensureVariablesInitialized();
+  // @Override
+  // public void apply(SchedulingContext context) {
+  //   context.ensureVariablesInitialized();
 
-    if (nature == ConstraintNature.HARD) {
-      // Contrainte dure : interdire complètement les assignations le weekend
-      applyHardConstraint(context);
-    } else {
-      // Contrainte souple : ajouter une pénalité pour les assignations weekend
-      applySoftConstraint(context);
-    }
-  }
+  //   if (nature == ConstraintNature.HARD) {
+  //     // Contrainte dure : interdire complètement les assignations le weekend
+  //     applyHardConstraint(context);
+  //   } else {
+  //     // Contrainte souple : ajouter une pénalité pour les assignations weekend
+  //     applySoftConstraint(context);
+  //   }
+  // }
 
   /** Applique la contrainte en mode HARD : interdit les assignations le weekend. */
-  private void applyHardConstraint(SchedulingContext context) {
+  @Override
+  public void applyHardConstraint(SchedulingContext context) {
     for (int e = 0; e < context.getEmployeeCount(); e++) {
       for (int s = 0; s < context.getShiftCount(); s++) {
         Shift shift = context.getShifts().get(s);
@@ -62,7 +63,8 @@ public class WeekdayPreferenceConstraint implements Constraint {
   }
 
   /** Applique la contrainte en mode SOFT : ajoute une pénalité pour les weekends. */
-  private void applySoftConstraint(SchedulingContext context) {
+  @Override
+  public void applySoftConstraint(SchedulingContext context) {
     // Créer une expression pour compter les assignations de weekend
     LinearExprBuilder weekendAssignments = LinearExpr.newBuilder();
 

@@ -1,6 +1,7 @@
 package com.cricri.service;
 
 import com.cricri.constraints.Constraint;
+import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.google.ortools.sat.BoolVar;
@@ -48,7 +49,11 @@ public class ModularShiftScheduler {
         .forEach(
             constraint -> {
               if (constraint.validate(context)) {
-                constraint.apply(context);
+                if (constraint.getNature() == ConstraintNature.HARD) {
+                  constraint.applyHardConstraint(context);
+                } else {
+                  constraint.applySoftConstraint(context);
+                }
                 System.out.println("✓ Appliqué: " + constraint.getName());
               } else {
                 System.out.println("✗ Ignoré: " + constraint.getName() + " (validation échouée)");

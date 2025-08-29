@@ -56,9 +56,9 @@ class MaxHoursPerWeekConstraintTest {
   @Test
   void applyConstraintTest() {
     // Appliquer les contraintes nécessaires
-    new MinimumCoverageConstraint().apply(context);
-    new AssignmentHoursConstraint(5 * 60).apply(context);
-    constraint.apply(context);
+    new MinimumCoverageConstraint().applyHardConstraint(context);
+    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(context);
+    constraint.applyHardConstraint(context);
 
     // Résoudre
     CpSolver solver = new CpSolver();
@@ -102,20 +102,20 @@ class MaxHoursPerWeekConstraintTest {
 
   @Test
   void constraintNameTest() {
-    assertEquals("MaxHoursPerWeek(" + (maxHoursPerWeek / 60.0) + "h)", constraint.getName());
+    assertEquals("MaxHoursPerWeek(" + (maxHoursPerWeek / 60.0) + "h, HARD)", constraint.getName());
   }
 
   @Test
   void constraintPriorityTest() {
-    assertEquals(0, constraint.getPriority());
+    assertEquals(com.cricri.constraints.enums.ConstraintPriority.NORMAL, constraint.getPriority());
   }
 
   @Test
   void hoursCalculationTest() {
     // Appliquer les contraintes
-    new MinimumCoverageConstraint().apply(context);
-    new AssignmentHoursConstraint(5 * 60).apply(context);
-    constraint.apply(context);
+    new MinimumCoverageConstraint().applyHardConstraint(context);
+    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(context);
+    constraint.applyHardConstraint(context);
 
     CpSolver solver = new CpSolver();
     CpSolverStatus status = solver.solve(context.getModel());

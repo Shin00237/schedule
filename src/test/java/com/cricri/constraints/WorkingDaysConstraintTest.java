@@ -40,9 +40,9 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
   @Test
   void basicWorkingDaysConsistencyTest() {
     // Appliquer les contraintes de base pour avoir des assignations
-    new MinimumCoverageConstraint().apply(context);
-    new AssignmentHoursConstraint(5 * 60).apply(context);
-    constraint.apply(context);
+    new MinimumCoverageConstraint().applyHardConstraint(context);
+    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(context);
+    constraint.applyHardConstraint(context);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(context);
 
@@ -62,9 +62,9 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
     SchedulingContext multiShiftContext =
         TestDataFactory.createContext(employees, multiShiftsPerDay);
 
-    new MinimumCoverageConstraint().apply(multiShiftContext);
-    new AssignmentHoursConstraint(5 * 60).apply(multiShiftContext);
-    constraint.apply(multiShiftContext);
+    new MinimumCoverageConstraint().applyHardConstraint(multiShiftContext);
+    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(multiShiftContext);
+    constraint.applyHardConstraint(multiShiftContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(multiShiftContext);
 
@@ -87,9 +87,9 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
 
   @Test
   void workingDaysPerWeekCalculationTest() {
-    new MinimumCoverageConstraint().apply(context);
-    new AssignmentHoursConstraint(5 * 60).apply(context);
-    constraint.apply(context);
+    new MinimumCoverageConstraint().applyHardConstraint(context);
+    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(context);
+    constraint.applyHardConstraint(context);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(context);
 
@@ -118,9 +118,9 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
   void workingDaysAcrossMultipleWeeksTest() {
     SchedulingContext twoWeekContext = createTwoWeekScenario();
 
-    new MinimumCoverageConstraint().apply(twoWeekContext);
-    new AssignmentHoursConstraint(5 * 60).apply(twoWeekContext);
-    constraint.apply(twoWeekContext);
+    new MinimumCoverageConstraint().applyHardConstraint(twoWeekContext);
+    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(twoWeekContext);
+    constraint.applyHardConstraint(twoWeekContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(twoWeekContext);
     List<Shift> twoWeekShifts = TestDataFactory.createTwoWeekShifts(week1, week2);
@@ -157,9 +157,9 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
     List<Shift> fewShifts = shifts.subList(0, 2); // Seulement 2 shifts
     SchedulingContext sparsContext = TestDataFactory.createContext(manyEmployees, fewShifts);
 
-    new MinimumCoverageConstraint().apply(sparsContext);
-    new AssignmentHoursConstraint(5 * 60).apply(sparsContext);
-    constraint.apply(sparsContext);
+    new MinimumCoverageConstraint().applyHardConstraint(sparsContext);
+    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(sparsContext);
+    constraint.applyHardConstraint(sparsContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(sparsContext);
 
@@ -201,9 +201,9 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
 
     SchedulingContext complexContext = TestDataFactory.createContext(employees, complexPattern);
 
-    new MinimumCoverageConstraint().apply(complexContext);
-    new AssignmentHoursConstraint(5 * 60).apply(complexContext);
-    constraint.apply(complexContext);
+    new MinimumCoverageConstraint().applyHardConstraint(complexContext);
+    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(complexContext);
+    constraint.applyHardConstraint(complexContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(complexContext);
 
@@ -235,10 +235,10 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
   @Test
   void workingDaysConstraintConsistencyTest() {
     // Test de cohérence globale avec toutes les contraintes
-    new MinimumCoverageConstraint().apply(context);
-    new AssignmentHoursConstraint(5 * 60).apply(context);
-    constraint.apply(context);
-    new MinimumRestDaysConstraint(1).apply(context); // Max 6 jours travaillés
+    new MinimumCoverageConstraint().applyHardConstraint(context);
+    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(context);
+    constraint.applyHardConstraint(context);
+    new MinimumRestDaysConstraint(1).applyHardConstraint(context); // Max 6 jours travaillés
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(context);
 
@@ -266,9 +266,9 @@ class WorkingDaysConstraintTest extends ConstraintTestBase {
 
     SchedulingContext edgeContext = TestDataFactory.createContext(employees, edgeCases);
 
-    new MinimumCoverageConstraint().apply(edgeContext);
-    new AssignmentHoursConstraint(5 * 60).apply(edgeContext);
-    constraint.apply(edgeContext);
+    new MinimumCoverageConstraint().applyHardConstraint(edgeContext);
+    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(edgeContext);
+    constraint.applyHardConstraint(edgeContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(edgeContext);
 

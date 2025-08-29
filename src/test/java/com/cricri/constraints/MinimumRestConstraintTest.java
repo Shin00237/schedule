@@ -32,16 +32,16 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
   void constraintPropertiesTest() {
     testConstraintProperties(constraint);
 
-    assertEquals("MinimumRest(" + minimumRestHours + "h)", constraint.getName());
+    assertEquals("MinimumRest(" + minimumRestHours + "h, HARD)", constraint.getName());
     assertEquals(ConstraintPriority.SAFETY, constraint.getPriority());
   }
 
   @Test
   void noRestConflictWithNormalShiftsTest() {
     // Avec des shifts normaux (8h-16h) sur des jours différents, pas de conflit
-    new MinimumCoverageConstraint().apply(context);
-    new AssignmentHoursConstraint(5 * 60).apply(context);
-    constraint.apply(context);
+    new MinimumCoverageConstraint().applyHardConstraint(context);
+    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(context);
+    constraint.applyHardConstraint(context);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(context);
 
@@ -54,9 +54,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
     // Créer des shifts en conflit temporel (même jour, horaires qui se chevauchent)
     SchedulingContext conflictContext = createConflictingScenario();
 
-    new MinimumCoverageConstraint().apply(conflictContext);
-    new AssignmentHoursConstraint(5 * 60).apply(conflictContext);
-    constraint.apply(conflictContext);
+    new MinimumCoverageConstraint().applyHardConstraint(conflictContext);
+    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(conflictContext);
+    constraint.applyHardConstraint(conflictContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(conflictContext);
     List<Shift> conflictingShifts = TestDataFactory.createConflictingShifts(week1);
@@ -87,9 +87,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
     SchedulingContext adequateRestContext =
         TestDataFactory.createContext(employees, consecutiveShifts);
 
-    new MinimumCoverageConstraint().apply(adequateRestContext);
-    new AssignmentHoursConstraint(5 * 60).apply(adequateRestContext);
-    constraint.apply(adequateRestContext);
+    new MinimumCoverageConstraint().applyHardConstraint(adequateRestContext);
+    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(adequateRestContext);
+    constraint.applyHardConstraint(adequateRestContext);
 
     // Une solution devrait exister car il y a assez de repos
     CpSolver solver = SolverAssertions.solveAndAssertSolution(adequateRestContext);
@@ -112,9 +112,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
     SchedulingContext insufficientRestContext =
         TestDataFactory.createContext(employees, tooCloseShifts);
 
-    new MinimumCoverageConstraint().apply(insufficientRestContext);
-    new AssignmentHoursConstraint(5 * 60).apply(insufficientRestContext);
-    constraint.apply(insufficientRestContext);
+    new MinimumCoverageConstraint().applyHardConstraint(insufficientRestContext);
+    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(insufficientRestContext);
+    constraint.applyHardConstraint(insufficientRestContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(insufficientRestContext);
 
@@ -134,15 +134,15 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
     MinimumRestConstraint strictConstraint = new MinimumRestConstraint(16);
 
     // Utiliser un contexte plus simple qui devrait être faisable
-    new MinimumCoverageConstraint().apply(context);
-    new AssignmentHoursConstraint(5 * 60).apply(context);
-    strictConstraint.apply(context);
+    new MinimumCoverageConstraint().applyHardConstraint(context);
+    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(context);
+    strictConstraint.applyHardConstraint(context);
 
     // Vérifier que le contexte standard reste faisable avec repos strict
     CpSolver solver = SolverAssertions.solveAndAssertSolution(context);
     SolverAssertions.assertAllShiftsCovered(solver, context.getAssignments(), shifts);
 
-    assertEquals("MinimumRest(16h)", strictConstraint.getName());
+    assertEquals("MinimumRest(16h, HARD)", strictConstraint.getName());
   }
 
   @Test
@@ -161,9 +161,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
 
     SchedulingContext flexibleContext = TestDataFactory.createContext(employees, flexibleShifts);
 
-    new MinimumCoverageConstraint().apply(flexibleContext);
-    new AssignmentHoursConstraint(5 * 60).apply(flexibleContext);
-    flexibleConstraint.apply(flexibleContext);
+    new MinimumCoverageConstraint().applyHardConstraint(flexibleContext);
+    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(flexibleContext);
+    flexibleConstraint.applyHardConstraint(flexibleContext);
 
     // Devrait être faisable avec repos flexible
     CpSolver solver = SolverAssertions.solveAndAssertSolution(flexibleContext);
@@ -179,9 +179,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
         TestDataFactory.createContext(
             manyEmployees, TestDataFactory.createConflictingShifts(week1));
 
-    new MinimumCoverageConstraint().apply(multiEmployeeContext);
-    new AssignmentHoursConstraint(5 * 60).apply(multiEmployeeContext);
-    constraint.apply(multiEmployeeContext);
+    new MinimumCoverageConstraint().applyHardConstraint(multiEmployeeContext);
+    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(multiEmployeeContext);
+    constraint.applyHardConstraint(multiEmployeeContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(multiEmployeeContext);
 
@@ -217,9 +217,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
 
     SchedulingContext nightContext = TestDataFactory.createContext(employees, nightShifts);
 
-    new MinimumCoverageConstraint().apply(nightContext);
-    new AssignmentHoursConstraint(5 * 60).apply(nightContext);
-    constraint.apply(nightContext);
+    new MinimumCoverageConstraint().applyHardConstraint(nightContext);
+    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(nightContext);
+    constraint.applyHardConstraint(nightContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(nightContext);
 
@@ -245,9 +245,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
 
     SchedulingContext weekendContext = TestDataFactory.createContext(employees, weekendShifts);
 
-    new MinimumCoverageConstraint().apply(weekendContext);
-    new AssignmentHoursConstraint(5 * 60).apply(weekendContext);
-    constraint.apply(weekendContext);
+    new MinimumCoverageConstraint().applyHardConstraint(weekendContext);
+    new AssignmentHoursConstraint(5 * 60).applyHardConstraint(weekendContext);
+    constraint.applyHardConstraint(weekendContext);
 
     // Devrait être faisable car weekend = beaucoup de repos
     CpSolver solver = SolverAssertions.solveAndAssertSolution(weekendContext);

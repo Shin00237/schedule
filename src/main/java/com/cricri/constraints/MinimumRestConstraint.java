@@ -24,7 +24,7 @@ public class MinimumRestConstraint implements Constraint {
   }
 
   @Override
-  public void apply(SchedulingContext context) {
+  public void applyHardConstraint(SchedulingContext context) {
     context.ensureVariablesInitialized();
 
     int minRestMinutes = minRestHours * 60;
@@ -35,7 +35,7 @@ public class MinimumRestConstraint implements Constraint {
       for (int s1 = 0; s1 < context.getShiftCount(); s1++) {
         for (int s2 = 0; s2 < context.getShiftCount(); s2++) {
           if (s1 != s2 && hasRestConflict(context, s1, s2, minRestMinutes)) {
-            // Si les shifts sont en conflit, l'employé ne peut pas faire les deux
+            // Contrainte HARD : si les shifts sont en conflit, l'employé ne peut pas faire les deux
             context
                 .getModel()
                 .addLessOrEqual(
@@ -44,6 +44,42 @@ public class MinimumRestConstraint implements Constraint {
                         .add(context.getAssignments()[e][s2])
                         .build(),
                     1);
+          }
+        }
+      }
+    }
+  }
+
+  @Override
+  public void applySoftConstraint(SchedulingContext context) {
+    context.ensureVariablesInitialized();
+
+    int minRestMinutes = minRestHours * 60;
+
+    // Contrainte SOFT : variables de violation pour chaque conflit de repos
+    for (int e = 0; e < context.getEmployeeCount(); e++) {
+      for (int s1 = 0; s1 < context.getShiftCount(); s1++) {
+        for (int s2 = 0; s2 < context.getShiftCount(); s2++) {
+          if (s1 != s2 && hasRestConflict(context, s1, s2, minRestMinutes)) {
+            // Variable de violation pour ce conflit
+            var violationVar =
+                context
+                    .getModel()
+                    .newBoolVar("rest_conflict_violation_e" + e + "_s" + s1 + "_s" + s2);
+
+            // violationVar = 1 si les deux shifts sont assignés (conflit)
+            // violationVar >= assignments[e][s1] + assignments[e][s2] - 1
+            context
+                .getModel()
+                .addGreaterOrEqual(
+                    violationVar,
+                    com.google.ortools.sat.LinearExpr.newBuilder()
+                        .add(context.getAssignments()[e][s1])
+                        .add(context.getAssignments()[e][s2])
+                        .add(-1)
+                        .build());
+
+            // TODO: Ajouter cette violation à un objectif global de minimisation
           }
         }
       }

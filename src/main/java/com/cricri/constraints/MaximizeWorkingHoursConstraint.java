@@ -38,7 +38,15 @@ public class MaximizeWorkingHoursConstraint implements Constraint {
   }
 
   @Override
-  public void apply(SchedulingContext context) {
+  public void applyHardConstraint(SchedulingContext context) {
+    // Cette contrainte n'a pas de sens en mode HARD
+    // car elle ne peut pas être absolue (c'est un objectif d'optimisation)
+    throw new UnsupportedOperationException(
+        "MaximizeWorkingHoursConstraint ne peut pas être appliquée en mode HARD");
+  }
+
+  @Override
+  public void applySoftConstraint(SchedulingContext context) {
     context.ensureVariablesInitialized();
 
     // Créer l'expression objectif comme dans l'ancienne addWeekdayStaffingObjective()

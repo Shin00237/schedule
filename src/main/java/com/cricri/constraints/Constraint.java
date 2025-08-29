@@ -6,11 +6,18 @@ import com.cricri.service.SchedulingContext;
 
 public interface Constraint {
   /**
-   * Applique la contrainte au modèle OR-Tools
+   * Implémentation de la contrainte en version HARD (absolue)
    *
    * @param context Le contexte contenant les variables et données
    */
-  void apply(SchedulingContext context);
+  void applyHardConstraint(SchedulingContext context);
+
+  /**
+   * Implémentation de la contrainte en version SOFT (avec pénalité)
+   *
+   * @param context Le contexte contenant les variables et données
+   */
+  void applySoftConstraint(SchedulingContext context);
 
   /** Nom unique de la contrainte pour debugging */
   String getName();

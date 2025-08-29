@@ -57,7 +57,7 @@ class MinimumCoverageConstraintTest extends ConstraintTestBase {
             );
 
     SchedulingContext rangeContext = TestDataFactory.createContext(employees, rangeShifts);
-    constraint.apply(rangeContext);
+    constraint.applyHardConstraint(rangeContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(rangeContext);
     SolverAssertions.assertAllShiftsCovered(solver, rangeContext.getAssignments(), rangeShifts);
@@ -87,7 +87,7 @@ class MinimumCoverageConstraintTest extends ConstraintTestBase {
             new Shift("Flexible-1", week1.getDay(2), TestDataFactory.NORMAL_SHIFT, 1, 2));
 
     SchedulingContext variedContext = TestDataFactory.createContext(fiveEmployees, variedShifts);
-    constraint.apply(variedContext);
+    constraint.applyHardConstraint(variedContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(variedContext);
     SolverAssertions.assertAllShiftsCovered(solver, variedContext.getAssignments(), variedShifts);
@@ -102,7 +102,7 @@ class MinimumCoverageConstraintTest extends ConstraintTestBase {
             new Shift("Required", week1.getDay(1), TestDataFactory.NORMAL_SHIFT, 1, 1));
 
     SchedulingContext optionalContext = TestDataFactory.createContext(employees, optionalShifts);
-    constraint.apply(optionalContext);
+    constraint.applyHardConstraint(optionalContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(optionalContext);
 
