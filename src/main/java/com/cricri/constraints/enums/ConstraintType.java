@@ -39,12 +39,6 @@ public enum ConstraintType {
   MAX_HOURS_PER_WEEK,
 
   /**
-   * Favorise l'assignation durant les jours de semaine plutôt que le weekend. Généralement utilisé
-   * comme contrainte SOFT.
-   */
-  WEEKDAY_PREFERENCE,
-
-  /**
    * Assure la cohérence des variables de jours travaillés. Généralement utilisé comme contrainte
    * HARD pour l'intégrité du modèle.
    */

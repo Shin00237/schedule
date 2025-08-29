@@ -3,7 +3,9 @@ package com.cricri.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintPriority;
@@ -16,9 +18,6 @@ import com.cricri.testutils.SolverAssertions;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 /**
  * Tests unitaires pour ModularShiftScheduler.
@@ -136,21 +135,7 @@ class ModularShiftSchedulerTest {
                     ConstraintConfig.of(
                         ConstraintType.WORKING_DAYS,
                         ConstraintNature.HARD,
-                        ConstraintPriority.COMFORT)))
-            .withConstraint(
-                ConstraintFactory.create(
-                    ConstraintConfig.of(
-                        ConstraintType.WEEKDAY_PREFERENCE,
-                        ConstraintNature.SOFT,
-                        ConstraintPriority.COMFORT)))
-            .withConstraint(
-                ConstraintFactory.create(
-                    ConstraintConfig.of(
-                        ConstraintType.WEEKDAY_PREFERENCE,
-                        ConstraintNature.SOFT,
-                        ConstraintPriority.COMFORT,
-                        "bonusWeight",
-                        5))); // Test avec multiplier
+                        ConstraintPriority.COMFORT))); // Test avec multiplier
 
     assertEquals(scheduler, configuredScheduler);
 
@@ -232,15 +217,7 @@ class ModularShiftSchedulerTest {
                     ConstraintConfig.of(
                         ConstraintType.WORKING_DAYS,
                         ConstraintNature.HARD,
-                        ConstraintPriority.COMFORT)))
-            .withConstraint(
-                ConstraintFactory.create(
-                    ConstraintConfig.of(
-                        ConstraintType.WEEKDAY_PREFERENCE,
-                        ConstraintNature.SOFT,
-                        ConstraintPriority.COMFORT,
-                        "bonusWeight",
-                        3)));
+                        ConstraintPriority.COMFORT)));
 
     chainedScheduler.buildModel();
     CpSolver solver = SolverAssertions.solveAndAssertSolution(chainedScheduler);
@@ -349,13 +326,7 @@ class ModularShiftSchedulerTest {
                     ConstraintNature.HARD,
                     ConstraintPriority.NORMAL,
                     "maxHoursPerWeek",
-                    40 * 60)))
-        .withConstraint(
-            ConstraintFactory.create(
-                ConstraintConfig.of(
-                    ConstraintType.WEEKDAY_PREFERENCE,
-                    ConstraintNature.SOFT,
-                    ConstraintPriority.COMFORT)));
+                    40 * 60)));
 
     // Ces méthodes devraient fonctionner sans crash
     scheduler.printConstraints();

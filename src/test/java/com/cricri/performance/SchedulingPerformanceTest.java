@@ -1,5 +1,9 @@
 package com.cricri.performance;
 
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintPriority;
@@ -13,10 +17,6 @@ import com.cricri.testutils.SolverAssertions;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
 
 /**
  * Tests de performance pour s'assurer que le système reste performant même avec des volumes de
@@ -151,11 +151,11 @@ class SchedulingPerformanceTest {
             .withConstraint(
                 ConstraintFactory.create(
                     ConstraintConfig.of(
-                        ConstraintType.WEEKDAY_PREFERENCE,
+                        ConstraintType.MAXIMIZE_WORKING_HOURS,
                         ConstraintNature.SOFT,
-                        ConstraintPriority.COMFORT,
-                        "bonusWeight",
-                        3)));
+                        ConstraintPriority.OPTIMIZATION,
+                        "weekdayMultiplier",
+                        2)));
 
     scheduler.buildModel();
     CpSolver solver = SolverAssertions.solveAndAssertSolution(scheduler);

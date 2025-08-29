@@ -7,7 +7,6 @@ import com.cricri.constraints.MaximizeWorkingHoursConstraint;
 import com.cricri.constraints.MinimumCoverageConstraint;
 import com.cricri.constraints.MinimumRestConstraint;
 import com.cricri.constraints.MinimumRestDaysConstraint;
-import com.cricri.constraints.WeekdayPreferenceConstraint;
 import com.cricri.constraints.WorkingDaysConstraint;
 import com.cricri.constraints.config.ConstraintConfig;
 
@@ -36,7 +35,6 @@ public class ConstraintFactory {
       case MINIMUM_REST -> createMinimumRestConstraint(config);
       case MINIMUM_REST_DAYS -> createMinimumRestDaysConstraint(config);
       case MAX_HOURS_PER_WEEK -> createMaxHoursPerWeekConstraint(config);
-      case WEEKDAY_PREFERENCE -> createWeekdayPreferenceConstraint(config);
       case WORKING_DAYS -> createWorkingDaysConstraint(config);
       case MAXIMIZE_WORKING_HOURS -> createMaximizeWorkingHoursConstraint(config);
     };
@@ -90,17 +88,6 @@ public class ConstraintFactory {
   private static Constraint createMaxHoursPerWeekConstraint(ConstraintConfig config) {
     int maxHoursPerWeek = config.getIntParameter("maxHoursPerWeek", 39 * 60); // 39h par défaut
     return new MaxHoursPerWeekConstraint(maxHoursPerWeek, config.nature(), config.priority());
-  }
-
-  /**
-   * Crée une contrainte de préférence pour les jours de semaine.
-   *
-   * <p>Paramètres attendus : - "multiplier" (Integer, optionnel) : Multiplicateur de préférence
-   * (défaut: 1)
-   */
-  private static Constraint createWeekdayPreferenceConstraint(ConstraintConfig config) {
-    int multiplier = config.getIntParameter("multiplier", 1);
-    return new WeekdayPreferenceConstraint(multiplier, config.nature(), config.priority());
   }
 
   /**

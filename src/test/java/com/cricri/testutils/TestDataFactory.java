@@ -1,5 +1,10 @@
 package com.cricri.testutils;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintPriority;
@@ -12,11 +17,6 @@ import com.cricri.model.Week;
 import com.cricri.service.ModularShiftScheduler;
 import com.cricri.service.SchedulingConfiguration;
 import com.cricri.service.SchedulingContext;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.IntStream;
 
 /**
  * Factory pour créer des données de test standardisées et réutilisables.
@@ -238,12 +238,6 @@ public class TestDataFactory {
                 ConstraintNature.SOFT,
                 ConstraintPriority.COMFORT,
                 "minRestDaysPerWeek",
-                1),
-            ConstraintConfig.of(
-                ConstraintType.WEEKDAY_PREFERENCE,
-                ConstraintNature.SOFT,
-                ConstraintPriority.COMFORT,
-                "multiplier",
                 1));
 
     for (ConstraintConfig config : constraintConfigs) {
