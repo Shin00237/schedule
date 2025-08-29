@@ -1,5 +1,10 @@
 package com.cricri.testutils;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintType;
@@ -11,11 +16,6 @@ import com.cricri.model.Week;
 import com.cricri.service.SchedulingConfiguration;
 import com.cricri.service.SchedulingContext;
 import com.cricri.service.ShiftScheduler;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.IntStream;
 
 /**
  * Factory pour créer des données de test standardisées et réutilisables.
@@ -313,35 +313,11 @@ public class TestDataFactory {
   }
 
   /**
-   * Crée un scheduler modulaire vide (sans contraintes).
-   *
-   * @param employees Liste des employés
-   * @param shifts Liste des shifts
-   * @return Scheduler sans contraintes
-   */
-  public static ShiftScheduler createEmptyScheduler(List<Employee> employees, List<Shift> shifts) {
-    return new ShiftScheduler(employees, shifts);
-  }
-
-  /**
    * Crée des semaines de test standard.
    *
    * @return Array de 2 semaines consécutives
    */
   public static Week[] createStandardWeeks() {
     return new Week[] {Week.create(0), Week.create(1)};
-  }
-
-  /**
-   * Crée un scénario de test complet avec employés et shifts standard.
-   *
-   * @return Scheduler prêt avec données de test cohérentes
-   */
-  public static ShiftScheduler createCompleteTestScenario() {
-    List<Employee> employees = createStandardEmployees();
-    Week[] weeks = createStandardWeeks();
-    List<Shift> shifts = createStandardWeekShifts(weeks[0]);
-
-    return createStandardScheduler(employees, shifts);
   }
 }

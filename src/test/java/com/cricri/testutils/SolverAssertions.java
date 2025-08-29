@@ -3,7 +3,7 @@ package com.cricri.testutils;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import java.util.List;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.service.SchedulingContext;
@@ -13,7 +13,6 @@ import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.CpSolver;
 import com.google.ortools.sat.CpSolverStatus;
 import com.google.ortools.sat.IntVar;
-import java.util.List;
 
 /**
  * Classe utilitaire contenant des assertions réutilisables pour les tests OR-Tools.
@@ -233,24 +232,6 @@ public class SolverAssertions {
     }
   }
 
-  /**
-   * Vérifie les statistiques globales d'une solution.
-   *
-   * @param solver Le solver (après résolution)
-   * @param scheduler Le scheduler utilisé
-   */
-  public static void assertSolutionStats(CpSolver solver, ShiftScheduler scheduler) {
-    System.out.printf("=== Statistiques de la solution ===%n");
-    System.out.printf("Statut: %s%n", solver.responseStats());
-    System.out.printf("Temps de résolution: %.2fs%n", solver.wallTime());
-    System.out.printf(
-        "Employés: %d, Shifts: %d%n",
-        scheduler.getEmployees().size(), scheduler.getShifts().size());
-
-    // Vérification de cohérence basique
-    assertTrue(solver.wallTime() >= 0, "Le temps de résolution doit être positif");
-  }
-
   /** Méthode utilitaire pour compter les employés assignés à un shift. */
   private static int countAssignedEmployees(
       CpSolver solver, BoolVar[][] assignments, int shiftIndex) {
@@ -287,44 +268,5 @@ public class SolverAssertions {
     CpSolver solver = new CpSolver();
     assertSolutionExists(solver, context.getModel());
     return solver;
-  }
-
-  /**
-   * Vérifie que les priorités des contraintes sont dans l'ordre attendu. Contraintes fondamentales
-   * (-10) avant contraintes de confort (5).
-   *
-   * @param constraints Liste des contraintes à vérifier
-   */
-  public static void assertPriorityOrdering(List<?> constraints) {
-    // À implémenter si nécessaire selon votre interface Constraint
-    assertTrue(true, "Vérification des priorités - à implémenter");
-  }
-
-  /**
-   * Vérifie qu'aucun employé ne travaille plus que sa limite contractuelle.
-   *
-   * @param solver Le solver (après résolution)
-   * @param assignments Matrice des assignations
-   * @param shifts Liste des shifts
-   * @param employees Liste des employés
-   */
-  public static void assertEmployeeWorkloadLimits(
-      CpSolver solver, BoolVar[][] assignments, List<Shift> shifts, List<Employee> employees) {
-
-    for (int e = 0; e < employees.size(); e++) {
-      int shiftsWorked = 0;
-      for (int s = 0; s < shifts.size(); s++) {
-        if (solver.value(assignments[e][s]) == 1) {
-          shiftsWorked++;
-        }
-      }
-
-      // Par défaut, on considère qu'un employé ne devrait pas travailler
-      // plus de shifts qu'il n'y a de jours dans la semaine
-      assertTrue(
-          shiftsWorked <= 7,
-          String.format(
-              "L'employé %s travaille trop de shifts: %d", employees.get(e).nom(), shiftsWorked));
-    }
   }
 }

@@ -1,5 +1,9 @@
 package com.cricri.testutils;
 
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.cricri.constraints.Constraint;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
@@ -7,10 +11,6 @@ import com.cricri.model.Week;
 import com.cricri.service.SchedulingContext;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Classe de base abstraite pour les tests de contraintes.
@@ -107,18 +107,6 @@ public abstract class ConstraintTestBase {
   }
 
   /**
-   * Crée un contexte avec des employés et shifts personnalisés.
-   *
-   * @param customEmployees Liste d'employés
-   * @param customShifts Liste de shifts
-   * @return Contexte configuré
-   */
-  protected SchedulingContext createCustomContext(
-      List<Employee> customEmployees, List<Shift> customShifts) {
-    return TestDataFactory.createContext(customEmployees, customShifts);
-  }
-
-  /**
    * Teste les propriétés de base d'une contrainte.
    *
    * @param constraint La contrainte à tester
@@ -128,18 +116,6 @@ public abstract class ConstraintTestBase {
     String name = constraint.getName();
     assert name != null : "Le nom de la contrainte ne doit pas être null";
     assert !name.trim().isEmpty() : "Le nom de la contrainte ne doit pas être vide";
-  }
-
-  /**
-   * Crée un scénario impossible avec un seul employé et trop de shifts. Utile pour tester les
-   * contraintes qui limitent les assignations.
-   *
-   * @return Contexte impossible
-   */
-  protected SchedulingContext createImpossibleScenario() {
-    List<Employee> oneEmployee = TestDataFactory.createEmployees(1);
-    List<Shift> manyShifts = TestDataFactory.createWeekShifts(week1, 1, 1); // 7 shifts
-    return TestDataFactory.createContext(oneEmployee, manyShifts);
   }
 
   /**
@@ -160,28 +136,5 @@ public abstract class ConstraintTestBase {
   protected SchedulingContext createTwoWeekScenario() {
     List<Shift> twoWeekShifts = TestDataFactory.createTwoWeekShifts(week1, week2);
     return TestDataFactory.createContext(employees, twoWeekShifts);
-  }
-
-  /**
-   * Affiche des informations de debug sur la solution trouvée.
-   *
-   * @param constraint La contrainte testée
-   */
-  protected void debugSolution(Constraint constraint) {
-    logger.debug("\n=== Debug: {} ===", constraint.getName());
-    logger.debug("Employés: {}, Shifts: {}", employees.size(), shifts.size());
-
-    if (solver != null) {
-      logger.debug("Temps de résolution: {}s", solver.wallTime());
-
-      // Afficher les assignations si la solution existe
-      for (int e = 0; e < employees.size(); e++) {
-        for (int s = 0; s < shifts.size(); s++) {
-          if (solver.value(context.getAssignments()[e][s]) == 1) {
-            logger.debug("  {} -> {}", employees.get(e).nom(), shifts.get(s).id());
-          }
-        }
-      }
-    }
   }
 }
