@@ -172,8 +172,7 @@ public class TestDataFactory {
         new Shift("Mardi-NORMAL", week.getDay(1), NORMAL_SHIFT, 1, 1),
         new Shift("Mercredi-NORMAL", week.getDay(2), NORMAL_SHIFT, 1, 1),
         new Shift("Jeudi-NORMAL", week.getDay(3), NORMAL_SHIFT, 1, 1),
-        new Shift("Vendredi-NORMAL", week.getDay(4), NORMAL_SHIFT, 1, 1)
-    );
+        new Shift("Vendredi-NORMAL", week.getDay(4), NORMAL_SHIFT, 1, 1));
   }
 
   /**
@@ -194,8 +193,7 @@ public class TestDataFactory {
   public static List<Shift> createWeekendOnlyShifts(Week week) {
     return Arrays.asList(
         new Shift("Samedi-NORMAL", week.getDay(5), NORMAL_SHIFT, 1, 1),
-        new Shift("Dimanche-NORMAL", week.getDay(6), NORMAL_SHIFT, 1, 1)
-    );
+        new Shift("Dimanche-NORMAL", week.getDay(6), NORMAL_SHIFT, 1, 1));
   }
 
   /**

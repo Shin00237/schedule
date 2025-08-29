@@ -96,12 +96,14 @@ public class MinimumCoverageConstraint implements Constraint {
                     .build());
 
         // Ajouter cette violation au collecteur d'objectif avec pénalité faible
-        ObjectiveWeight weight = (config != null) ? config.getObjectiveWeight() : ObjectiveWeight.MINIMIZE_LOW;
+        ObjectiveWeight weight =
+            (config != null) ? config.getObjectiveWeight() : ObjectiveWeight.MINIMIZE_LOW;
         collector.addTerm(overCoverageVar, weight.getWeight()); // Poids négatif = minimisation
       }
 
       // Ajouter la sous-couverture globale au collecteur d'objectif
-      ObjectiveWeight weight = (config != null) ? config.getObjectiveWeight() : ObjectiveWeight.MINIMIZE_LOW;
+      ObjectiveWeight weight =
+          (config != null) ? config.getObjectiveWeight() : ObjectiveWeight.MINIMIZE_LOW;
       collector.addTerm(underCoverageVar, weight.getWeight()); // Poids négatif = minimisation
     }
   }

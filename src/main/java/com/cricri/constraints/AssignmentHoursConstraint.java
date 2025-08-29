@@ -20,7 +20,8 @@ public class AssignmentHoursConstraint implements Constraint {
     this(minHoursPerShift, nature, null);
   }
 
-  public AssignmentHoursConstraint(int minHoursPerShift, ConstraintNature nature, ConstraintConfig config) {
+  public AssignmentHoursConstraint(
+      int minHoursPerShift, ConstraintNature nature, ConstraintConfig config) {
     this.minHoursPerShift = minHoursPerShift;
     this.nature = nature;
     this.config = config;
@@ -91,7 +92,8 @@ public class AssignmentHoursConstraint implements Constraint {
                     .build());
 
         // Ajouter cette violation au collecteur d'objectif avec pénalité faible
-        ObjectiveWeight weight = (config != null) ? config.getObjectiveWeight() : ObjectiveWeight.MINIMIZE_LOW;
+        ObjectiveWeight weight =
+            (config != null) ? config.getObjectiveWeight() : ObjectiveWeight.MINIMIZE_LOW;
         collector.addTerm(violationVar, weight.getWeight()); // Poids négatif = minimisation
       }
     }

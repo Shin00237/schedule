@@ -19,7 +19,8 @@ public class MinimumRestDaysConstraint implements Constraint {
     this(minRestDaysPerWeek, nature, null);
   }
 
-  public MinimumRestDaysConstraint(int minRestDaysPerWeek, ConstraintNature nature, ConstraintConfig config) {
+  public MinimumRestDaysConstraint(
+      int minRestDaysPerWeek, ConstraintNature nature, ConstraintConfig config) {
     this.minRestDaysPerWeek = minRestDaysPerWeek;
     this.nature = nature;
     this.config = config;
@@ -67,7 +68,8 @@ public class MinimumRestDaysConstraint implements Constraint {
         // violationVar >= 0 (implicite car défini comme IntVar(0, daysPerCycle))
 
         // Ajouter cette violation au collecteur d'objectif avec pénalité moyenne
-        ObjectiveWeight weight = (config != null) ? config.getObjectiveWeight() : ObjectiveWeight.MINIMIZE_MEDIUM;
+        ObjectiveWeight weight =
+            (config != null) ? config.getObjectiveWeight() : ObjectiveWeight.MINIMIZE_MEDIUM;
         collector.addTerm(violationVar, weight.getWeight()); // Poids négatif = minimisation
       }
     }

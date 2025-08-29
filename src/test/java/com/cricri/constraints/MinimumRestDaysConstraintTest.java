@@ -2,8 +2,7 @@ package com.cricri.constraints;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.List;
-import org.junit.jupiter.api.Test;
+
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.service.ObjectiveCollector;
@@ -12,6 +11,8 @@ import com.cricri.testutils.ConstraintTestBase;
 import com.cricri.testutils.SolverAssertions;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.sat.CpSolver;
+import java.util.List;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests unitaires pour MinimumRestDaysConstraint.
@@ -58,7 +59,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
     new MinimumCoverageConstraint().applyHardConstraint(context);
     new AssignmentHoursConstraint(5 * 60).applyHardConstraint(context);
     // WorkingDaysConstraint supprimée - logique maintenant dans SchedulingContext
-     ObjectiveCollector sharedCollector = new ObjectiveCollector();
+    ObjectiveCollector sharedCollector = new ObjectiveCollector();
 
     constraint.applySoftConstraint(context, sharedCollector);
 

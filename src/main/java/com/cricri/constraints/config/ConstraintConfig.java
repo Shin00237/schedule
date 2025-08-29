@@ -1,9 +1,9 @@
 package com.cricri.constraints.config;
 
-import java.util.Map;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.constraints.enums.ObjectiveWeight;
+import java.util.Map;
 
 /**
  * Configuration complète d'une contrainte dans le système de planification.
@@ -108,9 +108,9 @@ public record ConstraintConfig(
   /**
    * Récupère le poids d'objectif pour les contraintes SOFT.
    *
-   * <p>Cette méthode centralise la logique de détermination des poids d'objectif :
-   * - Pour les contraintes HARD : retourne toujours DISABLED
-   * - Pour les contraintes SOFT : utilise le paramètre "objectiveWeight" ou une valeur par défaut
+   * <p>Cette méthode centralise la logique de détermination des poids d'objectif : - Pour les
+   * contraintes HARD : retourne toujours DISABLED - Pour les contraintes SOFT : utilise le
+   * paramètre "objectiveWeight" ou une valeur par défaut
    *
    * @return Le poids d'objectif approprié selon le type et la nature de la contrainte
    */
@@ -126,12 +126,11 @@ public record ConstraintConfig(
   /**
    * Détermine le poids par défaut selon le type de contrainte SOFT.
    *
-   * <p>Cette méthode encode la logique métier de prioritisation des objectifs :
-   * - MAXIMIZE_WORKING_HOURS : objectif principal (CRITICAL)
-   * - MINIMUM_REST : violation critique de sécurité (MINIMIZE_CRITICAL)
-   * - MAX_HOURS_PER_WEEK : violation importante légale (MINIMIZE_HIGH)
-   * - MINIMUM_REST_DAYS : violation de confort (MINIMIZE_MEDIUM)
-   * - Autres : violations mineures (MINIMIZE_LOW)
+   * <p>Cette méthode encode la logique métier de prioritisation des objectifs : -
+   * MAXIMIZE_WORKING_HOURS : objectif principal (CRITICAL) - MINIMUM_REST : violation critique de
+   * sécurité (MINIMIZE_CRITICAL) - MAX_HOURS_PER_WEEK : violation importante légale (MINIMIZE_HIGH)
+   * - MINIMUM_REST_DAYS : violation de confort (MINIMIZE_MEDIUM) - Autres : violations mineures
+   * (MINIMIZE_LOW)
    *
    * @return Le poids par défaut pour ce type de contrainte
    */

@@ -1,11 +1,5 @@
 package com.cricri.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.cricri.constraints.Constraint;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.model.Employee;
@@ -14,7 +8,13 @@ import com.google.ortools.sat.BoolVar;
 import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.IntVar;
 import com.google.ortools.sat.LinearExpr;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Getter
 public class ModularShiftScheduler {
@@ -71,7 +71,8 @@ public class ModularShiftScheduler {
     LinearExpr globalObjective = sharedCollector.build();
     if (!sharedCollector.isEmpty()) {
       context.getModel().maximize(globalObjective);
-      logger.info("🎯 Objectif global unifié appliqué avec {} termes", sharedCollector.getTermCount());
+      logger.info(
+          "🎯 Objectif global unifié appliqué avec {} termes", sharedCollector.getTermCount());
     }
 
     logger.info("Modèle construit avec {} contraintes", constraints.size());

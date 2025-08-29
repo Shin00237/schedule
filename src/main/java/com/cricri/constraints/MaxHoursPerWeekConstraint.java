@@ -22,7 +22,8 @@ public class MaxHoursPerWeekConstraint implements Constraint {
     this(maxHoursPerWeek, nature, null);
   }
 
-  public MaxHoursPerWeekConstraint(int maxHoursPerWeek, ConstraintNature nature, ConstraintConfig config) {
+  public MaxHoursPerWeekConstraint(
+      int maxHoursPerWeek, ConstraintNature nature, ConstraintConfig config) {
     this.maxHoursPerWeek = maxHoursPerWeek;
     this.nature = nature;
     this.config = config;
@@ -99,7 +100,8 @@ public class MaxHoursPerWeekConstraint implements Constraint {
                     .build());
 
         // Ajouter cette violation au collecteur d'objectif avec pénalité élevée
-        ObjectiveWeight weight = (config != null) ? config.getObjectiveWeight() : ObjectiveWeight.MINIMIZE_HIGH;
+        ObjectiveWeight weight =
+            (config != null) ? config.getObjectiveWeight() : ObjectiveWeight.MINIMIZE_HIGH;
         collector.addTerm(violationVar, weight.getWeight()); // Poids négatif = minimisation
       }
     }

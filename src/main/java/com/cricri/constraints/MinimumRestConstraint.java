@@ -85,7 +85,8 @@ public class MinimumRestConstraint implements Constraint {
                         .build());
 
             // Ajouter cette violation au collecteur d'objectif avec pénalité critique
-            ObjectiveWeight weight = (config != null) ? config.getObjectiveWeight() : ObjectiveWeight.MINIMIZE_CRITICAL;
+            ObjectiveWeight weight =
+                (config != null) ? config.getObjectiveWeight() : ObjectiveWeight.MINIMIZE_CRITICAL;
             collector.addTerm(violationVar, weight.getWeight()); // Poids négatif = minimisation
           }
         }

@@ -34,7 +34,8 @@ public class MaximizeWorkingHoursConstraint implements Constraint {
     this(weekdayMultiplier, nature, null);
   }
 
-  public MaximizeWorkingHoursConstraint(int weekdayMultiplier, ConstraintNature nature, ConstraintConfig config) {
+  public MaximizeWorkingHoursConstraint(
+      int weekdayMultiplier, ConstraintNature nature, ConstraintConfig config) {
     this.weekdayMultiplier = weekdayMultiplier;
     this.nature = nature;
     this.config = config;
@@ -53,7 +54,8 @@ public class MaximizeWorkingHoursConstraint implements Constraint {
     context.ensureVariablesInitialized();
 
     // Récupérer le poids d'objectif depuis la configuration
-    ObjectiveWeight weight = (config != null) ? config.getObjectiveWeight() : ObjectiveWeight.MAXIMIZE_CRITICAL;
+    ObjectiveWeight weight =
+        (config != null) ? config.getObjectiveWeight() : ObjectiveWeight.MAXIMIZE_CRITICAL;
 
     // Objectif principal : maximiser les heures réelles travaillées
     for (int e = 0; e < context.getEmployeeCount(); e++) {
