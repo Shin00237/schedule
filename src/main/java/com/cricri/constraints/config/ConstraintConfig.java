@@ -1,8 +1,9 @@
 package com.cricri.constraints.config;
 
+import java.util.Map;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintType;
-import java.util.Map;
+import com.cricri.constraints.enums.ObjectiveWeight;
 
 /**
  * Configuration complète d'une contrainte dans le système de planification.
@@ -102,5 +103,45 @@ public record ConstraintConfig(
   /** Récupère un paramètre booléen avec valeur par défaut. */
   public boolean getBooleanParameter(String key, boolean defaultValue) {
     return getParameter(key, defaultValue, Boolean.class);
+  }
+
+  /**
+   * Récupère le poids d'objectif pour les contraintes SOFT.
+   *
+   * <p>Cette méthode centralise la logique de détermination des poids d'objectif :
+   * - Pour les contraintes HARD : retourne toujours DISABLED
+   * - Pour les contraintes SOFT : utilise le paramètre "objectiveWeight" ou une valeur par défaut
+   *
+   * @return Le poids d'objectif approprié selon le type et la nature de la contrainte
+   */
+  public ObjectiveWeight getObjectiveWeight() {
+    if (nature == ConstraintNature.HARD) {
+      return ObjectiveWeight.DISABLED;
+    }
+
+    // Récupérer depuis les paramètres ou valeur par défaut selon le type
+    return getParameter("objectiveWeight", getDefaultWeight(), ObjectiveWeight.class);
+  }
+
+  /**
+   * Détermine le poids par défaut selon le type de contrainte SOFT.
+   *
+   * <p>Cette méthode encode la logique métier de prioritisation des objectifs :
+   * - MAXIMIZE_WORKING_HOURS : objectif principal (CRITICAL)
+   * - MINIMUM_REST : violation critique de sécurité (MINIMIZE_CRITICAL)
+   * - MAX_HOURS_PER_WEEK : violation importante légale (MINIMIZE_HIGH)
+   * - MINIMUM_REST_DAYS : violation de confort (MINIMIZE_MEDIUM)
+   * - Autres : violations mineures (MINIMIZE_LOW)
+   *
+   * @return Le poids par défaut pour ce type de contrainte
+   */
+  private ObjectiveWeight getDefaultWeight() {
+    return switch (type) {
+      case MAXIMIZE_WORKING_HOURS -> ObjectiveWeight.MAXIMIZE_CRITICAL;
+      case MINIMUM_REST -> ObjectiveWeight.MINIMIZE_CRITICAL;
+      case MAX_HOURS_PER_WEEK -> ObjectiveWeight.MINIMIZE_HIGH;
+      case MINIMUM_REST_DAYS -> ObjectiveWeight.MINIMIZE_MEDIUM;
+      case MINIMUM_COVERAGE, ASSIGNMENT_HOURS -> ObjectiveWeight.MINIMIZE_LOW;
+    };
   }
 }

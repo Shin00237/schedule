@@ -17,26 +17,27 @@ com.cricri/
 
 ## Règles de Développement
 
-### 0. Système de Configuration (Nouvelle Architecture)
+### 0. Système de Configuration et Objectif Unifié (Architecture Refactorisée)
 
 **Classes Clés :**
 - `ConstraintType` : Enumération des types de contraintes disponibles
 - `ConstraintNature` : HARD (obligatoire) ou SOFT (avec pénalité)
-- `ConstraintPriority` : Priorités nommées (FUNDAMENTAL, CONSISTENCY, SAFETY, NORMAL, COMFORT, OPTIMIZATION)
 - `ConstraintConfig` : Record encapsulant la configuration complète d'une contrainte
 - `ConstraintFactory` : Factory pour créer des contraintes à partir de configurations
+- `ObjectiveWeight` : Enumération des poids d'objectif pour les contraintes SOFT
+- `ObjectiveCollector` : Collecteur stateless pour l'objectif global unifié
 
-**Avantages du nouveau système :**
-- Configuration déclarative depuis interface graphique ou fichiers
-- Séparation claire entre types, natures et priorités
-- Support natif des contraintes souples (SOFT)
-- Factory pattern pour une création centralisée
-- Paramètres typés avec validation
+**Nouveau système d'objectif unifié :**
+- **UN SEUL** `model.maximize()` appelé avec l'objectif global
+- Chaque contrainte SOFT contribue via `ObjectiveCollector.addTerm()`
+- Poids automatiques basés sur la criticité : CRITICAL (±10000) > HIGH (±1000) > MEDIUM (±100) > LOW (±10)
+- Maximisation (poids +) pour objectifs directs, minimisation (poids -) pour violations
 
-**Migration depuis l'ancien système :**
-- `withStandardConstraints()` → `TestDataFactory.createStandardSchedulerWithConfig()`
-- `withMinimumCoverage()` → `ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ...)`
-- Méthodes fluides → Configuration par liste de `ConstraintConfig`
+**Avantages du système unifié :**
+- Résout le conflit technique OR-Tools (un seul objectif possible)
+- Configuration déclarative inchangée pour l'utilisateur
+- Collecteur stateless respectant les principes CLAUDE.md
+- Poids calibrés automatiquement selon le type de contrainte
 
 ### 1. Contraintes (package `constraints`)
 
@@ -45,43 +46,56 @@ com.cricri/
 - Nom de classe DOIT finir par `Constraint` (ex: `MaxHoursPerWeekConstraint`)
 - Méthode `getName()` DOIT retourner un nom descriptif avec paramètres (ex: "MaxHoursPerWeek(39.0h)")
 - Contraintes DOIVENT être stateless (pas d'état interne modifiable)
-- TOUJOURS appeler `context.ensureVariablesInitialized()` au début de `apply()`
+- TOUJOURS appeler `context.ensureVariablesInitialized()` au début des méthodes apply
+- Les contraintes SOFT DOIVENT utiliser le `ObjectiveCollector` passé en paramètre
+- JAMAIS appeler directement `model.maximize()` ou `model.minimize()` dans les contraintes
 
-**Priorités avec énumérations (Nouveau Système) :**
-- `ConstraintPriority.FUNDAMENTAL (-10)` : Contraintes fondamentales (couverture minimum)
-- `ConstraintPriority.CONSISTENCY (-5)` : Contraintes de cohérence (assignation-heures)
-- `ConstraintPriority.SAFETY (-3)` : Contraintes de sécurité (repos minimum)
-- `ConstraintPriority.NORMAL (0)` : Contraintes normales (heures max/semaine)
-- `ConstraintPriority.COMFORT (5)` : Contraintes de confort (jours de repos)
-- `ConstraintPriority.OPTIMIZATION (10)` : Contraintes d'optimisation (maximisation heures)
+**Poids d'objectif pour contraintes SOFT (ObjectiveWeight) :**
+- `MAXIMIZE_CRITICAL (10000)` : Objectif critique (ex: MaximizeWorkingHours)
+- `MAXIMIZE_HIGH/MEDIUM/LOW (1000/100/10)` : Objectifs secondaires
+- `MINIMIZE_CRITICAL (-10000)` : Violations critiques (sécurité, repos minimum)
+- `MINIMIZE_HIGH (-1000)` : Violations importantes (légal, heures max)
+- `MINIMIZE_MEDIUM (-100)` : Violations moyennes (confort, jours de repos)
+- `MINIMIZE_LOW (-10)` : Violations mineures
+- `DISABLED (0)` : Pas d'objectif (contraintes HARD)
 
-**Exemple type (Nouvelle Interface) :**
+**Exemple type (Interface refactorisée avec ObjectiveCollector) :**
 ```java
 public class MaContrainte implements Constraint {
     private final int parametre;
     private final ConstraintNature nature;
-    private final ConstraintPriority priority;
+    private final ConstraintConfig config;
 
-    public MaContrainte(int parametre, ConstraintNature nature, ConstraintPriority priority) {
+    public MaContrainte(int parametre, ConstraintNature nature, ConstraintConfig config) {
         this.parametre = parametre;
         this.nature = nature;
-        this.priority = priority;
+        this.config = config;
     }
 
     @Override
-    public void apply(SchedulingContext context) {
+    public void applyHardConstraint(SchedulingContext context) {
         context.ensureVariablesInitialized();
-        // Logique de contrainte...
+        // Logique HARD : contraintes absolues avec addEquality(), addLessOrEqual(), etc.
+    }
+
+    @Override
+    public void applySoftConstraint(SchedulingContext context, ObjectiveCollector collector) {
+        context.ensureVariablesInitialized();
+        
+        // Créer des variables de violation
+        IntVar violationVar = context.getModel().newIntVar(0, 1000, "violation_" + getName());
+        
+        // Logique SOFT : contraintes avec violations possibles
+        // ...
+        
+        // Ajouter la violation au collecteur avec le poids approprié
+        ObjectiveWeight weight = (config != null) ? config.getObjectiveWeight() : ObjectiveWeight.MINIMIZE_MEDIUM;
+        collector.addTerm(violationVar, weight.getWeight());
     }
 
     @Override
     public String getName() {
         return "MaContrainte(" + parametre + ", " + nature + ")";
-    }
-
-    @Override
-    public ConstraintPriority getPriority() {
-        return priority;
     }
 
     @Override
@@ -93,28 +107,28 @@ public class MaContrainte implements Constraint {
 
 ### 1.1. Contraintes Spéciales
 
-**MaximizeWorkingHoursConstraint :**
-Cette contrainte reproduit l'ancienne logique `addWeekdayStaffingObjective()` qui avait été supprimée. Elle résout le problème où les employés ne travaillaient que 5h au lieu de 8h+ par shift.
+**MaximizeWorkingHoursConstraint (Refactorisée avec ObjectiveCollector) :**
+Cette contrainte reproduit l'ancienne logique `addWeekdayStaffingObjective()` qui avait été supprimée, mais utilise maintenant le système d'objectif unifié.
 
 ```java
-// Remplace l'ancienne addWeekdayStaffingObjective()
+// Configuration inchangée pour l'utilisateur
 ConstraintConfig.of(
     ConstraintType.MAXIMIZE_WORKING_HOURS,
     ConstraintNature.SOFT,
-    ConstraintPriority.OPTIMIZATION,
-    "weekdayMultiplier", 2  // Pondération ×3 pour jours de semaine (1 + 2)
+    "weekdayMultiplier", 2
 )
 ```
 
-**Fonctionnement :**
-- Maximise les heures réelles travaillées (pousse vers la durée complète des shifts)
-- Favorise les assignations en semaine plutôt qu'en weekend
-- Utilise `model.maximize()` pour optimiser les heures totales
-- Nature SOFT avec priorité OPTIMIZATION pour s'appliquer après les contraintes critiques
+**Fonctionnement (refactorisé) :**
+- Ajoute ses termes au `ObjectiveCollector` via `collector.addTerm()`
+- Maximise les heures réelles avec poids `MAXIMIZE_CRITICAL (10000)`
+- Bonus pondéré pour les jours de semaine : `(weight * weekdayMultiplier) / 10`
+- Participe à l'objectif global unifié (plus de conflit OR-Tools)
 
-**Migration :**
-- Ancien : `addWeekdayStaffingObjective()` dans le scheduler
-- Nouveau : `MaximizeWorkingHoursConstraint` configurée comme contrainte
+**Avantages post-refacto :**
+- Compatible avec autres contraintes SOFT simultanément
+- Poids automatique depuis `config.getObjectiveWeight()`
+- Un seul `model.maximize()` global dans `ModularShiftScheduler.buildModel()`
 
 ### 3. Tests
 
@@ -124,43 +138,69 @@ ConstraintConfig.of(
 - Utiliser `SchedulingContext` dans les tests pour l'isolation
 - Vérifier que la contrainte fonctionne avec différents jeux de données
 
-**Structure de test recommandée :**
+**Structure de test recommandée (avec ObjectiveCollector) :**
 ```java
 @Test
-void testMaContrainte() {
+void testMaContrainteSoft() {
     // Arrange
     List<Employee> employees = createTestEmployees();
     List<Shift> shifts = createTestShifts();
     SchedulingContext context = new SchedulingContext(employees, shifts, indexMap);
-    MaContrainte constraint = new MaContrainte(parametre);
+    ObjectiveCollector collector = new ObjectiveCollector();
+    MaContrainte constraint = new MaContrainte(parametre, ConstraintNature.SOFT, config);
 
     // Act
-    constraint.apply(context);
+    constraint.applySoftConstraint(context, collector);
+    
+    // Assert
+    assertFalse(collector.isEmpty(), "La contrainte SOFT doit ajouter des termes d'objectif");
+    assertTrue(collector.getTermCount() > 0, "Des termes doivent être ajoutés au collecteur");
+    
+    // Test d'intégration avec solver
+    context.getModel().maximize(collector.build());
     CpSolver solver = new CpSolver();
     CpSolverStatus status = solver.solve(context.getModel());
-
-    // Assert
     assertTrue(status == OPTIMAL || status == FEASIBLE);
-    // Vérifications spécifiques...
+}
+
+@Test
+void testMaContrainteHard() {
+    // Arrange
+    SchedulingContext context = new SchedulingContext(employees, shifts, indexMap);
+    MaContrainte constraint = new MaContrainte(parametre, ConstraintNature.HARD, config);
+
+    // Act
+    constraint.applyHardConstraint(context);
+    
+    // Assert - Vérifier que les contraintes HARD sont respectées
+    CpSolver solver = new CpSolver();
+    CpSolverStatus status = solver.solve(context.getModel());
+    assertTrue(status == OPTIMAL || status == FEASIBLE);
+    // Vérifications spécifiques aux contraintes HARD...
 }
 ```
 
 ### 4. Configuration et Usage
 
-**API Moderne avec ConstraintConfig (Recommandée) :**
+**API Moderne avec ConstraintConfig (Objectif unifié automatique) :**
 ```java
+// Configuration simplifiée - les poids d'objectif sont gérés automatiquement
 List<ConstraintConfig> constraintConfigs = Arrays.asList(
-    ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD, ConstraintPriority.FUNDAMENTAL),
-    ConstraintConfig.of(ConstraintType.MAX_HOURS_PER_WEEK, ConstraintNature.HARD, ConstraintPriority.NORMAL, "maxHoursPerWeek", 39 * 60),
-    ConstraintConfig.of(ConstraintType.MINIMUM_REST, ConstraintNature.HARD, ConstraintPriority.SAFETY, "minRestHours", 11),
-    ConstraintConfig.of(ConstraintType.WEEKDAY_PREFERENCE, ConstraintNature.SOFT, ConstraintPriority.COMFORT, "multiplier", 1)
+    ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD),
+    ConstraintConfig.of(ConstraintType.MAX_HOURS_PER_WEEK, ConstraintNature.SOFT, "maxHoursPerWeek", 39 * 60),
+    ConstraintConfig.of(ConstraintType.MINIMUM_REST, ConstraintNature.HARD, "minRestHours", 11),
+    ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, "weekdayMultiplier", 2),
+    ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, "minRestDaysPerWeek", 2)
 );
 
 ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts);
 for (ConstraintConfig config : constraintConfigs) {
     scheduler.withConstraint(ConstraintFactory.create(config));
 }
+// buildModel() gère automatiquement l'objectif unifié
 scheduler.buildModel();
+
+// Résultat : UN SEUL model.maximize() avec tous les termes SOFT combinés
 ```
 
 **API Legacy (pour compatibilité avec les tests) :**
@@ -177,13 +217,17 @@ ModularShiftScheduler scheduler = TestDataFactory.createStandardSchedulerWithCon
 
 ### 5. Extensibilité
 
-**Pour ajouter une nouvelle contrainte :**
+**Pour ajouter une nouvelle contrainte SOFT (avec ObjectiveCollector) :**
 
 1. Créer la classe dans `constraints/` implémentant l'interface `Constraint`
-2. Ajouter le nouveau type dans `ConstraintType.java`
-3. Ajouter le cas correspondant dans `ConstraintFactory.java`
-4. Ajouter les tests dans `test/`
-5. Documenter les paramètres et cas d'usage
+2. Implémenter `applySoftConstraint(context, collector)` avec :
+   - Création des variables de violation si nécessaire
+   - Ajout des termes via `collector.addTerm(variable, weight.getWeight())`
+   - Récupération du poids via `config.getObjectiveWeight()`
+3. Ajouter le nouveau type dans `ConstraintType.java`
+4. Ajouter le cas correspondant dans `ConstraintFactory.java`
+5. Ajouter les tests dans `test/` (tester `ObjectiveCollector.getTermCount()`)
+6. Documenter les paramètres et le type de violation/objectif
 
 **Exemple complet d'ajout de contrainte :**
 ```java
@@ -198,29 +242,33 @@ MA_CONTRAINTE
 // 3. Ajouter dans ConstraintFactory.java
 case MA_CONTRAINTE -> createMaConstraint(config);
 
-// 4. Usage avec ConstraintConfig
-ConstraintConfig.of(ConstraintType.MA_CONTRAINTE, ConstraintNature.HARD, ConstraintPriority.NORMAL, "param", valeur)
+// 4. Usage avec ConstraintConfig (poids automatique)
+ConstraintConfig.of(ConstraintType.MA_CONTRAINTE, ConstraintNature.SOFT, "param", valeur)
 ```
 
 **Pour ajouter un nouvel objectif :**
-1. Créer la classe dans `objectives/`
-2. Implémenter `ObjectiveFunction`
-3. S'assurer qu'il combine bien avec les objectifs existants
+- **Plus nécessaire** - Utiliser les contraintes SOFT avec `ObjectiveCollector`
+- L'objectif global unifié combine automatiquement tous les termes
+- Préférer créer une contrainte SOFT plutôt qu'une classe d'objectif séparée
 
 ### 6. Bonnes Pratiques OR-Tools
 
 - Toujours nommer les variables avec des préfixes clairs (`assign_e1_s2`)
 - Utiliser `LinearExprBuilder` pour construire les expressions complexes
 - Préférer `addEquality()`, `addLessOrEqual()` aux formes avec constantes
+- **JAMAIS** appeler `model.maximize()` ou `model.minimize()` dans les contraintes
+- Pour les contraintes SOFT : utiliser `ObjectiveCollector.addTerm()` exclusivement
 - Valider les indices avant d'accéder aux tableaux
 - Gérer les cas où `shifts.isEmpty()` ou `employees.isEmpty()`
 
 ### 7. Performance
 
-- Les contraintes sont appliquées dans l'ordre de priorité
+- Un seul `ObjectiveCollector` partagé pour toutes les contraintes SOFT
+- Un seul appel `model.maximize()` dans `ModularShiftScheduler.buildModel()`
 - Éviter les boucles imbriquées O(n³) quand possible
 - Lazy loading des variables dans `SchedulingContext`
 - Réutiliser les expressions communes
+- Les poids négatifs (minimisation) et positifs (maximisation) sont combinés automatiquement
 
 ### 8. Documentation
 
@@ -247,12 +295,15 @@ public class MaxHoursPerWeekConstraint implements Constraint {
 }
 ```
 
-## Points d'Attention
+## Points d'Attention (Post-Refacto SOFT)
 
 - **Thread Safety** : Les contraintes doivent être thread-safe (stateless)
+- **ObjectiveCollector** : Thread-safe avec méthodes `synchronized`
+- **Un seul objectif** : `ModularShiftScheduler.buildModel()` appelle `model.maximize()` une seule fois
+- **Pas de conflit OR-Tools** : Toutes les contraintes SOFT contribuent au même objectif global
 - **Validation** : Implémenter `validate()` pour vérifier les prérequis
-- **Debugging** : Le nom retourné par `getName()` apparaît dans les logs
-- **Compatibilité** : Tester l'interaction entre différentes contraintes
+- **Debugging** : Le nom retourné par `getName()` apparaît dans les logs + nombre de termes d'objectif
+- **Compatibilité** : Tester l'interaction entre différentes contraintes SOFT via le collecteur
 
 ## Workflow de Développement
 
@@ -311,12 +362,14 @@ src/test/java/com/cricri/
 - TOUJOURS écrire les tests AVANT l'implémentation
 - Cycle Rouge → Vert → Refactor systématique
 - Ne jamais implémenter de fonctionnalités non demandées
+- Tester les contraintes SOFT avec `ObjectiveCollector.getTermCount()`
 
 **Règles de Communication :**
 - Claude NE DOIT PAS ajouter de fonctionnalités sans autorisation explicite
 - Claude NE DOIT PAS créer de tests non demandés
 - Demander confirmation avant d'ajouter du code supplémentaire
 - Expliquer le "pourquoi" avant le "comment"
+- **NOUVEAU** : Toujours rappeler l'usage d'`ObjectiveCollector` pour les contraintes SOFT
 
 **Philosophie Bibliothèque de Règles :**
 - Chaque contrainte est une règle métier isolée et réutilisable

@@ -44,7 +44,7 @@ public class ConstraintFactory {
    * <p>Paramètres attendus : aucun
    */
   private static Constraint createMinimumCoverageConstraint(ConstraintConfig config) {
-    return new MinimumCoverageConstraint(config.nature());
+    return new MinimumCoverageConstraint(config.nature(), config);
   }
 
   /**
@@ -54,7 +54,7 @@ public class ConstraintFactory {
    */
   private static Constraint createAssignmentHoursConstraint(ConstraintConfig config) {
     int minHoursPerShift = config.getIntParameter("minHoursPerShift", 240); // 4h par défaut
-    return new AssignmentHoursConstraint(minHoursPerShift, config.nature());
+    return new AssignmentHoursConstraint(minHoursPerShift, config.nature(), config);
   }
 
   /**
@@ -64,7 +64,7 @@ public class ConstraintFactory {
    */
   private static Constraint createMinimumRestConstraint(ConstraintConfig config) {
     int minRestHours = config.getIntParameter("minRestHours", 11);
-    return new MinimumRestConstraint(minRestHours, config.nature());
+    return new MinimumRestConstraint(minRestHours, config.nature(), config);
   }
 
   /**
@@ -75,7 +75,7 @@ public class ConstraintFactory {
    */
   private static Constraint createMinimumRestDaysConstraint(ConstraintConfig config) {
     int minRestDaysPerWeek = config.getIntParameter("minRestDaysPerWeek", 2);
-    return new MinimumRestDaysConstraint(minRestDaysPerWeek, config.nature());
+    return new MinimumRestDaysConstraint(minRestDaysPerWeek, config.nature(), config);
   }
 
   /**
@@ -85,7 +85,7 @@ public class ConstraintFactory {
    */
   private static Constraint createMaxHoursPerWeekConstraint(ConstraintConfig config) {
     int maxHoursPerWeek = config.getIntParameter("maxHoursPerWeek", 39 * 60); // 39h par défaut
-    return new MaxHoursPerWeekConstraint(maxHoursPerWeek, config.nature());
+    return new MaxHoursPerWeekConstraint(maxHoursPerWeek, config.nature(), config);
   }
 
   /**
@@ -96,6 +96,6 @@ public class ConstraintFactory {
    */
   private static Constraint createMaximizeWorkingHoursConstraint(ConstraintConfig config) {
     int weekdayMultiplier = config.getIntParameter("weekdayMultiplier", 2);
-    return new MaximizeWorkingHoursConstraint(weekdayMultiplier, config.nature());
+    return new MaximizeWorkingHoursConstraint(weekdayMultiplier, config.nature(), config);
   }
 }

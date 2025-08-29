@@ -1,20 +1,29 @@
 package com.cricri.constraints;
 
+import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.enums.ConstraintNature;
+import com.cricri.constraints.enums.ObjectiveWeight;
+import com.cricri.service.ObjectiveCollector;
 import com.cricri.service.SchedulingContext;
 import com.google.ortools.sat.LinearExpr;
 
 public class AssignmentHoursConstraint implements Constraint {
   private final int minHoursPerShift;
   private final ConstraintNature nature;
+  private final ConstraintConfig config;
 
   public AssignmentHoursConstraint(int minHoursPerShift) {
-    this(minHoursPerShift, ConstraintNature.HARD);
+    this(minHoursPerShift, ConstraintNature.HARD, null);
   }
 
   public AssignmentHoursConstraint(int minHoursPerShift, ConstraintNature nature) {
+    this(minHoursPerShift, nature, null);
+  }
+
+  public AssignmentHoursConstraint(int minHoursPerShift, ConstraintNature nature, ConstraintConfig config) {
     this.minHoursPerShift = minHoursPerShift;
     this.nature = nature;
+    this.config = config;
   }
 
   @Override
@@ -48,7 +57,7 @@ public class AssignmentHoursConstraint implements Constraint {
   }
 
   @Override
-  public void applySoftConstraint(SchedulingContext context) {
+  public void applySoftConstraint(SchedulingContext context, ObjectiveCollector collector) {
     context.ensureVariablesInitialized();
 
     // Contrainte SOFT : permet une certaine flexibilité sur les heures minimum
@@ -81,7 +90,9 @@ public class AssignmentHoursConstraint implements Constraint {
                     .addTerm(context.getActualHours()[e][s], -1)
                     .build());
 
-        // TODO: Ajouter cette violation à un objectif global de minimisation
+        // Ajouter cette violation au collecteur d'objectif avec pénalité faible
+        ObjectiveWeight weight = (config != null) ? config.getObjectiveWeight() : ObjectiveWeight.MINIMIZE_LOW;
+        collector.addTerm(violationVar, weight.getWeight()); // Poids négatif = minimisation
       }
     }
   }

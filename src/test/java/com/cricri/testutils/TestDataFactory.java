@@ -38,6 +38,10 @@ public class TestDataFactory {
   public static final ShiftType NIGHT_SHIFT =
       new ShiftType("NUIT", 1350, 420, 510, 30); // 22h30-7h, 8h30 effectives
 
+  // Semaines de référence pour les tests
+  public static final Week WEEK_1 = Week.create(1, SchedulingConfiguration.STANDARD_WEEK);
+  public static final Week WEEK_2 = Week.create(2, SchedulingConfiguration.STANDARD_WEEK);
+
   // Employés standards
   private static final String[] EMPLOYEE_NAMES = {
     "Alice", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Henry"
@@ -104,6 +108,15 @@ public class TestDataFactory {
   }
 
   /**
+   * Crée une semaine complète de shifts normaux avec la semaine par défaut.
+   *
+   * @return Liste de 7 shifts
+   */
+  public static List<Shift> createStandardWeekShifts() {
+    return createStandardWeekShifts(WEEK_1);
+  }
+
+  /**
    * Crée des shifts sur deux semaines pour tester les contraintes d'heures hebdomadaires.
    *
    * @param week1 Première semaine
@@ -124,6 +137,15 @@ public class TestDataFactory {
   }
 
   /**
+   * Crée des shifts sur deux semaines avec les semaines par défaut.
+   *
+   * @return Liste de shifts répartis sur 2 semaines
+   */
+  public static List<Shift> createTwoWeekShifts() {
+    return createTwoWeekShifts(WEEK_1, WEEK_2);
+  }
+
+  /**
    * Crée des shifts avec potentiels conflits de temps de repos.
    *
    * @param week La semaine de référence
@@ -136,6 +158,53 @@ public class TestDataFactory {
         new Shift("Vendredi-SOIR", week.getDay(4), EVENING_SHIFT, 1, 1),
         // Samedi matin : pas de conflit
         new Shift("Samedi-MATIN", week.getDay(5), MORNING_SHIFT, 1, 1));
+  }
+
+  /**
+   * Crée uniquement des shifts en semaine (lundi-vendredi).
+   *
+   * @param week La semaine de référence
+   * @return Liste de shifts de semaine seulement
+   */
+  public static List<Shift> createWeekdayOnlyShifts(Week week) {
+    return Arrays.asList(
+        new Shift("Lundi-NORMAL", week.getDay(0), NORMAL_SHIFT, 1, 1),
+        new Shift("Mardi-NORMAL", week.getDay(1), NORMAL_SHIFT, 1, 1),
+        new Shift("Mercredi-NORMAL", week.getDay(2), NORMAL_SHIFT, 1, 1),
+        new Shift("Jeudi-NORMAL", week.getDay(3), NORMAL_SHIFT, 1, 1),
+        new Shift("Vendredi-NORMAL", week.getDay(4), NORMAL_SHIFT, 1, 1)
+    );
+  }
+
+  /**
+   * Crée des shifts en semaine avec la semaine par défaut.
+   *
+   * @return Liste de shifts de semaine seulement
+   */
+  public static List<Shift> createWeekdayOnlyShifts() {
+    return createWeekdayOnlyShifts(WEEK_1);
+  }
+
+  /**
+   * Crée uniquement des shifts de weekend (samedi-dimanche).
+   *
+   * @param week La semaine de référence
+   * @return Liste de shifts de weekend seulement
+   */
+  public static List<Shift> createWeekendOnlyShifts(Week week) {
+    return Arrays.asList(
+        new Shift("Samedi-NORMAL", week.getDay(5), NORMAL_SHIFT, 1, 1),
+        new Shift("Dimanche-NORMAL", week.getDay(6), NORMAL_SHIFT, 1, 1)
+    );
+  }
+
+  /**
+   * Crée des shifts de weekend avec la semaine par défaut.
+   *
+   * @return Liste de shifts de weekend seulement
+   */
+  public static List<Shift> createWeekendOnlyShifts() {
+    return createWeekendOnlyShifts(WEEK_1);
   }
 
   /**

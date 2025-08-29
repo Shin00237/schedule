@@ -1,10 +1,11 @@
 package com.cricri.constraints;
 
+import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.enums.ConstraintNature;
+import com.cricri.constraints.enums.ObjectiveWeight;
 import com.cricri.model.Shift;
+import com.cricri.service.ObjectiveCollector;
 import com.cricri.service.SchedulingContext;
-import com.google.ortools.sat.LinearExpr;
-import com.google.ortools.sat.LinearExprBuilder;
 
 /**
  * Contrainte de maximisation des heures travaillées avec préférence pour les jours de semaine.
@@ -19,18 +20,24 @@ import com.google.ortools.sat.LinearExprBuilder;
 public class MaximizeWorkingHoursConstraint implements Constraint {
   private final int weekdayMultiplier;
   private final ConstraintNature nature;
+  private final ConstraintConfig config;
 
   public MaximizeWorkingHoursConstraint() {
-    this(2, ConstraintNature.SOFT);
+    this(2, ConstraintNature.SOFT, null);
   }
 
   public MaximizeWorkingHoursConstraint(int weekdayMultiplier) {
-    this(weekdayMultiplier, ConstraintNature.SOFT);
+    this(weekdayMultiplier, ConstraintNature.SOFT, null);
   }
 
   public MaximizeWorkingHoursConstraint(int weekdayMultiplier, ConstraintNature nature) {
+    this(weekdayMultiplier, nature, null);
+  }
+
+  public MaximizeWorkingHoursConstraint(int weekdayMultiplier, ConstraintNature nature, ConstraintConfig config) {
     this.weekdayMultiplier = weekdayMultiplier;
     this.nature = nature;
+    this.config = config;
   }
 
   @Override
@@ -42,16 +49,16 @@ public class MaximizeWorkingHoursConstraint implements Constraint {
   }
 
   @Override
-  public void applySoftConstraint(SchedulingContext context) {
+  public void applySoftConstraint(SchedulingContext context, ObjectiveCollector collector) {
     context.ensureVariablesInitialized();
 
-    // Créer l'expression objectif comme dans l'ancienne addWeekdayStaffingObjective()
-    LinearExprBuilder objective = LinearExpr.newBuilder();
+    // Récupérer le poids d'objectif depuis la configuration
+    ObjectiveWeight weight = (config != null) ? config.getObjectiveWeight() : ObjectiveWeight.MAXIMIZE_CRITICAL;
 
     // Objectif principal : maximiser les heures réelles travaillées
     for (int e = 0; e < context.getEmployeeCount(); e++) {
       for (int s = 0; s < context.getShiftCount(); s++) {
-        objective.add(context.getActualHours()[e][s]); // Encourager plus d'heures
+        collector.addTerm(context.getActualHours()[e][s], weight.getWeight());
       }
     }
 
@@ -60,14 +67,12 @@ public class MaximizeWorkingHoursConstraint implements Constraint {
       Shift shift = context.getShifts().get(s);
       if (!isWeekend(shift)) {
         for (int e = 0; e < context.getEmployeeCount(); e++) {
-          // Pondération supplémentaire pour les jours de semaine
-          objective.addTerm(context.getActualHours()[e][s], weekdayMultiplier);
+          // Bonus pondéré pour les jours de semaine
+          long bonusWeight = (weight.getWeight() * weekdayMultiplier) / 10;
+          collector.addTerm(context.getActualHours()[e][s], bonusWeight);
         }
       }
     }
-
-    // Maximiser les heures totales (comme dans l'ancienne version)
-    context.getModel().maximize(objective);
   }
 
   /** Détermine si un shift tombe un weekend. */

@@ -1,7 +1,10 @@
 package com.cricri.constraints;
 
+import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.enums.ConstraintNature;
+import com.cricri.constraints.enums.ObjectiveWeight;
 import com.cricri.model.Shift;
+import com.cricri.service.ObjectiveCollector;
 import com.cricri.service.SchedulingContext;
 import com.google.ortools.sat.LinearExpr;
 import com.google.ortools.sat.LinearExprBuilder;
@@ -9,14 +12,20 @@ import com.google.ortools.sat.LinearExprBuilder;
 public class MaxHoursPerWeekConstraint implements Constraint {
   private final int maxHoursPerWeek;
   private final ConstraintNature nature;
+  private final ConstraintConfig config;
 
   public MaxHoursPerWeekConstraint(int maxHoursPerWeek) {
-    this(maxHoursPerWeek, ConstraintNature.HARD);
+    this(maxHoursPerWeek, ConstraintNature.HARD, null);
   }
 
   public MaxHoursPerWeekConstraint(int maxHoursPerWeek, ConstraintNature nature) {
+    this(maxHoursPerWeek, nature, null);
+  }
+
+  public MaxHoursPerWeekConstraint(int maxHoursPerWeek, ConstraintNature nature, ConstraintConfig config) {
     this.maxHoursPerWeek = maxHoursPerWeek;
     this.nature = nature;
+    this.config = config;
   }
 
   @Override
@@ -52,7 +61,7 @@ public class MaxHoursPerWeekConstraint implements Constraint {
   }
 
   @Override
-  public void applySoftConstraint(SchedulingContext context) {
+  public void applySoftConstraint(SchedulingContext context, ObjectiveCollector collector) {
     context.ensureVariablesInitialized();
 
     int nbWeeks = context.getWeekCount();
@@ -89,7 +98,9 @@ public class MaxHoursPerWeekConstraint implements Constraint {
                     .add(-maxHoursPerWeek)
                     .build());
 
-        // TODO: Ajouter cette violation à un objectif global de minimisation
+        // Ajouter cette violation au collecteur d'objectif avec pénalité élevée
+        ObjectiveWeight weight = (config != null) ? config.getObjectiveWeight() : ObjectiveWeight.MINIMIZE_HIGH;
+        collector.addTerm(violationVar, weight.getWeight()); // Poids négatif = minimisation
       }
     }
   }

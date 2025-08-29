@@ -1,19 +1,28 @@
 package com.cricri.constraints;
 
+import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.enums.ConstraintNature;
+import com.cricri.constraints.enums.ObjectiveWeight;
+import com.cricri.service.ObjectiveCollector;
 import com.cricri.service.SchedulingContext;
 
 public class MinimumRestDaysConstraint implements Constraint {
   private final int minRestDaysPerWeek;
   private final ConstraintNature nature;
+  private final ConstraintConfig config;
 
   public MinimumRestDaysConstraint(int minRestDaysPerWeek) {
-    this(minRestDaysPerWeek, ConstraintNature.SOFT);
+    this(minRestDaysPerWeek, ConstraintNature.SOFT, null);
   }
 
   public MinimumRestDaysConstraint(int minRestDaysPerWeek, ConstraintNature nature) {
+    this(minRestDaysPerWeek, nature, null);
+  }
+
+  public MinimumRestDaysConstraint(int minRestDaysPerWeek, ConstraintNature nature, ConstraintConfig config) {
     this.minRestDaysPerWeek = minRestDaysPerWeek;
     this.nature = nature;
+    this.config = config;
   }
 
   @Override
@@ -32,7 +41,7 @@ public class MinimumRestDaysConstraint implements Constraint {
   }
 
   @Override
-  public void applySoftConstraint(SchedulingContext context) {
+  public void applySoftConstraint(SchedulingContext context, ObjectiveCollector collector) {
     context.ensureVariablesInitialized();
 
     int daysPerCycle = context.getConfig().getDaysPerCycle();
@@ -57,8 +66,9 @@ public class MinimumRestDaysConstraint implements Constraint {
 
         // violationVar >= 0 (implicite car défini comme IntVar(0, daysPerCycle))
 
-        // TODO: Ajouter cette violation à un objectif global de minimisation
-        // Pour l'instant, la variable est créée mais pas utilisée dans l'optimisation
+        // Ajouter cette violation au collecteur d'objectif avec pénalité moyenne
+        ObjectiveWeight weight = (config != null) ? config.getObjectiveWeight() : ObjectiveWeight.MINIMIZE_MEDIUM;
+        collector.addTerm(violationVar, weight.getWeight()); // Poids négatif = minimisation
       }
     }
   }

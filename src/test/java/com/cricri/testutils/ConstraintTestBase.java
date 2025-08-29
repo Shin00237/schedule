@@ -1,5 +1,9 @@
 package com.cricri.testutils;
 
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.cricri.constraints.Constraint;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
@@ -7,10 +11,6 @@ import com.cricri.model.Week;
 import com.cricri.service.SchedulingContext;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Classe de base abstraite pour les tests de contraintes.
@@ -86,25 +86,6 @@ public abstract class ConstraintTestBase {
   }
 
   /**
-   * Teste une contrainte en mode SOFT avec des données standard.
-   *
-   * @param constraint La contrainte à tester
-   */
-  protected void testSoftConstraintWithStandardData(Constraint constraint) {
-    // Appliquer la contrainte en mode SOFT
-    constraint.applySoftConstraint(context);
-
-    // Vérifier que la solution existe
-    SolverAssertions.assertSolutionExists(
-        solver,
-        context.getModel(),
-        "La contrainte SOFT " + constraint.getName() + " devrait permettre une solution");
-
-    // Vérifications de base
-    SolverAssertions.assertAllShiftsCovered(solver, context.getAssignments(), shifts);
-  }
-
-  /**
    * Teste qu'une contrainte rend un scénario infaisable en mode HARD.
    *
    * @param constraint La contrainte à tester
@@ -125,27 +106,6 @@ public abstract class ConstraintTestBase {
             + reason);
   }
 
-  /**
-   * Teste qu'une contrainte en mode SOFT permet toujours une solution même dans un scénario
-   * difficile.
-   *
-   * @param constraint La contrainte à tester
-   * @param difficultContext Contexte difficile
-   * @param reason Raison pourquoi le scénario est difficile
-   */
-  protected void testSoftConstraintAllowsSolution(
-      Constraint constraint, SchedulingContext difficultContext, String reason) {
-
-    constraint.applySoftConstraint(difficultContext);
-
-    SolverAssertions.assertSolutionExists(
-        solver,
-        difficultContext.getModel(),
-        "La contrainte SOFT "
-            + constraint.getName()
-            + " devrait permettre une solution même dans un scénario difficile: "
-            + reason);
-  }
 
   /**
    * Crée un contexte avec des employés et shifts personnalisés.

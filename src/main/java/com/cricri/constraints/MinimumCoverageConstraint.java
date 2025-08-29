@@ -1,20 +1,29 @@
 package com.cricri.constraints;
 
+import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.enums.ConstraintNature;
+import com.cricri.constraints.enums.ObjectiveWeight;
 import com.cricri.model.Shift;
+import com.cricri.service.ObjectiveCollector;
 import com.cricri.service.SchedulingContext;
 import com.google.ortools.sat.LinearExpr;
 import com.google.ortools.sat.LinearExprBuilder;
 
 public class MinimumCoverageConstraint implements Constraint {
   private final ConstraintNature nature;
+  private final ConstraintConfig config;
 
   public MinimumCoverageConstraint() {
-    this(ConstraintNature.HARD);
+    this(ConstraintNature.HARD, null);
   }
 
   public MinimumCoverageConstraint(ConstraintNature nature) {
+    this(nature, null);
+  }
+
+  public MinimumCoverageConstraint(ConstraintNature nature, ConstraintConfig config) {
     this.nature = nature;
+    this.config = config;
   }
 
   @Override
@@ -44,7 +53,7 @@ public class MinimumCoverageConstraint implements Constraint {
   }
 
   @Override
-  public void applySoftConstraint(SchedulingContext context) {
+  public void applySoftConstraint(SchedulingContext context, ObjectiveCollector collector) {
     context.ensureVariablesInitialized();
 
     for (int s = 0; s < context.getShiftCount(); s++) {
@@ -86,10 +95,14 @@ public class MinimumCoverageConstraint implements Constraint {
                     .add(-shift.maxEmployes())
                     .build());
 
-        // TODO: Ajouter ces violations à un objectif global de minimisation
+        // Ajouter cette violation au collecteur d'objectif avec pénalité faible
+        ObjectiveWeight weight = (config != null) ? config.getObjectiveWeight() : ObjectiveWeight.MINIMIZE_LOW;
+        collector.addTerm(overCoverageVar, weight.getWeight()); // Poids négatif = minimisation
       }
 
-      // TODO: Ajouter underCoverageVar à un objectif global de minimisation
+      // Ajouter la sous-couverture globale au collecteur d'objectif
+      ObjectiveWeight weight = (config != null) ? config.getObjectiveWeight() : ObjectiveWeight.MINIMIZE_LOW;
+      collector.addTerm(underCoverageVar, weight.getWeight()); // Poids négatif = minimisation
     }
   }
 

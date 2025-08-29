@@ -1,22 +1,31 @@
 package com.cricri.constraints;
 
+import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.enums.ConstraintNature;
+import com.cricri.constraints.enums.ObjectiveWeight;
 import com.cricri.model.Day;
 import com.cricri.model.Shift;
+import com.cricri.service.ObjectiveCollector;
 import com.cricri.service.SchedulingContext;
 import com.google.ortools.sat.LinearExpr;
 
 public class MinimumRestConstraint implements Constraint {
   private final int minRestHours;
   private final ConstraintNature nature;
+  private final ConstraintConfig config;
 
   public MinimumRestConstraint(int minRestHours) {
-    this(minRestHours, ConstraintNature.HARD);
+    this(minRestHours, ConstraintNature.HARD, null);
   }
 
   public MinimumRestConstraint(int minRestHours, ConstraintNature nature) {
+    this(minRestHours, nature, null);
+  }
+
+  public MinimumRestConstraint(int minRestHours, ConstraintNature nature, ConstraintConfig config) {
     this.minRestHours = minRestHours;
     this.nature = nature;
+    this.config = config;
   }
 
   @Override
@@ -47,7 +56,7 @@ public class MinimumRestConstraint implements Constraint {
   }
 
   @Override
-  public void applySoftConstraint(SchedulingContext context) {
+  public void applySoftConstraint(SchedulingContext context, ObjectiveCollector collector) {
     context.ensureVariablesInitialized();
 
     int minRestMinutes = minRestHours * 60;
@@ -75,7 +84,9 @@ public class MinimumRestConstraint implements Constraint {
                         .add(-1)
                         .build());
 
-            // TODO: Ajouter cette violation à un objectif global de minimisation
+            // Ajouter cette violation au collecteur d'objectif avec pénalité critique
+            ObjectiveWeight weight = (config != null) ? config.getObjectiveWeight() : ObjectiveWeight.MINIMIZE_CRITICAL;
+            collector.addTerm(violationVar, weight.getWeight()); // Poids négatif = minimisation
           }
         }
       }

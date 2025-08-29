@@ -35,6 +35,16 @@ public class SolverAssertions {
   }
 
   /**
+   * Vérifie qu'une solution existe avec un solver par défaut.
+   *
+   * @param model Le modèle à résoudre
+   * @return Le statut de la solution
+   */
+  public static CpSolverStatus assertSolutionExists(CpModel model) {
+    return assertSolutionExists(new CpSolver(), model, "Une solution doit exister");
+  }
+
+  /**
    * Vérifie qu'une solution existe avec un message personnalisé.
    *
    * @param solver Le solver CP-SAT

@@ -1,5 +1,11 @@
 package com.cricri.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.cricri.constraints.Constraint;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.model.Employee;
@@ -7,13 +13,8 @@ import com.cricri.model.Shift;
 import com.google.ortools.sat.BoolVar;
 import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.IntVar;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.ortools.sat.LinearExpr;
 import lombok.Getter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Getter
 public class ModularShiftScheduler {
@@ -46,20 +47,32 @@ public class ModularShiftScheduler {
   public void buildModel() {
     logger.info("\n=== Construction du modèle modulaire ===");
 
-    // Appliquer toutes les contraintes (ordre d'insertion)
-    constraints.forEach(
-        constraint -> {
-          if (constraint.validate(context)) {
-            if (constraint.getNature() == ConstraintNature.HARD) {
-              constraint.applyHardConstraint(context);
-            } else {
-              constraint.applySoftConstraint(context);
-            }
-            logger.info("✓ Appliqué: {}", constraint.getName());
-          } else {
-            logger.warn("✗ Ignoré: {} (validation échouée)", constraint.getName());
-          }
-        });
+    // UN SEUL collecteur partagé pour TOUTES les contraintes SOFT
+    ObjectiveCollector sharedCollector = new ObjectiveCollector();
+
+    // Appliquer toutes les contraintes triées par priorité
+    constraints.stream()
+        .forEach(
+            constraint -> {
+              if (constraint.validate(context)) {
+                if (constraint.getNature() == ConstraintNature.HARD) {
+                  constraint.applyHardConstraint(context);
+                } else {
+                  // Chaque contrainte SOFT ajoute ses termes au collecteur partagé
+                  constraint.applySoftConstraint(context, sharedCollector);
+                }
+                logger.info("✓ Appliqué: {}", constraint.getName());
+              } else {
+                logger.warn("✗ Ignoré: {} (validation échouée)", constraint.getName());
+              }
+            });
+
+    // À la fin : un seul objectif unifié, pas d'état global !
+    LinearExpr globalObjective = sharedCollector.build();
+    if (!sharedCollector.isEmpty()) {
+      context.getModel().maximize(globalObjective);
+      logger.info("🎯 Objectif global unifié appliqué avec {} termes", sharedCollector.getTermCount());
+    }
 
     logger.info("Modèle construit avec {} contraintes", constraints.size());
   }
