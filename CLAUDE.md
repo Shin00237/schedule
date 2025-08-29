@@ -116,20 +116,6 @@ ConstraintConfig.of(
 - Ancien : `addWeekdayStaffingObjective()` dans le scheduler
 - Nouveau : `MaximizeWorkingHoursConstraint` configurée comme contrainte
 
-### 2. Objectifs (package `objectives`) - En Cours de Migration
-
-**⚠️ Statut : La plupart des objectifs ont été migrés vers des contraintes SOFT**
-
-**Anciennes fonctions objectif migrées :**
-- `WeekdayPreferenceObjective` → `WeekdayPreferenceConstraint` + `MaximizeWorkingHoursConstraint`
-- `addWeekdayStaffingObjective()` → `MaximizeWorkingHoursConstraint`
-
-**Règles pour les objectifs restants :**
-- Toute fonction objectif DOIT implémenter `ObjectiveFunction`
-- Nom de classe DOIT finir par `Objective`
-- Une seule fonction objectif peut être appliquée (combine les critères si nécessaire)
-- Toujours utiliser `context.getModel().maximize()` ou `minimize()`
-
 ### 3. Tests
 
 **Règles obligatoires :**

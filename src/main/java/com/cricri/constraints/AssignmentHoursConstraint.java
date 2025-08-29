@@ -1,24 +1,20 @@
 package com.cricri.constraints;
 
 import com.cricri.constraints.enums.ConstraintNature;
-import com.cricri.constraints.enums.ConstraintPriority;
 import com.cricri.service.SchedulingContext;
 import com.google.ortools.sat.LinearExpr;
 
 public class AssignmentHoursConstraint implements Constraint {
   private final int minHoursPerShift;
   private final ConstraintNature nature;
-  private final ConstraintPriority priority;
 
   public AssignmentHoursConstraint(int minHoursPerShift) {
-    this(minHoursPerShift, ConstraintNature.HARD, ConstraintPriority.CONSISTENCY);
+    this(minHoursPerShift, ConstraintNature.HARD);
   }
 
-  public AssignmentHoursConstraint(
-      int minHoursPerShift, ConstraintNature nature, ConstraintPriority priority) {
+  public AssignmentHoursConstraint(int minHoursPerShift, ConstraintNature nature) {
     this.minHoursPerShift = minHoursPerShift;
     this.nature = nature;
-    this.priority = priority;
   }
 
   @Override
@@ -93,11 +89,6 @@ public class AssignmentHoursConstraint implements Constraint {
   @Override
   public String getName() {
     return "AssignmentHours(min=" + (minHoursPerShift / 60.0) + "h, " + nature + ")";
-  }
-
-  @Override
-  public ConstraintPriority getPriority() {
-    return priority;
   }
 
   @Override

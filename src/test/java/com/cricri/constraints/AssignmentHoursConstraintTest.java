@@ -2,7 +2,6 @@ package com.cricri.constraints;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.cricri.constraints.enums.ConstraintPriority;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.service.SchedulingContext;
@@ -35,7 +34,6 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
 
     assertEquals(
         "AssignmentHours(min=" + (minHoursPerShift / 60.0) + "h, HARD)", constraint.getName());
-    assertEquals(ConstraintPriority.CONSISTENCY, constraint.getPriority());
   }
 
   @Test

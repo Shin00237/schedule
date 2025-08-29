@@ -2,7 +2,6 @@ package com.cricri.testutils;
 
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.enums.ConstraintNature;
-import com.cricri.constraints.enums.ConstraintPriority;
 import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.factory.ConstraintFactory;
 import com.cricri.model.Employee;
@@ -209,34 +208,21 @@ public class TestDataFactory {
     // Reproduire exactement la logique de withStandardConstraints()
     List<ConstraintConfig> constraintConfigs =
         Arrays.asList(
-            ConstraintConfig.of(
-                ConstraintType.MINIMUM_COVERAGE,
-                ConstraintNature.HARD,
-                ConstraintPriority.FUNDAMENTAL),
+            ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD),
             ConstraintConfig.of(
                 ConstraintType.ASSIGNMENT_HOURS,
                 ConstraintNature.HARD,
-                ConstraintPriority.CONSISTENCY,
                 "minHoursPerShift",
                 minHoursPerShift),
             ConstraintConfig.of(
                 ConstraintType.MAX_HOURS_PER_WEEK,
                 ConstraintNature.HARD,
-                ConstraintPriority.NORMAL,
                 "maxHoursPerWeek",
                 maxHoursPerWeek),
             ConstraintConfig.of(
-                ConstraintType.MINIMUM_REST,
-                ConstraintNature.HARD,
-                ConstraintPriority.SAFETY,
-                "minRestHours",
-                minRestHours),
+                ConstraintType.MINIMUM_REST, ConstraintNature.HARD, "minRestHours", minRestHours),
             ConstraintConfig.of(
-                ConstraintType.MINIMUM_REST_DAYS,
-                ConstraintNature.SOFT,
-                ConstraintPriority.COMFORT,
-                "minRestDaysPerWeek",
-                1));
+                ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, "minRestDaysPerWeek", 1));
 
     for (ConstraintConfig config : constraintConfigs) {
       scheduler.withConstraint(ConstraintFactory.create(config));
@@ -254,8 +240,7 @@ public class TestDataFactory {
 
     ModularShiftScheduler scheduler = new ModularShiftScheduler(employees, shifts);
     ConstraintConfig config =
-        ConstraintConfig.of(
-            ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD, ConstraintPriority.FUNDAMENTAL);
+        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD);
     scheduler.withConstraint(ConstraintFactory.create(config));
     return scheduler;
   }

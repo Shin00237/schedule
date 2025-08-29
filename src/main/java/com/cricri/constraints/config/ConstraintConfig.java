@@ -1,7 +1,6 @@
 package com.cricri.constraints.config;
 
 import com.cricri.constraints.enums.ConstraintNature;
-import com.cricri.constraints.enums.ConstraintPriority;
 import com.cricri.constraints.enums.ConstraintType;
 import java.util.Map;
 
@@ -9,34 +8,28 @@ import java.util.Map;
  * Configuration complète d'une contrainte dans le système de planification.
  *
  * <p>Cette classe record encapsule toutes les informations nécessaires pour créer et configurer une
- * contrainte : - Le type de contrainte à appliquer - Sa nature (HARD ou SOFT) - Sa priorité
- * d'application - Ses paramètres spécifiques
+ * contrainte : - Le type de contrainte à appliquer - Sa nature (HARD ou SOFT) - Ses paramètres
+ * spécifiques
  *
  * <p>Cette approche permet une configuration flexible depuis une interface graphique ou des
  * fichiers de configuration.
  *
  * @param type Le type de contrainte (ex: MAX_HOURS_PER_WEEK)
  * @param nature La nature de la contrainte (HARD ou SOFT)
- * @param priority La priorité d'application (ex: ConstraintPriority.NORMAL)
  * @param parameters Les paramètres spécifiques à ce type de contrainte
  */
 public record ConstraintConfig(
-    ConstraintType type,
-    ConstraintNature nature,
-    ConstraintPriority priority,
-    Map<String, Object> parameters) {
+    ConstraintType type, ConstraintNature nature, Map<String, Object> parameters) {
 
   /**
    * Constructeur de convenance pour une contrainte sans paramètres.
    *
    * @param type Le type de contrainte
    * @param nature La nature (HARD/SOFT)
-   * @param priority La priorité
    * @return Une configuration avec une map de paramètres vide
    */
-  public static ConstraintConfig of(
-      ConstraintType type, ConstraintNature nature, ConstraintPriority priority) {
-    return new ConstraintConfig(type, nature, priority, Map.of());
+  public static ConstraintConfig of(ConstraintType type, ConstraintNature nature) {
+    return new ConstraintConfig(type, nature, Map.of());
   }
 
   /**
@@ -44,18 +37,13 @@ public record ConstraintConfig(
    *
    * @param type Le type de contrainte
    * @param nature La nature (HARD/SOFT)
-   * @param priority La priorité
    * @param parameterName Nom du paramètre
    * @param parameterValue Valeur du paramètre
    * @return Une configuration avec un paramètre
    */
   public static ConstraintConfig of(
-      ConstraintType type,
-      ConstraintNature nature,
-      ConstraintPriority priority,
-      String parameterName,
-      Object parameterValue) {
-    return new ConstraintConfig(type, nature, priority, Map.of(parameterName, parameterValue));
+      ConstraintType type, ConstraintNature nature, String parameterName, Object parameterValue) {
+    return new ConstraintConfig(type, nature, Map.of(parameterName, parameterValue));
   }
 
   /**
@@ -73,10 +61,6 @@ public record ConstraintConfig(
     if (parameters == null) {
       throw new IllegalArgumentException(
           "Les paramètres ne peuvent pas être null (utiliser Map.of() pour une map vide)");
-    }
-
-    if (priority == null) {
-      throw new IllegalArgumentException("La priorité ne peut pas être null");
     }
   }
 

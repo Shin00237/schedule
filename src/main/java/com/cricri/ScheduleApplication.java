@@ -2,7 +2,6 @@ package com.cricri;
 
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.enums.ConstraintNature;
-import com.cricri.constraints.enums.ConstraintPriority;
 import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.factory.ConstraintFactory;
 import com.cricri.model.Day;
@@ -16,8 +15,15 @@ import com.google.ortools.sat.CpSolver;
 import com.google.ortools.sat.CpSolverStatus;
 import java.util.Arrays;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-public class Main {
+@SpringBootApplication
+public class ScheduleApplication {
+
+  private static final Logger logger = LoggerFactory.getLogger(ScheduleApplication.class);
 
   // Configuration du modèle
   private static final int MIN_EMPLOYES_PAR_SHIFT = 1;
@@ -35,6 +41,8 @@ public class Main {
   };
 
   public static void main(String[] args) {
+    SpringApplication.run(ScheduleApplication.class, args);
+
     // Charger les bibliothèques OR-Tools
     Loader.loadNativeLibraries();
 
@@ -45,19 +53,19 @@ public class Main {
 
     // Construire le modèle
     scheduler.buildModel();
-    System.out.println("Modèle construit avec contraintes de couverture minimale");
+    logger.info("Modèle construit avec contraintes de couverture minimale");
 
     // Résoudre
-    System.out.println("\n=== Résolution ===");
+    logger.info("\n=== Résolution ===");
     CpSolver solver = new CpSolver();
     CpSolverStatus status = solver.solve(scheduler.getModel());
 
-    System.out.println("Status: " + status);
+    logger.info("Status: {}", status);
 
     if (status == CpSolverStatus.OPTIMAL || status == CpSolverStatus.FEASIBLE) {
       printSolution(scheduler, solver);
     } else {
-      System.out.println("❌ Aucune solution trouvée!");
+      logger.warn("❌ Aucune solution trouvée!");
     }
   }
 
@@ -100,16 +108,12 @@ public class Main {
     List<ConstraintConfig> constraintConfigs =
         Arrays.asList(
             // 1. withMinimumCoverage() - par défaut HARD, FUNDAMENTAL
-            ConstraintConfig.of(
-                ConstraintType.MINIMUM_COVERAGE,
-                ConstraintNature.HARD,
-                ConstraintPriority.FUNDAMENTAL),
+            ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD),
 
             // 2. withAssignmentHours(minHoursPerShift) - par défaut HARD, CONSISTENCY
             ConstraintConfig.of(
                 ConstraintType.ASSIGNMENT_HOURS,
                 ConstraintNature.HARD,
-                ConstraintPriority.CONSISTENCY,
                 "minHoursPerShift",
                 5 * 60), // 5h minimum par shift
 
@@ -117,7 +121,6 @@ public class Main {
             ConstraintConfig.of(
                 ConstraintType.MAX_HOURS_PER_WEEK,
                 ConstraintNature.HARD,
-                ConstraintPriority.NORMAL,
                 "maxHoursPerWeek",
                 MAX_HEURES_PAR_SEMAINE), // 39h par semaine
 
@@ -125,7 +128,6 @@ public class Main {
             ConstraintConfig.of(
                 ConstraintType.MINIMUM_REST,
                 ConstraintNature.HARD,
-                ConstraintPriority.SAFETY,
                 "minRestHours",
                 11), // 11h de repos minimum
 
@@ -133,7 +135,6 @@ public class Main {
             ConstraintConfig.of(
                 ConstraintType.MINIMUM_REST_DAYS,
                 ConstraintNature.HARD,
-                ConstraintPriority.COMFORT,
                 "minRestDaysPerWeek",
                 2), // 1 jour de repos minimum
 
@@ -141,7 +142,6 @@ public class Main {
             ConstraintConfig.of(
                 ConstraintType.MAXIMIZE_WORKING_HOURS,
                 ConstraintNature.SOFT,
-                ConstraintPriority.OPTIMIZATION,
                 "weekdayMultiplier",
                 2));
 
@@ -154,44 +154,27 @@ public class Main {
   }
 
   private static void printConfiguration(ModularShiftScheduler scheduler) {
-    System.out.println("=== Configuration ===");
-    System.out.println("Employés : " + scheduler.getEmployees().size());
-    scheduler
-        .getEmployees()
-        .forEach(e -> System.out.println("  - " + e.nom() + " (" + e.id() + ")"));
+    logger.info("=== Configuration ===");
+    logger.info("Employés : {}", scheduler.getEmployees().size());
+    scheduler.getEmployees().forEach(e -> logger.info("  - {} ({})", e.nom(), e.id()));
 
-    System.out.println("\nShifts :");
+    logger.info("\nShifts :");
     scheduler
         .getShifts()
         .forEach(
-            s ->
-                System.out.println(
-                    "  - "
-                        + s.id()
-                        + " : "
-                        + s.minEmployes()
-                        + "-"
-                        + s.maxEmployes()
-                        + " employés"));
+            s -> logger.info("  - {} : {}-{} employés", s.id(), s.minEmployes(), s.maxEmployes()));
   }
 
   private static void printSolution(ModularShiftScheduler scheduler, CpSolver solver) {
     List<Employee> employees = scheduler.getEmployees();
     List<Shift> shifts = scheduler.getShifts();
 
-    System.out.println("\n=== Solution trouvée ===");
+    logger.info("\n=== Solution trouvée ===");
 
     // Afficher les assignations
     for (int s = 0; s < shifts.size(); s++) {
       Shift shift = shifts.get(s);
-      System.out.println(
-          "\n"
-              + shift.id()
-              + " (requis: "
-              + shift.minEmployes()
-              + "-"
-              + shift.maxEmployes()
-              + "):");
+      logger.info("\n{} (requis: {}-{}):", shift.id(), shift.minEmployes(), shift.maxEmployes());
 
       int assignedCount = 0;
       for (int e = 0; e < employees.size(); e++) {
@@ -202,23 +185,24 @@ public class Main {
           // Calculer les heures de début et fin réelles
           String startEndTime = calculateWorkingHours(shift, actualMinutes);
 
-          System.out.printf(
-              "  [OK] %s (%.1fh effective / %.1fh présence) - %s%n",
+          logger.info(
+              "  [OK] {} ({}h effective / {}h présence) - {}",
               employees.get(e).nom(),
               actualHours,
               shift.type().dureeMinutes() / 60.0,
               startEndTime);
+
           assignedCount++;
         }
       }
 
-      System.out.println("  Total assignés: " + assignedCount);
+      logger.info("  Total assignés: {}", assignedCount);
 
       // Vérifier la contrainte
       if (assignedCount >= shift.minEmployes() && assignedCount <= shift.maxEmployes()) {
-        System.out.println("  [OK] Contrainte respectée");
+        logger.info("  [OK] Contrainte respectée");
       } else {
-        System.out.println("  [ERREUR] Contrainte violée!");
+        logger.error("  [ERREUR] Contrainte violée!");
       }
     }
 
@@ -234,7 +218,7 @@ public class Main {
       CpSolver solver,
       List<Employee> employees,
       List<Shift> shifts) {
-    System.out.println("\n=== Heures par employé par semaine ===");
+    logger.info("\n=== Heures par employé par semaine ===");
 
     // Calculer le nombre de semaines
     int nbWeeks =
@@ -242,7 +226,7 @@ public class Main {
 
     for (int e = 0; e < employees.size(); e++) {
       Employee employee = employees.get(e);
-      System.out.println("\n" + employee.nom() + " (" + employee.id() + "):");
+      logger.info("\n{} ({}):", employee.nom(), employee.id());
 
       int totalHours = 0;
 
@@ -261,59 +245,60 @@ public class Main {
         }
 
         double weekHoursDouble = weekHours / 60.0;
-        System.out.printf("  Semaine %d: %.1fh", (w + 1), weekHoursDouble);
+        String weekInfo = String.format("  Semaine %d: %.1fh", (w + 1), weekHoursDouble);
 
         // Vérifier si la limite est dépassée
         if (weekHours > MAX_HEURES_PAR_SEMAINE) {
-          System.out.print(" [ERREUR - Limite dépassée!]");
+          logger.error(weekInfo + " [ERREUR - Limite dépassée!]");
         } else if (weekHours > 0) {
-          System.out.print(" [OK]");
+          logger.info(weekInfo + " [OK]");
+        } else {
+          logger.info(weekInfo);
         }
-        System.out.println();
 
         totalHours += weekHours;
       }
 
       double totalHoursDouble = totalHours / 60.0;
-      System.out.printf("  TOTAL: %.1fh\n", totalHoursDouble);
+      logger.info("  TOTAL: {}h", totalHoursDouble);
     }
   }
 
   private static void printRestDaysPerEmployee(
       ModularShiftScheduler scheduler, CpSolver solver, List<Employee> employees) {
-    System.out.println("\n=== Jours de repos par employé par semaine ===");
+    logger.info("\n=== Jours de repos par employé par semaine ===");
 
     int nbWeeks = scheduler.getWorkingDaysPerWeek()[0].length;
 
     for (int e = 0; e < employees.size(); e++) {
       Employee employee = employees.get(e);
-      System.out.println("\n" + employee.nom() + " (" + employee.id() + "):");
+      logger.info("\n{} ({}):", employee.nom(), employee.id());
 
       for (int w = 0; w < nbWeeks; w++) {
         long workingDays = solver.value(scheduler.getWorkingDaysPerWeek()[e][w]);
         long restDays = 7 - workingDays;
 
-        System.out.printf("  Semaine %d: %d jours de repos", (w + 1), restDays);
+        StringBuilder restDaysInfo = new StringBuilder();
+        restDaysInfo.append(String.format("  Semaine %d: %d jours de repos", (w + 1), restDays));
 
         // Afficher les jours de repos spécifiques
-        System.out.print(" (");
+        restDaysInfo.append(" (");
         boolean first = true;
         for (int d = 0; d < 7; d++) {
           if (solver.value(scheduler.getWorkingDays()[e][w][d]) == 0) {
-            if (!first) System.out.print(", ");
-            System.out.print(JOURS[d]);
+            if (!first) restDaysInfo.append(", ");
+            restDaysInfo.append(JOURS[d]);
             first = false;
           }
         }
-        System.out.print(")");
+        restDaysInfo.append(")");
 
         // Vérifier si la contrainte de repos est respectée
         if (restDays >= 1) {
-          System.out.print(" [OK]");
+          logger.info(restDaysInfo + " [OK]");
         } else {
-          System.out.print(" [ERREUR - Pas assez de repos!]");
+          logger.error(restDaysInfo + " [ERREUR - Pas assez de repos!]");
         }
-        System.out.println();
       }
     }
   }

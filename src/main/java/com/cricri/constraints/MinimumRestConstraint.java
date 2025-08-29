@@ -1,7 +1,6 @@
 package com.cricri.constraints;
 
 import com.cricri.constraints.enums.ConstraintNature;
-import com.cricri.constraints.enums.ConstraintPriority;
 import com.cricri.model.Day;
 import com.cricri.model.Shift;
 import com.cricri.service.SchedulingContext;
@@ -10,17 +9,14 @@ import com.google.ortools.sat.LinearExpr;
 public class MinimumRestConstraint implements Constraint {
   private final int minRestHours;
   private final ConstraintNature nature;
-  private final ConstraintPriority priority;
 
   public MinimumRestConstraint(int minRestHours) {
-    this(minRestHours, ConstraintNature.HARD, ConstraintPriority.SAFETY);
+    this(minRestHours, ConstraintNature.HARD);
   }
 
-  public MinimumRestConstraint(
-      int minRestHours, ConstraintNature nature, ConstraintPriority priority) {
+  public MinimumRestConstraint(int minRestHours, ConstraintNature nature) {
     this.minRestHours = minRestHours;
     this.nature = nature;
-    this.priority = priority;
   }
 
   @Override
@@ -116,11 +112,6 @@ public class MinimumRestConstraint implements Constraint {
   @Override
   public String getName() {
     return "MinimumRest(" + minRestHours + "h, " + nature + ")";
-  }
-
-  @Override
-  public ConstraintPriority getPriority() {
-    return priority;
   }
 
   @Override

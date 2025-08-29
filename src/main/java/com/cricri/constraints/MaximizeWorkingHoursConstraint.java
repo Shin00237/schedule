@@ -1,7 +1,6 @@
 package com.cricri.constraints;
 
 import com.cricri.constraints.enums.ConstraintNature;
-import com.cricri.constraints.enums.ConstraintPriority;
 import com.cricri.model.Shift;
 import com.cricri.service.SchedulingContext;
 import com.google.ortools.sat.LinearExpr;
@@ -20,21 +19,18 @@ import com.google.ortools.sat.LinearExprBuilder;
 public class MaximizeWorkingHoursConstraint implements Constraint {
   private final int weekdayMultiplier;
   private final ConstraintNature nature;
-  private final ConstraintPriority priority;
 
   public MaximizeWorkingHoursConstraint() {
-    this(2, ConstraintNature.SOFT, ConstraintPriority.OPTIMIZATION);
+    this(2, ConstraintNature.SOFT);
   }
 
   public MaximizeWorkingHoursConstraint(int weekdayMultiplier) {
-    this(weekdayMultiplier, ConstraintNature.SOFT, ConstraintPriority.OPTIMIZATION);
+    this(weekdayMultiplier, ConstraintNature.SOFT);
   }
 
-  public MaximizeWorkingHoursConstraint(
-      int weekdayMultiplier, ConstraintNature nature, ConstraintPriority priority) {
+  public MaximizeWorkingHoursConstraint(int weekdayMultiplier, ConstraintNature nature) {
     this.weekdayMultiplier = weekdayMultiplier;
     this.nature = nature;
-    this.priority = priority;
   }
 
   @Override
@@ -88,10 +84,5 @@ public class MaximizeWorkingHoursConstraint implements Constraint {
   @Override
   public ConstraintNature getNature() {
     return nature;
-  }
-
-  @Override
-  public ConstraintPriority getPriority() {
-    return priority;
   }
 }

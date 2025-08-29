@@ -9,6 +9,8 @@ import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Classe de base abstraite pour les tests de contraintes.
@@ -17,6 +19,8 @@ import org.junit.jupiter.api.BeforeEach;
  * de manière isolée.
  */
 public abstract class ConstraintTestBase {
+
+  private static final Logger logger = LoggerFactory.getLogger(ConstraintTestBase.class);
 
   // Données de test communes
   protected List<Employee> employees;
@@ -165,12 +169,6 @@ public abstract class ConstraintTestBase {
     String name = constraint.getName();
     assert name != null : "Le nom de la contrainte ne doit pas être null";
     assert !name.trim().isEmpty() : "Le nom de la contrainte ne doit pas être vide";
-
-    // Vérifier que la priorité est dans une plage raisonnable
-    int priority = constraint.getPriority().getValue();
-    assert priority >= -20 && priority <= 20
-        : "La priorité devrait être dans une plage raisonnable (-20 à 20), mais est: " + priority;
-
     // Vérifier que la validation passe avec un contexte valide
     assert constraint.validate(context) : "La validation devrait passer avec un contexte valide";
   }
@@ -213,17 +211,17 @@ public abstract class ConstraintTestBase {
    * @param constraint La contrainte testée
    */
   protected void debugSolution(Constraint constraint) {
-    System.out.println("\n=== Debug: " + constraint.getName() + " ===");
-    System.out.println("Employés: " + employees.size() + ", Shifts: " + shifts.size());
+    logger.debug("\n=== Debug: {} ===", constraint.getName());
+    logger.debug("Employés: {}, Shifts: {}", employees.size(), shifts.size());
 
     if (solver != null) {
-      System.out.println("Temps de résolution: " + solver.wallTime() + "s");
+      logger.debug("Temps de résolution: {}s", solver.wallTime());
 
       // Afficher les assignations si la solution existe
       for (int e = 0; e < employees.size(); e++) {
         for (int s = 0; s < shifts.size(); s++) {
           if (solver.value(context.getAssignments()[e][s]) == 1) {
-            System.out.printf("  %s -> %s%n", employees.get(e).nom(), shifts.get(s).id());
+            logger.debug("  {} -> {}", employees.get(e).nom(), shifts.get(s).id());
           }
         }
       }

@@ -106,11 +106,6 @@ class MaxHoursPerWeekConstraintTest {
   }
 
   @Test
-  void constraintPriorityTest() {
-    assertEquals(com.cricri.constraints.enums.ConstraintPriority.NORMAL, constraint.getPriority());
-  }
-
-  @Test
   void hoursCalculationTest() {
     // Appliquer les contraintes
     new MinimumCoverageConstraint().applyHardConstraint(context);

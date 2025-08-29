@@ -1,23 +1,19 @@
 package com.cricri.constraints;
 
 import com.cricri.constraints.enums.ConstraintNature;
-import com.cricri.constraints.enums.ConstraintPriority;
 import com.cricri.service.SchedulingContext;
 
 public class MinimumRestDaysConstraint implements Constraint {
   private final int minRestDaysPerWeek;
   private final ConstraintNature nature;
-  private final ConstraintPriority priority;
 
   public MinimumRestDaysConstraint(int minRestDaysPerWeek) {
-    this(minRestDaysPerWeek, ConstraintNature.SOFT, ConstraintPriority.COMFORT);
+    this(minRestDaysPerWeek, ConstraintNature.SOFT);
   }
 
-  public MinimumRestDaysConstraint(
-      int minRestDaysPerWeek, ConstraintNature nature, ConstraintPriority priority) {
+  public MinimumRestDaysConstraint(int minRestDaysPerWeek, ConstraintNature nature) {
     this.minRestDaysPerWeek = minRestDaysPerWeek;
     this.nature = nature;
-    this.priority = priority;
   }
 
   @Override
@@ -70,11 +66,6 @@ public class MinimumRestDaysConstraint implements Constraint {
   @Override
   public String getName() {
     return "MinimumRestDays(" + minRestDaysPerWeek + " rest days min, " + nature + ")";
-  }
-
-  @Override
-  public ConstraintPriority getPriority() {
-    return priority;
   }
 
   @Override

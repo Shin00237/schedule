@@ -3,7 +3,6 @@ package com.cricri.constraints;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.cricri.constraints.enums.ConstraintPriority;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.service.SchedulingContext;
@@ -36,7 +35,6 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
 
     assertEquals(
         "MinimumRestDays(" + minimumRestDays + " rest days min, SOFT)", constraint.getName());
-    assertEquals(ConstraintPriority.COMFORT, constraint.getPriority());
   }
 
   @Test

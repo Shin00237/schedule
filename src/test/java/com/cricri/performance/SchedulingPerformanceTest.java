@@ -2,7 +2,6 @@ package com.cricri.performance;
 
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.enums.ConstraintNature;
-import com.cricri.constraints.enums.ConstraintPriority;
 import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.factory.ConstraintFactory;
 import com.cricri.model.Employee;
@@ -106,16 +105,12 @@ class SchedulingPerformanceTest {
         new ModularShiftScheduler(employees, shifts)
             .withConstraint(
                 ConstraintFactory.create(
-                    ConstraintConfig.of(
-                        ConstraintType.MINIMUM_COVERAGE,
-                        ConstraintNature.HARD,
-                        ConstraintPriority.FUNDAMENTAL)))
+                    ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)))
             .withConstraint(
                 ConstraintFactory.create(
                     ConstraintConfig.of(
                         ConstraintType.ASSIGNMENT_HOURS,
                         ConstraintNature.HARD,
-                        ConstraintPriority.CONSISTENCY,
                         "assignmentHours",
                         5 * 60)))
             .withConstraint(
@@ -123,23 +118,17 @@ class SchedulingPerformanceTest {
                     ConstraintConfig.of(
                         ConstraintType.MAX_HOURS_PER_WEEK,
                         ConstraintNature.HARD,
-                        ConstraintPriority.NORMAL,
                         "maxHoursPerWeek",
                         35 * 60)))
             .withConstraint(
                 ConstraintFactory.create(
                     ConstraintConfig.of(
-                        ConstraintType.MINIMUM_REST,
-                        ConstraintNature.HARD,
-                        ConstraintPriority.SAFETY,
-                        "minimumRest",
-                        11)))
+                        ConstraintType.MINIMUM_REST, ConstraintNature.HARD, "minimumRest", 11)))
             .withConstraint(
                 ConstraintFactory.create(
                     ConstraintConfig.of(
                         ConstraintType.MINIMUM_REST_DAYS,
                         ConstraintNature.HARD,
-                        ConstraintPriority.COMFORT,
                         "minimumRestDays",
                         2)))
             .withConstraint(
@@ -147,7 +136,6 @@ class SchedulingPerformanceTest {
                     ConstraintConfig.of(
                         ConstraintType.MAXIMIZE_WORKING_HOURS,
                         ConstraintNature.SOFT,
-                        ConstraintPriority.OPTIMIZATION,
                         "weekdayMultiplier",
                         2)));
 

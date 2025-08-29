@@ -1,7 +1,6 @@
 package com.cricri.constraints;
 
 import com.cricri.constraints.enums.ConstraintNature;
-import com.cricri.constraints.enums.ConstraintPriority;
 import com.cricri.model.Shift;
 import com.cricri.service.SchedulingContext;
 import com.google.ortools.sat.LinearExpr;
@@ -9,15 +8,13 @@ import com.google.ortools.sat.LinearExprBuilder;
 
 public class MinimumCoverageConstraint implements Constraint {
   private final ConstraintNature nature;
-  private final ConstraintPriority priority;
 
   public MinimumCoverageConstraint() {
-    this(ConstraintNature.HARD, ConstraintPriority.FUNDAMENTAL);
+    this(ConstraintNature.HARD);
   }
 
-  public MinimumCoverageConstraint(ConstraintNature nature, ConstraintPriority priority) {
+  public MinimumCoverageConstraint(ConstraintNature nature) {
     this.nature = nature;
-    this.priority = priority;
   }
 
   @Override
@@ -99,11 +96,6 @@ public class MinimumCoverageConstraint implements Constraint {
   @Override
   public String getName() {
     return "MinimumCoverage(" + nature + ")";
-  }
-
-  @Override
-  public ConstraintPriority getPriority() {
-    return priority;
   }
 
   @Override

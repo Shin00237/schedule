@@ -8,14 +8,17 @@ import com.google.ortools.sat.BoolVar;
 import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.IntVar;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Getter
 public class ModularShiftScheduler {
+
+  private static final Logger logger = LoggerFactory.getLogger(ModularShiftScheduler.class);
   private final SchedulingContext context;
   private final List<Constraint> constraints = new ArrayList<>();
 
@@ -41,26 +44,24 @@ public class ModularShiftScheduler {
   }
 
   public void buildModel() {
-    System.out.println("\n=== Construction du modèle modulaire ===");
+    logger.info("\n=== Construction du modèle modulaire ===");
 
-    // Appliquer contraintes par priorité
-    constraints.stream()
-        .sorted(Comparator.comparingInt(constraint -> constraint.getPriority().getValue()))
-        .forEach(
-            constraint -> {
-              if (constraint.validate(context)) {
-                if (constraint.getNature() == ConstraintNature.HARD) {
-                  constraint.applyHardConstraint(context);
-                } else {
-                  constraint.applySoftConstraint(context);
-                }
-                System.out.println("✓ Appliqué: " + constraint.getName());
-              } else {
-                System.out.println("✗ Ignoré: " + constraint.getName() + " (validation échouée)");
-              }
-            });
+    // Appliquer toutes les contraintes (ordre d'insertion)
+    constraints.forEach(
+        constraint -> {
+          if (constraint.validate(context)) {
+            if (constraint.getNature() == ConstraintNature.HARD) {
+              constraint.applyHardConstraint(context);
+            } else {
+              constraint.applySoftConstraint(context);
+            }
+            logger.info("✓ Appliqué: {}", constraint.getName());
+          } else {
+            logger.warn("✗ Ignoré: {} (validation échouée)", constraint.getName());
+          }
+        });
 
-    System.out.println("Modèle construit avec " + constraints.size() + " contraintes");
+    logger.info("Modèle construit avec {} contraintes", constraints.size());
   }
 
   // Méthodes de compatibilité avec l'ancien code
@@ -95,18 +96,7 @@ public class ModularShiftScheduler {
 
   // Méthodes utilitaires
   public void printConstraints() {
-    System.out.println("\n=== Contraintes configurées ===");
-    constraints.stream()
-        .sorted(Comparator.comparingInt(constraint -> constraint.getPriority().getValue()))
-        .forEach(
-            c ->
-                System.out.println(
-                    "  "
-                        + c.getName()
-                        + " (priorité: "
-                        + c.getPriority()
-                        + ", nature: "
-                        + c.getNature()
-                        + ")"));
+    logger.info("\n=== Contraintes configurées ===");
+    constraints.forEach(c -> logger.info("  {} (nature: {})", c.getName(), c.getNature()));
   }
 }

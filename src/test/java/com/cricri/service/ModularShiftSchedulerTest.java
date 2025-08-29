@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.enums.ConstraintNature;
-import com.cricri.constraints.enums.ConstraintPriority;
 import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.factory.ConstraintFactory;
 import com.cricri.model.Employee;
@@ -61,32 +60,23 @@ class ModularShiftSchedulerTest {
         scheduler
             .withConstraint(
                 ConstraintFactory.create(
-                    ConstraintConfig.of(
-                        ConstraintType.MINIMUM_COVERAGE,
-                        ConstraintNature.HARD,
-                        ConstraintPriority.FUNDAMENTAL)))
+                    ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)))
             .withConstraint(
                 ConstraintFactory.create(
                     ConstraintConfig.of(
                         ConstraintType.MAX_HOURS_PER_WEEK,
                         ConstraintNature.HARD,
-                        ConstraintPriority.NORMAL,
                         "maxHoursPerWeek",
                         40 * 60)))
             .withConstraint(
                 ConstraintFactory.create(
                     ConstraintConfig.of(
-                        ConstraintType.MINIMUM_REST,
-                        ConstraintNature.HARD,
-                        ConstraintPriority.SAFETY,
-                        "minimumRest",
-                        11)))
+                        ConstraintType.MINIMUM_REST, ConstraintNature.HARD, "minimumRest", 11)))
             .withConstraint(
                 ConstraintFactory.create(
                     ConstraintConfig.of(
                         ConstraintType.MINIMUM_REST_DAYS,
                         ConstraintNature.HARD,
-                        ConstraintPriority.COMFORT,
                         "minimumRestDays",
                         1)))
             .withConstraint(
@@ -94,7 +84,6 @@ class ModularShiftSchedulerTest {
                     ConstraintConfig.of(
                         ConstraintType.ASSIGNMENT_HOURS,
                         ConstraintNature.HARD,
-                        ConstraintPriority.CONSISTENCY,
                         "assignmentHours",
                         5 * 60)));
 
@@ -113,16 +102,12 @@ class ModularShiftSchedulerTest {
         scheduler
             .withConstraint(
                 ConstraintFactory.create(
-                    ConstraintConfig.of(
-                        ConstraintType.MINIMUM_COVERAGE,
-                        ConstraintNature.HARD,
-                        ConstraintPriority.FUNDAMENTAL)))
+                    ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)))
             .withConstraint(
                 ConstraintFactory.create(
                     ConstraintConfig.of(
                         ConstraintType.ASSIGNMENT_HOURS,
                         ConstraintNature.HARD,
-                        ConstraintPriority.CONSISTENCY,
                         "assignmentHours",
                         5 * 60))); // Test avec multiplier
 
@@ -165,16 +150,12 @@ class ModularShiftSchedulerTest {
         new ModularShiftScheduler(employees, shifts)
             .withConstraint(
                 ConstraintFactory.create(
-                    ConstraintConfig.of(
-                        ConstraintType.MINIMUM_COVERAGE,
-                        ConstraintNature.HARD,
-                        ConstraintPriority.FUNDAMENTAL)))
+                    ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)))
             .withConstraint(
                 ConstraintFactory.create(
                     ConstraintConfig.of(
                         ConstraintType.ASSIGNMENT_HOURS,
                         ConstraintNature.HARD,
-                        ConstraintPriority.CONSISTENCY,
                         "assignmentHours",
                         6 * 60)))
             .withConstraint(
@@ -182,23 +163,17 @@ class ModularShiftSchedulerTest {
                     ConstraintConfig.of(
                         ConstraintType.MAX_HOURS_PER_WEEK,
                         ConstraintNature.HARD,
-                        ConstraintPriority.NORMAL,
                         "maxHoursPerWeek",
                         35 * 60)))
             .withConstraint(
                 ConstraintFactory.create(
                     ConstraintConfig.of(
-                        ConstraintType.MINIMUM_REST,
-                        ConstraintNature.HARD,
-                        ConstraintPriority.SAFETY,
-                        "minimumRest",
-                        12)))
+                        ConstraintType.MINIMUM_REST, ConstraintNature.HARD, "minimumRest", 12)))
             .withConstraint(
                 ConstraintFactory.create(
                     ConstraintConfig.of(
                         ConstraintType.MINIMUM_REST_DAYS,
                         ConstraintNature.HARD,
-                        ConstraintPriority.COMFORT,
                         "minimumRestDays",
                         2)));
 
@@ -298,16 +273,12 @@ class ModularShiftSchedulerTest {
     scheduler
         .withConstraint(
             ConstraintFactory.create(
-                ConstraintConfig.of(
-                    ConstraintType.MINIMUM_COVERAGE,
-                    ConstraintNature.HARD,
-                    ConstraintPriority.FUNDAMENTAL)))
+                ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)))
         .withConstraint(
             ConstraintFactory.create(
                 ConstraintConfig.of(
                     ConstraintType.MAX_HOURS_PER_WEEK,
                     ConstraintNature.HARD,
-                    ConstraintPriority.NORMAL,
                     "maxHoursPerWeek",
                     40 * 60)));
 
@@ -328,16 +299,12 @@ class ModularShiftSchedulerTest {
         new ModularShiftScheduler(singleEmployee, singleShift)
             .withConstraint(
                 ConstraintFactory.create(
-                    ConstraintConfig.of(
-                        ConstraintType.MINIMUM_COVERAGE,
-                        ConstraintNature.HARD,
-                        ConstraintPriority.FUNDAMENTAL)))
+                    ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)))
             .withConstraint(
                 ConstraintFactory.create(
                     ConstraintConfig.of(
                         ConstraintType.ASSIGNMENT_HOURS,
                         ConstraintNature.HARD,
-                        ConstraintPriority.CONSISTENCY,
                         "assignmentHours",
                         4 * 60)));
 
@@ -355,16 +322,12 @@ class ModularShiftSchedulerTest {
         new ModularShiftScheduler(employees, shifts)
             .withConstraint(
                 ConstraintFactory.create(
-                    ConstraintConfig.of(
-                        ConstraintType.MINIMUM_COVERAGE,
-                        ConstraintNature.HARD,
-                        ConstraintPriority.FUNDAMENTAL)))
+                    ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)))
             .withConstraint(
                 ConstraintFactory.create(
                     ConstraintConfig.of(
                         ConstraintType.ASSIGNMENT_HOURS,
                         ConstraintNature.HARD,
-                        ConstraintPriority.CONSISTENCY,
                         "assignmentHours",
                         0)))
             .withConstraint(
@@ -372,23 +335,17 @@ class ModularShiftSchedulerTest {
                     ConstraintConfig.of(
                         ConstraintType.MAX_HOURS_PER_WEEK,
                         ConstraintNature.HARD,
-                        ConstraintPriority.NORMAL,
                         "maxHoursPerWeek",
                         168 * 60)))
             .withConstraint(
                 ConstraintFactory.create(
                     ConstraintConfig.of(
-                        ConstraintType.MINIMUM_REST,
-                        ConstraintNature.HARD,
-                        ConstraintPriority.SAFETY,
-                        "minimumRest",
-                        1)))
+                        ConstraintType.MINIMUM_REST, ConstraintNature.HARD, "minimumRest", 1)))
             .withConstraint(
                 ConstraintFactory.create(
                     ConstraintConfig.of(
                         ConstraintType.MINIMUM_REST_DAYS,
                         ConstraintNature.HARD,
-                        ConstraintPriority.COMFORT,
                         "minimumRestDays",
                         0)));
 

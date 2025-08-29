@@ -2,7 +2,6 @@ package com.cricri.constraints;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.cricri.constraints.enums.ConstraintPriority;
 import com.cricri.model.Shift;
 import com.cricri.service.SchedulingContext;
 import com.cricri.testutils.ConstraintTestBase;
@@ -33,7 +32,6 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
     testConstraintProperties(constraint);
 
     assertEquals("MinimumRest(" + minimumRestHours + "h, HARD)", constraint.getName());
-    assertEquals(ConstraintPriority.SAFETY, constraint.getPriority());
   }
 
   @Test

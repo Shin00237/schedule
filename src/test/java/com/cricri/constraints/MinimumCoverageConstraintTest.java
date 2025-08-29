@@ -2,7 +2,6 @@ package com.cricri.constraints;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.cricri.constraints.enums.ConstraintPriority;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.service.SchedulingContext;
@@ -33,7 +32,6 @@ class MinimumCoverageConstraintTest extends ConstraintTestBase {
     testConstraintProperties(constraint);
 
     assertEquals("MinimumCoverage(HARD)", constraint.getName());
-    assertEquals(ConstraintPriority.FUNDAMENTAL, constraint.getPriority());
   }
 
   @Test

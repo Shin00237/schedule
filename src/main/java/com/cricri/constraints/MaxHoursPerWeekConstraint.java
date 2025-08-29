@@ -1,7 +1,6 @@
 package com.cricri.constraints;
 
 import com.cricri.constraints.enums.ConstraintNature;
-import com.cricri.constraints.enums.ConstraintPriority;
 import com.cricri.model.Shift;
 import com.cricri.service.SchedulingContext;
 import com.google.ortools.sat.LinearExpr;
@@ -10,17 +9,14 @@ import com.google.ortools.sat.LinearExprBuilder;
 public class MaxHoursPerWeekConstraint implements Constraint {
   private final int maxHoursPerWeek;
   private final ConstraintNature nature;
-  private final ConstraintPriority priority;
 
   public MaxHoursPerWeekConstraint(int maxHoursPerWeek) {
-    this(maxHoursPerWeek, ConstraintNature.HARD, ConstraintPriority.NORMAL);
+    this(maxHoursPerWeek, ConstraintNature.HARD);
   }
 
-  public MaxHoursPerWeekConstraint(
-      int maxHoursPerWeek, ConstraintNature nature, ConstraintPriority priority) {
+  public MaxHoursPerWeekConstraint(int maxHoursPerWeek, ConstraintNature nature) {
     this.maxHoursPerWeek = maxHoursPerWeek;
     this.nature = nature;
-    this.priority = priority;
   }
 
   @Override
@@ -101,11 +97,6 @@ public class MaxHoursPerWeekConstraint implements Constraint {
   @Override
   public String getName() {
     return "MaxHoursPerWeek(" + (maxHoursPerWeek / 60.0) + "h, " + nature + ")";
-  }
-
-  @Override
-  public ConstraintPriority getPriority() {
-    return priority;
   }
 
   @Override

@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.enums.ConstraintNature;
-import com.cricri.constraints.enums.ConstraintPriority;
 import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.factory.ConstraintFactory;
 import com.cricri.model.Employee;
@@ -91,15 +90,12 @@ class SchedulingRobustnessTest {
                   .withConstraint(
                       ConstraintFactory.create(
                           ConstraintConfig.of(
-                              ConstraintType.MINIMUM_COVERAGE,
-                              ConstraintNature.HARD,
-                              ConstraintPriority.FUNDAMENTAL)))
+                              ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)))
                   .withConstraint(
                       ConstraintFactory.create(
                           ConstraintConfig.of(
                               ConstraintType.MAX_HOURS_PER_WEEK,
                               ConstraintNature.HARD,
-                              ConstraintPriority.NORMAL,
                               "maxHoursPerWeek",
                               1)))
                   .withConstraint(
@@ -107,7 +103,6 @@ class SchedulingRobustnessTest {
                           ConstraintConfig.of(
                               ConstraintType.MINIMUM_REST,
                               ConstraintNature.HARD,
-                              ConstraintPriority.SAFETY,
                               "minimumRest",
                               23)))
                   .withConstraint(
@@ -115,7 +110,6 @@ class SchedulingRobustnessTest {
                           ConstraintConfig.of(
                               ConstraintType.ASSIGNMENT_HOURS,
                               ConstraintNature.HARD,
-                              ConstraintPriority.CONSISTENCY,
                               "assignmentHours",
                               1)));
 
@@ -138,15 +132,12 @@ class SchedulingRobustnessTest {
                   .withConstraint(
                       ConstraintFactory.create(
                           ConstraintConfig.of(
-                              ConstraintType.MINIMUM_COVERAGE,
-                              ConstraintNature.HARD,
-                              ConstraintPriority.FUNDAMENTAL)))
+                              ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)))
                   .withConstraint(
                       ConstraintFactory.create(
                           ConstraintConfig.of(
                               ConstraintType.MAX_HOURS_PER_WEEK,
                               ConstraintNature.HARD,
-                              ConstraintPriority.NORMAL,
                               "maxHoursPerWeek",
                               0)))
                   .withConstraint(
@@ -154,7 +145,6 @@ class SchedulingRobustnessTest {
                           ConstraintConfig.of(
                               ConstraintType.ASSIGNMENT_HOURS,
                               ConstraintNature.HARD,
-                              ConstraintPriority.CONSISTENCY,
                               "assignmentHours",
                               8 * 60)));
 
@@ -177,15 +167,12 @@ class SchedulingRobustnessTest {
                   .withConstraint(
                       ConstraintFactory.create(
                           ConstraintConfig.of(
-                              ConstraintType.MINIMUM_COVERAGE,
-                              ConstraintNature.HARD,
-                              ConstraintPriority.FUNDAMENTAL)))
+                              ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)))
                   .withConstraint(
                       ConstraintFactory.create(
                           ConstraintConfig.of(
                               ConstraintType.MAX_HOURS_PER_WEEK,
                               ConstraintNature.HARD,
-                              ConstraintPriority.NORMAL,
                               "maxHoursPerWeek",
                               Integer.MAX_VALUE / 1000)))
                   .withConstraint(
@@ -193,7 +180,6 @@ class SchedulingRobustnessTest {
                           ConstraintConfig.of(
                               ConstraintType.ASSIGNMENT_HOURS,
                               ConstraintNature.HARD,
-                              ConstraintPriority.CONSISTENCY,
                               "assignmentHours",
                               0)));
 
@@ -230,10 +216,7 @@ class SchedulingRobustnessTest {
     // Vérifier que l'état reste cohérent après ajout de contraintes
     scheduler.withConstraint(
         ConstraintFactory.create(
-            ConstraintConfig.of(
-                ConstraintType.MINIMUM_COVERAGE,
-                ConstraintNature.HARD,
-                ConstraintPriority.FUNDAMENTAL)));
+            ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)));
     assert scheduler.getEmployees().size() == employees.size();
     assert scheduler.getShifts().size() == shifts.size();
 
@@ -242,7 +225,6 @@ class SchedulingRobustnessTest {
             ConstraintConfig.of(
                 ConstraintType.MAX_HOURS_PER_WEEK,
                 ConstraintNature.HARD,
-                ConstraintPriority.NORMAL,
                 "maxHoursPerWeek",
                 40 * 60)));
     assert scheduler.getEmployees().size() == employees.size();
