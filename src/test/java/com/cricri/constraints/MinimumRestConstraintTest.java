@@ -27,7 +27,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
 
   @Override
   protected void setupSpecific() {
-    constraint = new MinimumRestConstraint(minimumRestHours);
+    constraint = new MinimumRestConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_REST, ConstraintNature.HARD, "minRestHours", minimumRestHours)
+    );
   }
 
   @Test
@@ -148,7 +150,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
   @Test
   void differentRestPeriodsTest() {
     // Tester avec un repos plus strict (16h) mais sur un scénario plus simple
-    MinimumRestConstraint strictConstraint = new MinimumRestConstraint(16);
+    MinimumRestConstraint strictConstraint = new MinimumRestConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_REST, ConstraintNature.HARD, "minRestHours", 16)
+    );
 
     // Utiliser un contexte plus simple qui devrait être faisable
     new MinimumCoverageConstraint(
@@ -169,7 +173,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
   @Test
   void restConstraintWithFlexibleRestPeriodTest() {
     // Tester avec un repos plus souple (8h)
-    MinimumRestConstraint flexibleConstraint = new MinimumRestConstraint(8);
+    MinimumRestConstraint flexibleConstraint = new MinimumRestConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_REST, ConstraintNature.HARD, "minRestHours", 8)
+    );
 
     List<Shift> flexibleShifts =
         List.of(

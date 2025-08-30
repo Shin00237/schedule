@@ -63,8 +63,8 @@ class SoftConstraintViolationsTest {
     // Given
     MinimumRestConstraint constraint =
         new MinimumRestConstraint(
-            12, // 12h de repos minimum entre shifts
-            ConstraintNature.SOFT);
+            ConstraintConfig.of(ConstraintType.MINIMUM_REST, ConstraintNature.SOFT, "minRestHours", 12)
+        );
 
     int termsBefore = collector.getTermCount();
 

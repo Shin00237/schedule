@@ -68,8 +68,7 @@ public class ConstraintFactory {
    * <p>Paramètres attendus : - "minRestHours" (Integer) : Heures de repos minimum entre deux shifts
    */
   private static Constraint createMinimumRestConstraint(ConstraintConfig config) {
-    int minRestHours = config.getIntParameter("minRestHours", 11);
-    return new MinimumRestConstraint(minRestHours, config.nature(), config);
+    return new MinimumRestConstraint(config);
   }
 
   /**

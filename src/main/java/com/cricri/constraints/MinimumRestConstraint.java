@@ -14,17 +14,9 @@ public class MinimumRestConstraint implements Constraint {
   private final ConstraintNature nature;
   private final ConstraintConfig config;
 
-  public MinimumRestConstraint(int minRestHours) {
-    this(minRestHours, ConstraintNature.HARD, null);
-  }
-
-  public MinimumRestConstraint(int minRestHours, ConstraintNature nature) {
-    this(minRestHours, nature, null);
-  }
-
-  public MinimumRestConstraint(int minRestHours, ConstraintNature nature, ConstraintConfig config) {
-    this.minRestHours = minRestHours;
-    this.nature = nature;
+  public MinimumRestConstraint(ConstraintConfig config) {
+    this.minRestHours = config.getIntParameter("minRestHours", 11); // 11h par défaut
+    this.nature = config.nature();
     this.config = config;
   }
 
