@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.cricri.constraints.config.ConstraintConfig;
+import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.factory.ConstraintFactory;
@@ -96,7 +97,7 @@ class SchedulingRobustnessTest {
                           ConstraintConfig.of(
                               ConstraintType.MAX_HOURS_PER_WEEK,
                               ConstraintNature.HARD,
-                              "maxHoursPerWeek",
+                              ParameterKey.MAX_HOURS_PER_WEEK.getKeyName(),
                               1)))
                   .withConstraint(
                       ConstraintFactory.create(
@@ -138,7 +139,7 @@ class SchedulingRobustnessTest {
                           ConstraintConfig.of(
                               ConstraintType.MAX_HOURS_PER_WEEK,
                               ConstraintNature.HARD,
-                              "maxHoursPerWeek",
+                              ParameterKey.MAX_HOURS_PER_WEEK.getKeyName(),
                               0)))
                   .withConstraint(
                       ConstraintFactory.create(
@@ -173,7 +174,7 @@ class SchedulingRobustnessTest {
                           ConstraintConfig.of(
                               ConstraintType.MAX_HOURS_PER_WEEK,
                               ConstraintNature.HARD,
-                              "maxHoursPerWeek",
+                              ParameterKey.MAX_HOURS_PER_WEEK.getKeyName(),
                               Integer.MAX_VALUE / 1000)))
                   .withConstraint(
                       ConstraintFactory.create(
@@ -224,7 +225,7 @@ class SchedulingRobustnessTest {
             ConstraintConfig.of(
                 ConstraintType.MAX_HOURS_PER_WEEK,
                 ConstraintNature.HARD,
-                "maxHoursPerWeek",
+                ParameterKey.MAX_HOURS_PER_WEEK.getKeyName(),
                 40 * 60)));
     assert scheduler.getEmployees().size() == employees.size();
 

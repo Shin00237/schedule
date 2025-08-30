@@ -3,6 +3,7 @@ package com.cricri.constraints;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.cricri.constraints.config.ConstraintConfig;
+import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.model.Shift;
@@ -28,7 +29,7 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
   @Override
   protected void setupSpecific() {
     constraint = new MinimumRestConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_REST, ConstraintNature.HARD, "minRestHours", minimumRestHours)
+        ConstraintConfig.of(ConstraintType.MINIMUM_REST, ConstraintNature.HARD, ParameterKey.MIN_REST_HOURS.getKeyName(), minimumRestHours)
     );
   }
 
@@ -46,7 +47,7 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
         ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
     ).applyHardConstraint(context);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
     ).applyHardConstraint(context);
     constraint.applyHardConstraint(context);
 
@@ -65,7 +66,7 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
         ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
     ).applyHardConstraint(conflictContext);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
     ).applyHardConstraint(conflictContext);
     constraint.applyHardConstraint(conflictContext);
 
@@ -102,7 +103,7 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
         ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
     ).applyHardConstraint(adequateRestContext);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
     ).applyHardConstraint(adequateRestContext);
     constraint.applyHardConstraint(adequateRestContext);
 
@@ -131,7 +132,7 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
         ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
     ).applyHardConstraint(insufficientRestContext);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
     ).applyHardConstraint(insufficientRestContext);
     constraint.applyHardConstraint(insufficientRestContext);
 
@@ -151,7 +152,7 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
   void differentRestPeriodsTest() {
     // Tester avec un repos plus strict (16h) mais sur un scénario plus simple
     MinimumRestConstraint strictConstraint = new MinimumRestConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_REST, ConstraintNature.HARD, "minRestHours", 16)
+        ConstraintConfig.of(ConstraintType.MINIMUM_REST, ConstraintNature.HARD, ParameterKey.MIN_REST_HOURS.getKeyName(), 16)
     );
 
     // Utiliser un contexte plus simple qui devrait être faisable
@@ -159,7 +160,7 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
         ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
     ).applyHardConstraint(context);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
     ).applyHardConstraint(context);
     strictConstraint.applyHardConstraint(context);
 
@@ -174,7 +175,7 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
   void restConstraintWithFlexibleRestPeriodTest() {
     // Tester avec un repos plus souple (8h)
     MinimumRestConstraint flexibleConstraint = new MinimumRestConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_REST, ConstraintNature.HARD, "minRestHours", 8)
+        ConstraintConfig.of(ConstraintType.MINIMUM_REST, ConstraintNature.HARD, ParameterKey.MIN_REST_HOURS.getKeyName(), 8)
     );
 
     List<Shift> flexibleShifts =
@@ -192,7 +193,7 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
         ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
     ).applyHardConstraint(flexibleContext);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
     ).applyHardConstraint(flexibleContext);
     flexibleConstraint.applyHardConstraint(flexibleContext);
 
@@ -214,7 +215,7 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
         ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
     ).applyHardConstraint(multiEmployeeContext);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
     ).applyHardConstraint(multiEmployeeContext);
     constraint.applyHardConstraint(multiEmployeeContext);
 
@@ -256,7 +257,7 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
         ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
     ).applyHardConstraint(nightContext);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
     ).applyHardConstraint(nightContext);
     constraint.applyHardConstraint(nightContext);
 
@@ -288,7 +289,7 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
         ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
     ).applyHardConstraint(weekendContext);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
     ).applyHardConstraint(weekendContext);
     constraint.applyHardConstraint(weekendContext);
 

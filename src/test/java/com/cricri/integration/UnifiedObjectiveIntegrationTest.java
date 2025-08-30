@@ -3,9 +3,13 @@ package com.cricri.integration;
 import static com.cricri.testutils.SolverAssertions.assertSolutionExists;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import java.util.Arrays;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import com.cricri.constraints.Constraint;
 import com.cricri.constraints.config.ConstraintConfig;
+import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.factory.ConstraintFactory;
@@ -15,10 +19,6 @@ import com.cricri.service.ShiftScheduler;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.sat.CpSolver;
 import com.google.ortools.sat.CpSolverStatus;
-import java.util.Arrays;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 /**
  * Tests d'intégration pour l'objectif unifié avec la refacto SOFT.
@@ -46,7 +46,7 @@ class UnifiedObjectiveIntegrationTest {
             ConstraintConfig.of(
                 ConstraintType.MAXIMIZE_WORKING_HOURS,
                 ConstraintNature.SOFT,
-                "weekdayMultiplier",
+                ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(),
                 2));
 
     // When
@@ -69,14 +69,14 @@ class UnifiedObjectiveIntegrationTest {
             ConstraintConfig.of(
                 ConstraintType.MAXIMIZE_WORKING_HOURS,
                 ConstraintNature.SOFT,
-                "weekdayMultiplier",
+                ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(),
                 2),
             ConstraintConfig.of(
-                ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, "minRestDaysPerWeek", 2),
+                ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, ParameterKey.MIN_REST_DAYS_PER_WEEK.getKeyName(), 2),
             ConstraintConfig.of(
                 ConstraintType.MAX_HOURS_PER_WEEK,
                 ConstraintNature.SOFT,
-                "maxHoursPerWeek",
+                ParameterKey.MAX_HOURS_PER_WEEK.getKeyName(),
                 45 * 60));
 
     // When
@@ -95,18 +95,18 @@ class UnifiedObjectiveIntegrationTest {
             // Contraintes HARD critiques
             ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD),
             ConstraintConfig.of(
-                ConstraintType.MINIMUM_REST, ConstraintNature.HARD, "minRestHours", 11),
+                ConstraintType.MINIMUM_REST, ConstraintNature.HARD, ParameterKey.MIN_REST_HOURS.getKeyName(), 11),
 
             // Contraintes SOFT pour optimisation
             ConstraintConfig.of(
                 ConstraintType.MAXIMIZE_WORKING_HOURS,
                 ConstraintNature.SOFT,
-                "weekdayMultiplier",
+                ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(),
                 2),
             ConstraintConfig.of(
                 ConstraintType.MAX_HOURS_PER_WEEK,
                 ConstraintNature.SOFT,
-                "maxHoursPerWeek",
+                ParameterKey.MAX_HOURS_PER_WEEK.getKeyName(),
                 40 * 60));
 
     // When
@@ -126,10 +126,10 @@ class UnifiedObjectiveIntegrationTest {
             ConstraintConfig.of(
                 ConstraintType.MAX_HOURS_PER_WEEK,
                 ConstraintNature.HARD,
-                "maxHoursPerWeek",
+                ParameterKey.MAX_HOURS_PER_WEEK.getKeyName(),
                 40 * 60),
             ConstraintConfig.of(
-                ConstraintType.MINIMUM_REST, ConstraintNature.HARD, "minRestHours", 11));
+                ConstraintType.MINIMUM_REST, ConstraintNature.HARD, ParameterKey.MIN_REST_HOURS.getKeyName(), 11));
 
     // When
     ShiftScheduler scheduler = buildSchedulerWithConfigs(configs);
@@ -146,16 +146,16 @@ class UnifiedObjectiveIntegrationTest {
         Arrays.asList(
             ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD), // -10
             ConstraintConfig.of(
-                ConstraintType.MINIMUM_REST, ConstraintNature.HARD, "minRestHours", 11),
+                ConstraintType.MINIMUM_REST, ConstraintNature.HARD, ParameterKey.MIN_REST_HOURS.getKeyName(), 11),
             ConstraintConfig.of(
                 ConstraintType.MAX_HOURS_PER_WEEK,
                 ConstraintNature.SOFT,
-                "maxHoursPerWeek",
+                ParameterKey.MAX_HOURS_PER_WEEK.getKeyName(),
                 40 * 60),
             ConstraintConfig.of(
                 ConstraintType.MAXIMIZE_WORKING_HOURS,
                 ConstraintNature.SOFT,
-                "weekdayMultiplier",
+                ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(),
                 2));
 
     // When
@@ -176,7 +176,7 @@ class UnifiedObjectiveIntegrationTest {
             ConstraintConfig.of(
                 ConstraintType.MAXIMIZE_WORKING_HOURS,
                 ConstraintNature.SOFT,
-                "weekdayMultiplier",
+                ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(),
                 2 // Comme dans l'ancien système
                 ));
 
@@ -218,25 +218,25 @@ class UnifiedObjectiveIntegrationTest {
             ConstraintConfig.of(
                 ConstraintType.MAXIMIZE_WORKING_HOURS,
                 ConstraintNature.SOFT,
-                "weekdayMultiplier",
+                ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(),
                 3 // Pousse vers plus d'heures
                 ),
             ConstraintConfig.of(
                 ConstraintType.MAX_HOURS_PER_WEEK,
                 ConstraintNature.SOFT,
-                "maxHoursPerWeek",
+                ParameterKey.MAX_HOURS_PER_WEEK.getKeyName(),
                 25 * 60 // Limite basse
                 ),
             ConstraintConfig.of(
                 ConstraintType.MINIMUM_REST_DAYS,
                 ConstraintNature.SOFT,
-                "minRestDaysPerWeek",
+                ParameterKey.MIN_REST_DAYS_PER_WEEK.getKeyName(),
                 3 // Beaucoup de repos
                 ),
             ConstraintConfig.of(
                 ConstraintType.MINIMUM_REST,
                 ConstraintNature.SOFT,
-                "minRestHours",
+                ParameterKey.MIN_REST_HOURS.getKeyName(),
                 12 // Repos long entre shifts
                 ));
 

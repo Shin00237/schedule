@@ -1,6 +1,7 @@
 package com.cricri.constraints;
 
 import com.cricri.constraints.config.ConstraintConfig;
+import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ObjectiveWeight;
 import com.cricri.model.Shift;
@@ -15,7 +16,7 @@ public class MaxHoursPerWeekConstraint implements Constraint {
   private final ConstraintConfig config;
 
   public MaxHoursPerWeekConstraint(ConstraintConfig config) {
-    this.maxHoursPerWeek = config.getIntParameter("maxHoursPerWeek", 39 * 60); // 39h par défaut
+    this.maxHoursPerWeek = config.getParameter(ParameterKey.MAX_HOURS_PER_WEEK);
     this.nature = config.nature();
     this.config = config;
   }

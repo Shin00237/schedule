@@ -4,6 +4,7 @@ import static com.cricri.testutils.SolverAssertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.cricri.constraints.config.ConstraintConfig;
+import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.model.Employee;
@@ -44,7 +45,7 @@ class MaximizeWorkingHoursSoftTest {
     // Given
     MaximizeWorkingHoursConstraint constraint =
         new MaximizeWorkingHoursConstraint(
-            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, "weekdayMultiplier", 2)
+            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(), 2)
         );
 
     // When
@@ -67,7 +68,7 @@ class MaximizeWorkingHoursSoftTest {
 
     MaximizeWorkingHoursConstraint constraint =
         new MaximizeWorkingHoursConstraint(
-            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, "weekdayMultiplier", 3)
+            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(), 3)
         );
 
     // When
@@ -91,7 +92,7 @@ class MaximizeWorkingHoursSoftTest {
 
     MaximizeWorkingHoursConstraint constraint =
         new MaximizeWorkingHoursConstraint(
-            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, "weekdayMultiplier", 2)
+            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(), 2)
         );
 
     // When
@@ -110,7 +111,7 @@ class MaximizeWorkingHoursSoftTest {
     // Given
     MaximizeWorkingHoursConstraint constraint =
         new MaximizeWorkingHoursConstraint(
-            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.HARD, "weekdayMultiplier", 2)
+            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.HARD, ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(), 2)
         );
 
     // When/Then
@@ -125,7 +126,7 @@ class MaximizeWorkingHoursSoftTest {
     // Given
     MaximizeWorkingHoursConstraint constraint =
         new MaximizeWorkingHoursConstraint(
-            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, "weekdayMultiplier", 2)
+            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(), 2)
         );
 
     // When
@@ -150,7 +151,7 @@ class MaximizeWorkingHoursSoftTest {
     // Given - Configuration avec poids spécifique
     MaximizeWorkingHoursConstraint constraint =
         new MaximizeWorkingHoursConstraint(
-            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, "weekdayMultiplier", 2)
+            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(), 2)
         );
 
     // When
@@ -169,7 +170,7 @@ class MaximizeWorkingHoursSoftTest {
     // Given
     MaximizeWorkingHoursConstraint constraint =
         new MaximizeWorkingHoursConstraint(
-            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, "weekdayMultiplier", 3)
+            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(), 3)
         );
 
     // When/Then
@@ -184,11 +185,11 @@ class MaximizeWorkingHoursSoftTest {
     // Given
     MaximizeWorkingHoursConstraint softConstraint =
         new MaximizeWorkingHoursConstraint(
-            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, "weekdayMultiplier", 2)
+            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(), 2)
         );
     MaximizeWorkingHoursConstraint hardConstraint =
         new MaximizeWorkingHoursConstraint(
-            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.HARD, "weekdayMultiplier", 2)
+            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.HARD, ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(), 2)
         );
 
     // When/Then

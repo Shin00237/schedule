@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import com.cricri.constraints.config.ConstraintConfig;
+import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.model.Day;
@@ -36,7 +37,7 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
     // Given
     ShiftOverlapConstraint constraint =
         new ShiftOverlapConstraint(
-            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, "minOverlapEmployees", 1)
+            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(), 1)
         );
 
     // Then
@@ -64,7 +65,7 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
 
     ShiftOverlapConstraint constraint =
         new ShiftOverlapConstraint(
-            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, "minOverlapEmployees", 1)
+            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(), 1)
         ); // 1 employé dans les deux shifts
 
     // When - Appliquer la contrainte HARD
@@ -96,7 +97,7 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
 
     ShiftOverlapConstraint constraint =
         new ShiftOverlapConstraint(
-            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, "minOverlapEmployees", 1)
+            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(), 1)
         );
 
     // When
@@ -131,7 +132,7 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
 
     ShiftOverlapConstraint constraint =
         new ShiftOverlapConstraint(
-            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, "minOverlapEmployees", 5)
+            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(), 5)
         ); // 5 employés dans les deux shifts (impossible)
 
     // When/Then - Devrait rendre le scénario infaisable
@@ -160,7 +161,7 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
     ObjectiveCollector collector = new ObjectiveCollector();
     ConstraintConfig config =
         ConstraintConfig.of(
-            ConstraintType.SHIFT_OVERLAP, ConstraintNature.SOFT, "minOverlapEmployees", 1);
+            ConstraintType.SHIFT_OVERLAP, ConstraintNature.SOFT, ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(), 1);
 
     ShiftOverlapConstraint constraint =
         new ShiftOverlapConstraint(config);
@@ -193,7 +194,7 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
 
     ShiftOverlapConstraint constraint =
         new ShiftOverlapConstraint(
-            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.SOFT, "minOverlapEmployees", 1)
+            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.SOFT, ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(), 1)
         ); // 1 employé dans les deux shifts
 
     // When
@@ -225,7 +226,7 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
 
     ShiftOverlapConstraint constraint =
         new ShiftOverlapConstraint(
-            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, "minOverlapEmployees", 2)
+            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(), 2)
         ); // 2 employés dans les deux shifts
 
     // When
@@ -258,7 +259,7 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
 
     ShiftOverlapConstraint constraint =
         new ShiftOverlapConstraint(
-            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, "minOverlapEmployees", 1)
+            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(), 1)
         );
 
     // When
@@ -292,7 +293,7 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
     SchedulingContext context = TestDataFactory.createContext(employees, mixedShifts);
 
     ShiftOverlapConstraint constraint = new ShiftOverlapConstraint(
-        ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, "minOverlapEmployees", 1)
+        ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(), 1)
     );
 
     // When

@@ -1,6 +1,13 @@
 package com.cricri;
 
+import java.util.Arrays;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.cricri.constraints.config.ConstraintConfig;
+import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.factory.ConstraintFactory;
@@ -13,12 +20,6 @@ import com.cricri.service.ShiftScheduler;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
 import com.google.ortools.sat.CpSolverStatus;
-import java.util.Arrays;
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class ScheduleApplication {
@@ -114,35 +115,35 @@ public class ScheduleApplication {
             ConstraintConfig.of(
                 ConstraintType.ASSIGNMENT_HOURS,
                 ConstraintNature.HARD,
-                "minHoursPerShift",
+                ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(),
                 5 * 60), // 5h minimum par shift
 
             // 3. withMaxHoursPerWeek(maxHoursPerWeek) - par défaut HARD, NORMAL
             ConstraintConfig.of(
                 ConstraintType.MAX_HOURS_PER_WEEK,
                 ConstraintNature.HARD,
-                "maxHoursPerWeek",
+                ParameterKey.MAX_HOURS_PER_WEEK.getKeyName(),
                 MAX_HEURES_PAR_SEMAINE), // 39h par semaine
 
             // 4. withMinimumRest(minRestHours) - par défaut HARD, SAFETY
             ConstraintConfig.of(
                 ConstraintType.MINIMUM_REST,
                 ConstraintNature.HARD,
-                "minRestHours",
+                ParameterKey.MIN_REST_HOURS.getKeyName(),
                 11), // 11h de repos minimum
 
             // 5. withMinimumRestDays(1) - par défaut SOFT, COMFORT dans la classe
             ConstraintConfig.of(
                 ConstraintType.MINIMUM_REST_DAYS,
                 ConstraintNature.HARD,
-                "minRestDaysPerWeek",
+                ParameterKey.MIN_REST_DAYS_PER_WEEK.getKeyName(),
                 2), // 1 jour de repos minimum
 
             // 6. withMaximizeWorkingHours() - reproduit l'ancienne addWeekdayStaffingObjective()
             ConstraintConfig.of(
                 ConstraintType.MAXIMIZE_WORKING_HOURS,
                 ConstraintNature.SOFT,
-                "weekdayMultiplier",
+                ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(),
                 2));
 
     // Créer et ajouter toutes les contraintes

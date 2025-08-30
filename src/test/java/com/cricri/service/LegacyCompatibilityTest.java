@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.cricri.constraints.config.ConstraintConfig;
+import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.factory.ConstraintFactory;
@@ -76,7 +77,7 @@ class LegacyCompatibilityTest {
                     ConstraintConfig.of(
                         ConstraintType.MAX_HOURS_PER_WEEK,
                         ConstraintNature.HARD,
-                        "maxHoursPerWeek",
+                        ParameterKey.MAX_HOURS_PER_WEEK.getKeyName(),
                         40 * 60)))
             .withConstraint(
                 ConstraintFactory.create(
@@ -174,7 +175,7 @@ class LegacyCompatibilityTest {
                     ConstraintConfig.of(
                         ConstraintType.MAX_HOURS_PER_WEEK,
                         ConstraintNature.HARD,
-                        "maxHoursPerWeek",
+                        ParameterKey.MAX_HOURS_PER_WEEK.getKeyName(),
                         40 * 60)));
 
     scheduler.buildModel();

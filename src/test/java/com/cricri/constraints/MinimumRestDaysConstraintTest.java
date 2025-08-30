@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import com.cricri.constraints.config.ConstraintConfig;
+import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.model.Employee;
@@ -30,7 +31,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
   @Override
   protected void setupSpecific() {
     constraint = new MinimumRestDaysConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, "minRestDaysPerWeek", minimumRestDays)
+        ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, ParameterKey.MIN_REST_DAYS_PER_WEEK.getKeyName(), minimumRestDays)
     );
   }
 
@@ -49,7 +50,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
         ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
     ).applyHardConstraint(context);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
     ).applyHardConstraint(context);
     // WorkingDaysConstraint supprimée - logique maintenant dans SchedulingContext
     constraint.applyHardConstraint(context);
@@ -68,7 +69,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
         ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
     ).applyHardConstraint(context);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
     ).applyHardConstraint(context);
     // WorkingDaysConstraint supprimée - logique maintenant dans SchedulingContext
     ObjectiveCollector sharedCollector = new ObjectiveCollector();
@@ -92,7 +93,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
         ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
     ).applyHardConstraint(impossibleContext);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
     ).applyHardConstraint(impossibleContext);
     // WorkingDaysConstraint supprimée - logique maintenant dans SchedulingContext
 
@@ -114,7 +115,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
         ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
     ).applyHardConstraint(feasibleContext);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
     ).applyHardConstraint(feasibleContext);
     // WorkingDaysConstraint supprimée - logique maintenant dans SchedulingContext
     constraint.applyHardConstraint(feasibleContext);
@@ -134,7 +135,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
   void stricterRestDaysConstraintTest() {
     // Tester avec 2 jours de repos minimum (max 5 jours travaillés)
     MinimumRestDaysConstraint strictConstraint = new MinimumRestDaysConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, "minRestDaysPerWeek", 2)
+        ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, ParameterKey.MIN_REST_DAYS_PER_WEEK.getKeyName(), 2)
     );
 
     // Même avec 2 employés et 7 shifts, ce sera plus difficile
@@ -146,7 +147,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
         ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
     ).applyHardConstraint(strictContext);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
     ).applyHardConstraint(strictContext);
     // WorkingDaysConstraint supprimée - logique maintenant dans SchedulingContext
     strictConstraint.applyHardConstraint(strictContext);
@@ -164,7 +165,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
   void flexibleRestDaysConstraintTest() {
     // Tester avec 0 jour de repos minimum (7 jours travaillés possibles)
     MinimumRestDaysConstraint flexibleConstraint = new MinimumRestDaysConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, "minRestDaysPerWeek", 0)
+        ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, ParameterKey.MIN_REST_DAYS_PER_WEEK.getKeyName(), 0)
     );
 
     List<Employee> oneEmployee = TestDataFactory.createEmployees(1);
@@ -175,7 +176,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
         ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
     ).applyHardConstraint(flexibleContext);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
     ).applyHardConstraint(flexibleContext);
     // WorkingDaysConstraint supprimée - logique maintenant dans SchedulingContext
     flexibleConstraint.applyHardConstraint(flexibleContext);
@@ -199,7 +200,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
         ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
     ).applyHardConstraint(twoWeekContext);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
     ).applyHardConstraint(twoWeekContext);
     // WorkingDaysConstraint supprimée - logique maintenant dans SchedulingContext
     constraint.applyHardConstraint(twoWeekContext);
@@ -229,7 +230,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
         ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
     ).applyHardConstraint(mixedContext);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
     ).applyHardConstraint(mixedContext);
     // WorkingDaysConstraint supprimée - logique maintenant dans SchedulingContext
     constraint.applyHardConstraint(mixedContext);
@@ -260,7 +261,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
         ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
     ).applyHardConstraint(multiShiftContext);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
     ).applyHardConstraint(multiShiftContext);
     // WorkingDaysConstraint supprimée - logique maintenant dans SchedulingContext
     constraint.applyHardConstraint(multiShiftContext);
@@ -289,7 +290,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
         ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
     ).applyHardConstraint(fiveShiftContext);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
     ).applyHardConstraint(fiveShiftContext);
     // WorkingDaysConstraint supprimée - logique maintenant dans SchedulingContext
     constraint.applyHardConstraint(fiveShiftContext);
@@ -308,7 +309,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
   void extremeRestDaysConstraintTest() {
     // Tester avec contrainte extrême: 6 jours de repos (max 1 jour travaillé)
     MinimumRestDaysConstraint extremeConstraint = new MinimumRestDaysConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, "minRestDaysPerWeek", 6)
+        ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, ParameterKey.MIN_REST_DAYS_PER_WEEK.getKeyName(), 6)
     );
 
     // Même avec beaucoup d'employés, très restrictif
@@ -320,7 +321,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
         ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
     ).applyHardConstraint(extremeContext);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
     ).applyHardConstraint(extremeContext);
     // WorkingDaysConstraint supprimée - logique maintenant dans SchedulingContext
     extremeConstraint.applyHardConstraint(extremeContext);

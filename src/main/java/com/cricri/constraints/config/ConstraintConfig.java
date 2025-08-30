@@ -66,44 +66,30 @@ public record ConstraintConfig(
   }
 
   /**
-   * Récupère un paramètre typé avec une valeur par défaut.
+   * Récupère un paramètre typé avec une valeur par défaut (méthode type-safe).
    *
    * @param <T> Le type attendu du paramètre
-   * @param key La clé du paramètre
-   * @param defaultValue La valeur par défaut si le paramètre n'existe pas
-   * @param expectedType La classe du type attendu
+   * @param parameterKey La clé type-safe du paramètre
    * @return La valeur du paramètre ou la valeur par défaut
    * @throws ClassCastException si le paramètre n'est pas du type attendu
    */
   @SuppressWarnings("unchecked")
-  public <T> T getParameter(String key, T defaultValue, Class<T> expectedType) {
+  public <T> T getParameter(ParameterKey parameterKey) {
+    String key = parameterKey.getKeyName();
     Object value = parameters.get(key);
     if (value == null) {
-      return defaultValue;
+      return parameterKey.getDefaultValue();
     }
-    if (!expectedType.isInstance(value)) {
+    if (!parameterKey.getType().isInstance(value)) {
       throw new ClassCastException(
           String.format(
               "Le paramètre '%s' devrait être de type %s mais est de type %s",
-              key, expectedType.getSimpleName(), value.getClass().getSimpleName()));
+              key, parameterKey.getType().getSimpleName(), value.getClass().getSimpleName()));
     }
     return (T) value;
   }
 
-  /** Récupère un paramètre entier avec valeur par défaut. */
-  public int getIntParameter(String key, int defaultValue) {
-    return getParameter(key, defaultValue, Integer.class);
-  }
 
-  /** Récupère un paramètre chaîne avec valeur par défaut. */
-  public String getStringParameter(String key, String defaultValue) {
-    return getParameter(key, defaultValue, String.class);
-  }
-
-  /** Récupère un paramètre booléen avec valeur par défaut. */
-  public boolean getBooleanParameter(String key, boolean defaultValue) {
-    return getParameter(key, defaultValue, Boolean.class);
-  }
 
   /**
    * Récupère le poids d'objectif pour les contraintes SOFT.
@@ -120,7 +106,17 @@ public record ConstraintConfig(
     }
 
     // Récupérer depuis les paramètres ou valeur par défaut selon le type
-    return getParameter("objectiveWeight", getDefaultWeight(), ObjectiveWeight.class);
+    Object value = parameters.get("objectiveWeight");
+    if (value == null) {
+      return getDefaultWeight();
+    }
+    if (!ObjectiveWeight.class.isInstance(value)) {
+      throw new ClassCastException(
+          String.format(
+              "Le paramètre '%s' devrait être de type %s mais est de type %s",
+              "objectiveWeight", ObjectiveWeight.class.getSimpleName(), value.getClass().getSimpleName()));
+    }
+    return (ObjectiveWeight) value;
   }
 
   /**

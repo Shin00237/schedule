@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 import com.cricri.constraints.config.ConstraintConfig;
+import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.factory.ConstraintFactory;
@@ -279,17 +280,17 @@ public class TestDataFactory {
             ConstraintConfig.of(
                 ConstraintType.ASSIGNMENT_HOURS,
                 ConstraintNature.HARD,
-                "minHoursPerShift",
+                ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(),
                 minHoursPerShift),
             ConstraintConfig.of(
                 ConstraintType.MAX_HOURS_PER_WEEK,
                 ConstraintNature.HARD,
-                "maxHoursPerWeek",
+                ParameterKey.MAX_HOURS_PER_WEEK.getKeyName(),
                 maxHoursPerWeek),
             ConstraintConfig.of(
-                ConstraintType.MINIMUM_REST, ConstraintNature.HARD, "minRestHours", minRestHours),
+                ConstraintType.MINIMUM_REST, ConstraintNature.HARD, ParameterKey.MIN_REST_HOURS.getKeyName(), minRestHours),
             ConstraintConfig.of(
-                ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, "minRestDaysPerWeek", 1));
+                ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, ParameterKey.MIN_REST_DAYS_PER_WEEK.getKeyName(), 1));
 
     for (ConstraintConfig config : constraintConfigs) {
       scheduler.withConstraint(ConstraintFactory.create(config));

@@ -1,6 +1,7 @@
 package com.cricri.constraints;
 
 import com.cricri.constraints.config.ConstraintConfig;
+import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ObjectiveWeight;
 import com.cricri.model.Shift;
@@ -23,7 +24,7 @@ public class MaximizeWorkingHoursConstraint implements Constraint {
   private final ConstraintConfig config;
 
   public MaximizeWorkingHoursConstraint(ConstraintConfig config) {
-    this.weekdayMultiplier = config.getIntParameter("weekdayMultiplier", 2); // 2 par défaut
+    this.weekdayMultiplier = config.getParameter(ParameterKey.WEEKDAY_MULTIPLIER);
     this.nature = config.nature();
     this.config = config;
   }

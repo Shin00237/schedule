@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.cricri.constraints.config.ConstraintConfig;
+import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.model.Employee;
@@ -54,7 +55,7 @@ class MaxHoursPerWeekConstraintTest {
     // Contexte de test
     context = new SchedulingContext(employees, shifts, new HashMap<>());
     constraint = new MaxHoursPerWeekConstraint(
-        ConstraintConfig.of(ConstraintType.MAX_HOURS_PER_WEEK, ConstraintNature.HARD, "maxHoursPerWeek", maxHoursPerWeek)
+        ConstraintConfig.of(ConstraintType.MAX_HOURS_PER_WEEK, ConstraintNature.HARD, ParameterKey.MAX_HOURS_PER_WEEK.getKeyName(), maxHoursPerWeek)
     );
   }
 
@@ -65,7 +66,7 @@ class MaxHoursPerWeekConstraintTest {
         ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
     ).applyHardConstraint(context);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
     ).applyHardConstraint(context);
     constraint.applyHardConstraint(context);
 
@@ -121,7 +122,7 @@ class MaxHoursPerWeekConstraintTest {
         ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
     ).applyHardConstraint(context);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
     ).applyHardConstraint(context);
     constraint.applyHardConstraint(context);
 

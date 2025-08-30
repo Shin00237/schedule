@@ -1,6 +1,7 @@
 package com.cricri.constraints;
 
 import com.cricri.constraints.config.ConstraintConfig;
+import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ObjectiveWeight;
 import com.cricri.model.Day;
@@ -15,7 +16,7 @@ public class MinimumRestConstraint implements Constraint {
   private final ConstraintConfig config;
 
   public MinimumRestConstraint(ConstraintConfig config) {
-    this.minRestHours = config.getIntParameter("minRestHours", 11); // 11h par défaut
+    this.minRestHours = config.getParameter(ParameterKey.MIN_REST_HOURS);
     this.nature = config.nature();
     this.config = config;
   }

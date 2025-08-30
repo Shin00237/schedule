@@ -1,6 +1,7 @@
 package com.cricri.constraints;
 
 import com.cricri.constraints.config.ConstraintConfig;
+import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ObjectiveWeight;
 import com.cricri.model.Shift;
@@ -31,7 +32,7 @@ public class ShiftOverlapConstraint implements Constraint {
     private final ConstraintConfig config;
 
     public ShiftOverlapConstraint(ConstraintConfig config) {
-        this.minOverlapEmployees = config.getIntParameter("minOverlapEmployees", 1);
+        this.minOverlapEmployees = config.getParameter(ParameterKey.MIN_OVERLAP_EMPLOYEES);
         this.nature = config.nature();
         this.config = config;
     }

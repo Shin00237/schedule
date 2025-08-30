@@ -3,6 +3,7 @@ package com.cricri.constraints;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.cricri.constraints.config.ConstraintConfig;
+import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.model.Employee;
@@ -29,7 +30,7 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
   @Override
   protected void setupSpecific() {
     constraint = new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", minHoursPerShift)
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), minHoursPerShift)
     );
   }
 
@@ -158,7 +159,7 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
     // Tester avec un minimum d'heures différent
     AssignmentHoursConstraint strictConstraint =
         new AssignmentHoursConstraint(
-            ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 7 * 60)
+            ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 7 * 60)
         );
 
     new MinimumCoverageConstraint(
@@ -188,7 +189,7 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
   void withZeroMinimumHoursTest() {
     // Tester avec minimum = 0 (permet des assignations partielles)
     AssignmentHoursConstraint flexibleConstraint = new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 0)
+        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 0)
     );
 
     new MinimumCoverageConstraint(
