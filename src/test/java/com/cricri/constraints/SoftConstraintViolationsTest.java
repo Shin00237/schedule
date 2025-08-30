@@ -42,8 +42,8 @@ class SoftConstraintViolationsTest {
     // Given - Configuration qui va probablement créer des violations
     MinimumRestDaysConstraint constraint =
         new MinimumRestDaysConstraint(
-            5, // 5 jours de repos minimum par semaine (difficile à respecter)
-            ConstraintNature.SOFT);
+            ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, "minRestDaysPerWeek", 5)
+        );
 
     int termsBefore = collector.getTermCount();
 
@@ -122,7 +122,9 @@ class SoftConstraintViolationsTest {
   void testMultipleSoftConstraintsCombine() {
     // Given - Plusieurs contraintes SOFT qui vont toutes contribuer
     MinimumRestDaysConstraint restDaysConstraint =
-        new MinimumRestDaysConstraint(4, ConstraintNature.SOFT);
+        new MinimumRestDaysConstraint(
+            ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, "minRestDaysPerWeek", 4)
+        );
     MaxHoursPerWeekConstraint maxHoursConstraint =
         new MaxHoursPerWeekConstraint(
             ConstraintConfig.of(ConstraintType.MAX_HOURS_PER_WEEK, ConstraintNature.SOFT, "maxHoursPerWeek", 20 * 60)
@@ -158,7 +160,9 @@ class SoftConstraintViolationsTest {
   void testHardConstraintsDoNotAddToCollector() {
     // Given - Les mêmes contraintes mais en mode HARD
     MinimumRestDaysConstraint hardConstraint =
-        new MinimumRestDaysConstraint(2, ConstraintNature.HARD);
+        new MinimumRestDaysConstraint(
+            ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.HARD, "minRestDaysPerWeek", 2)
+        );
 
     // When/Then - Les contraintes HARD ne devraient pas appeler applySoftConstraint
     // Elles utilisent applyHardConstraint à la place

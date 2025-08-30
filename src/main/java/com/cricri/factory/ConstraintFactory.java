@@ -78,8 +78,7 @@ public class ConstraintFactory {
    * par semaine
    */
   private static Constraint createMinimumRestDaysConstraint(ConstraintConfig config) {
-    int minRestDaysPerWeek = config.getIntParameter("minRestDaysPerWeek", 2);
-    return new MinimumRestDaysConstraint(minRestDaysPerWeek, config.nature(), config);
+    return new MinimumRestDaysConstraint(config);
   }
 
   /**

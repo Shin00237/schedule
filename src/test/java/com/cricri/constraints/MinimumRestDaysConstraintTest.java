@@ -29,7 +29,9 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
 
   @Override
   protected void setupSpecific() {
-    constraint = new MinimumRestDaysConstraint(minimumRestDays);
+    constraint = new MinimumRestDaysConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, "minRestDaysPerWeek", minimumRestDays)
+    );
   }
 
   @Test
@@ -131,7 +133,9 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
   @Test
   void stricterRestDaysConstraintTest() {
     // Tester avec 2 jours de repos minimum (max 5 jours travaillés)
-    MinimumRestDaysConstraint strictConstraint = new MinimumRestDaysConstraint(2);
+    MinimumRestDaysConstraint strictConstraint = new MinimumRestDaysConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, "minRestDaysPerWeek", 2)
+    );
 
     // Même avec 2 employés et 7 shifts, ce sera plus difficile
     List<Employee> twoEmployees = TestDataFactory.createEmployees(2);
@@ -159,7 +163,9 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
   @Test
   void flexibleRestDaysConstraintTest() {
     // Tester avec 0 jour de repos minimum (7 jours travaillés possibles)
-    MinimumRestDaysConstraint flexibleConstraint = new MinimumRestDaysConstraint(0);
+    MinimumRestDaysConstraint flexibleConstraint = new MinimumRestDaysConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, "minRestDaysPerWeek", 0)
+    );
 
     List<Employee> oneEmployee = TestDataFactory.createEmployees(1);
     List<Shift> allWeekShifts = TestDataFactory.createWeekShifts(week1, 1, 1);
@@ -301,7 +307,9 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
   @Test
   void extremeRestDaysConstraintTest() {
     // Tester avec contrainte extrême: 6 jours de repos (max 1 jour travaillé)
-    MinimumRestDaysConstraint extremeConstraint = new MinimumRestDaysConstraint(6);
+    MinimumRestDaysConstraint extremeConstraint = new MinimumRestDaysConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, "minRestDaysPerWeek", 6)
+    );
 
     // Même avec beaucoup d'employés, très restrictif
     List<Employee> manyEmployees = TestDataFactory.createEmployees(8);

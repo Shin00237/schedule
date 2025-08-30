@@ -11,18 +11,9 @@ public class MinimumRestDaysConstraint implements Constraint {
   private final ConstraintNature nature;
   private final ConstraintConfig config;
 
-  public MinimumRestDaysConstraint(int minRestDaysPerWeek) {
-    this(minRestDaysPerWeek, ConstraintNature.SOFT, null);
-  }
-
-  public MinimumRestDaysConstraint(int minRestDaysPerWeek, ConstraintNature nature) {
-    this(minRestDaysPerWeek, nature, null);
-  }
-
-  public MinimumRestDaysConstraint(
-      int minRestDaysPerWeek, ConstraintNature nature, ConstraintConfig config) {
-    this.minRestDaysPerWeek = minRestDaysPerWeek;
-    this.nature = nature;
+  public MinimumRestDaysConstraint(ConstraintConfig config) {
+    this.minRestDaysPerWeek = config.getIntParameter("minRestDaysPerWeek", 2); // 2 jours par défaut
+    this.nature = config.nature();
     this.config = config;
   }
 
