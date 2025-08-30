@@ -5,8 +5,11 @@ import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.exceptions.EmptyParameterException;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
+import com.cricri.monitoring.ConstraintMonitor;
 import com.google.ortools.sat.BoolVar;
 import com.google.ortools.sat.CpModel;
+import com.google.ortools.sat.CpSolver;
+import com.google.ortools.sat.CpSolverStatus;
 import com.google.ortools.sat.IntVar;
 import com.google.ortools.sat.LinearExpr;
 import java.util.ArrayList;
@@ -24,8 +27,14 @@ public class ShiftScheduler {
   private static final Logger logger = LoggerFactory.getLogger(ShiftScheduler.class);
   private final SchedulingContext context;
   private final List<Constraint> constraints = new ArrayList<>();
+  private final ConstraintMonitor constraintMonitor;
+  private final boolean monitoringEnabled;
 
   public ShiftScheduler(List<Employee> employees, List<Shift> shifts) {
+    this(employees, shifts, false); // Monitoring désactivé par défaut
+  }
+
+  public ShiftScheduler(List<Employee> employees, List<Shift> shifts, boolean enableMonitoring) {
     verifyParameters(employees, shifts);
 
     Map<String, Integer> shiftIndexMap = new HashMap<>();
@@ -33,6 +42,8 @@ public class ShiftScheduler {
       shiftIndexMap.put(shifts.get(i).id(), i);
     }
     this.context = new SchedulingContext(employees, shifts, shiftIndexMap);
+    this.constraintMonitor = new ConstraintMonitor();
+    this.monitoringEnabled = enableMonitoring;
   }
 
   private void verifyParameters(List<Employee> employees, List<Shift> shifts) {
@@ -111,9 +122,48 @@ public class ShiftScheduler {
     return context.getWorkingDaysPerWeek();
   }
 
+  // Résolution avec monitoring simplifié
+  public CpSolver solve() {
+    buildModel();
+
+    logger.info("\n=== Résolution du modèle avec monitoring ===");
+
+    CpSolver solver = new CpSolver();
+    CpSolverStatus status = solver.solve(context.getModel());
+
+    if (monitoringEnabled) {
+      // IMPORTANT: Enregistrer les métriques dans le monitor
+      constraintMonitor.monitorConstraint("GLOBAL_MODEL", solver, status);
+    }
+
+    // Monitoring post-résolution simplifié
+    logSolutionStatus(status);
+
+    return solver;
+  }
+
+  private void logSolutionStatus(CpSolverStatus status) {
+    logger.info("\n=== RÉSULTAT DE LA RÉSOLUTION ===");
+    logger.info("Status: {}", status);
+
+    // Diagnostic basique en cas d'échec
+    if (status.toString().contains("INFEASIBLE")) {
+      logger.error("DIAGNOSTIC: Le modèle est impossible à satisfaire.");
+      logger.error("Vérifiez la compatibilité entre vos contraintes.");
+    } else if (status.toString().contains("OPTIMAL")) {
+      logger.info("✓ Solution optimale trouvée");
+    } else if (status.toString().contains("FEASIBLE")) {
+      logger.info("✓ Solution réalisable trouvée");
+    }
+  }
+
   // Méthodes utilitaires
   public void printConstraints() {
     logger.info("\n=== Contraintes configurées ===");
     constraints.forEach(c -> logger.info("  {} (nature: {})", c.getName(), c.getNature()));
+  }
+
+  public ConstraintMonitor getConstraintMonitor() {
+    return constraintMonitor;
   }
 }

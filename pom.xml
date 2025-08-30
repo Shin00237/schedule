@@ -103,6 +103,20 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.5.3</version>
+				<configuration>
+					<systemPropertyVariables>
+						<java.library.path>${project.basedir}/lib/native</java.library.path>
+					</systemPropertyVariables>
+					<argLine>
+						-Djava.library.path=${project.basedir}/lib/native
+						-Djava.awt.headless=true
+					</argLine>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.8.11</version>
