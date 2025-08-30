@@ -1,9 +1,10 @@
 package com.cricri.model;
 
-import com.cricri.service.SchedulingConfiguration;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
+import com.cricri.constants.Constants;
+import com.cricri.service.SchedulingConfiguration;
 
 public record Week(
     int weekNumber, // 0, 1, 2...
@@ -12,13 +13,12 @@ public record Week(
   public static Week create(int weekNumber, SchedulingConfiguration config) {
     List<Day> days = new ArrayList<>();
     List<DayOfWeek> cyclePattern = config.getCyclePattern();
-    int daysPerCycle = config.getDaysPerCycle();
 
     Week week = new Week(weekNumber, days, config);
 
-    for (int i = 0; i < daysPerCycle; i++) {
-      int dayNumber = weekNumber * daysPerCycle + i; // 0-indexé
-      days.add(new Day(dayNumber, cyclePattern.get(i), week));
+    for (int i = 0; i < Constants.DAYS_IN_A_WEEK; i++) {
+      int dayNumber = weekNumber * Constants.DAYS_IN_A_WEEK + i; // 0-indexé
+      days.add(new Day(dayNumber, cyclePattern.get(i)));
     }
 
     return week;
@@ -34,9 +34,8 @@ public record Week(
   }
 
   public Day getDay(int dayIndex) {
-    int daysPerCycle = config.getDaysPerCycle();
-    if (dayIndex < 0 || dayIndex >= daysPerCycle) {
-      throw new IllegalArgumentException("Day index must be between 0 and " + (daysPerCycle - 1));
+    if (dayIndex < 0 || dayIndex >= Constants.DAYS_IN_A_WEEK) {
+      throw new IllegalArgumentException("Day index must be between 0 and " + (Constants.DAYS_IN_A_WEEK - 1));
     }
     return days.get(dayIndex);
   }

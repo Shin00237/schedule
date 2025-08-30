@@ -1,18 +1,18 @@
 package com.cricri.model;
 
 import java.time.DayOfWeek;
+import com.cricri.constants.Constants;
 
 public record Day(
     int dayNumber, // 0-indexé (0-6 dans la semaine, global pour les contraintes)
-    DayOfWeek dayOfWeek, // MONDAY, TUESDAY, etc.
-    Week week // référence vers la semaine parent
+    DayOfWeek dayOfWeek // MONDAY, TUESDAY, etc.
     ) {
   public int getWeekNumber() {
-    return week.weekNumber();
+    return dayNumber / Constants.DAYS_IN_A_WEEK; // 0-indexé
   }
 
   public int getDayInWeek() {
-    return dayNumber % week.config().getDaysPerCycle(); // 0-n selon configuration
+    return dayNumber % Constants.DAYS_IN_A_WEEK; // 0-n selon configuration
   }
 
   public boolean isWeekend() {

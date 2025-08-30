@@ -1,12 +1,13 @@
 package com.cricri.service;
 
+import java.util.List;
+import java.util.Map;
+import com.cricri.constants.Constants;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.google.ortools.sat.BoolVar;
 import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.IntVar;
-import java.util.List;
-import java.util.Map;
 import lombok.Data;
 
 @Data
@@ -108,11 +109,10 @@ public class SchedulingContext {
   }
 
   private void daysWorksInit(int nbWeeks) {
-    int daysPerCycle = config.getDaysPerCycle();
-    workingDays = new BoolVar[getEmployeeCount()][nbWeeks][daysPerCycle];
+    workingDays = new BoolVar[getEmployeeCount()][nbWeeks][Constants.DAYS_IN_A_WEEK];
     for (int e = 0; e < getEmployeeCount(); e++) {
       for (int w = 0; w < nbWeeks; w++) {
-        for (int d = 0; d < daysPerCycle; d++) {
+        for (int d = 0; d < Constants.DAYS_IN_A_WEEK; d++) {
           workingDays[e][w][d] = model.newBoolVar("workDay_e" + e + "_w" + w + "_d" + d);
         }
       }
@@ -124,7 +124,7 @@ public class SchedulingContext {
     for (int e = 0; e < getEmployeeCount(); e++) {
       for (int w = 0; w < nbWeeks; w++) {
         workingDaysPerWeek[e][w] =
-            model.newIntVar(0, config.getDaysPerCycle(), "workDaysPerWeek_e" + e + "_w" + w);
+            model.newIntVar(0, Constants.DAYS_IN_A_WEEK, "workDaysPerWeek_e" + e + "_w" + w);
       }
     }
   }
@@ -153,7 +153,7 @@ public class SchedulingContext {
       for (int w = 0; w < workingDaysPerWeek[e].length; w++) {
         com.google.ortools.sat.LinearExprBuilder sumDaysWorked =
             com.google.ortools.sat.LinearExpr.newBuilder();
-        int daysPerCycle = config.getDaysPerCycle();
+        int daysPerCycle = Constants.DAYS_IN_A_WEEK;
         for (int d = 0; d < daysPerCycle; d++) {
           sumDaysWorked.add(workingDays[e][w][d]);
         }

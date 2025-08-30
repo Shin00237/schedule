@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
+import com.cricri.constants.Constants;
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
@@ -84,9 +85,8 @@ public class TestDataFactory {
    */
   public static List<Shift> createWeekShifts(Week week, int minEmployees, int maxEmployees) {
     String[] dayNames = {"Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"};
-    int daysInWeek = week.config().getDaysPerCycle();
 
-    return IntStream.range(0, daysInWeek)
+    return IntStream.range(0, Constants.DAYS_IN_A_WEEK)
         .mapToObj(
             dayIndex ->
                 new Shift(

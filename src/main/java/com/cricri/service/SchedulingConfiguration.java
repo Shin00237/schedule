@@ -1,15 +1,14 @@
 package com.cricri.service;
 
-import com.cricri.constraints.exceptions.NegativeParameterException;
 import java.time.DayOfWeek;
 import java.util.List;
+import com.cricri.constraints.exceptions.NegativeParameterException;
 
 /**
  * Configuration pour définir la structure temporelle du planning. Permet de supporter différents
  * types de cycles de travail.
  */
 public class SchedulingConfiguration {
-  private final int daysPerCycle;
   private final List<DayOfWeek> cyclePattern;
   private final String displayName;
 
@@ -23,7 +22,6 @@ public class SchedulingConfiguration {
           "cyclePattern doit contenir exactement " + daysPerCycle + " jours");
     }
 
-    this.daysPerCycle = daysPerCycle;
     this.cyclePattern = List.copyOf(cyclePattern); // Immutable
     this.displayName = displayName;
   }
@@ -71,9 +69,6 @@ public class SchedulingConfiguration {
 
   // Getters
 
-  public int getDaysPerCycle() {
-    return daysPerCycle;
-  }
 
   public List<DayOfWeek> getCyclePattern() {
     return cyclePattern;
@@ -81,26 +76,5 @@ public class SchedulingConfiguration {
 
   public String getDisplayName() {
     return displayName;
-  }
-
-  public DayOfWeek getDayOfWeek(int dayIndex) {
-    if (dayIndex < 0 || dayIndex >= daysPerCycle) {
-      throw new IllegalArgumentException("dayIndex doit être entre 0 et " + (daysPerCycle - 1));
-    }
-    return cyclePattern.get(dayIndex);
-  }
-
-  public boolean isWeekend(int dayIndex) {
-    DayOfWeek day = getDayOfWeek(dayIndex);
-    return day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY;
-  }
-
-  public boolean isWeekday(int dayIndex) {
-    return !isWeekend(dayIndex);
-  }
-
-  @Override
-  public String toString() {
-    return displayName + " (" + daysPerCycle + " jours)";
   }
 }

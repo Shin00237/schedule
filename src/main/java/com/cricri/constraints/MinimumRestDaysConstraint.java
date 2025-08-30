@@ -1,5 +1,6 @@
 package com.cricri.constraints;
 
+import com.cricri.constants.Constants;
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
@@ -22,8 +23,7 @@ public class MinimumRestDaysConstraint implements Constraint {
   public void applyHardConstraint(SchedulingContext context) {
     context.ensureVariablesInitialized();
 
-    int daysPerCycle = context.getConfig().getDaysPerCycle();
-    int maxWorkingDays = daysPerCycle - minRestDaysPerWeek;
+    int maxWorkingDays = Constants.DAYS_IN_A_WEEK - minRestDaysPerWeek;
 
     // Contrainte HARD : au moins X jours de repos par semaine (max Y jours travaillés)
     for (int e = 0; e < context.getEmployeeCount(); e++) {
@@ -37,15 +37,14 @@ public class MinimumRestDaysConstraint implements Constraint {
   public void applySoftConstraint(SchedulingContext context, ObjectiveCollector collector) {
     context.ensureVariablesInitialized();
 
-    int daysPerCycle = context.getConfig().getDaysPerCycle();
-    int maxWorkingDays = daysPerCycle - minRestDaysPerWeek;
+    int maxWorkingDays = Constants.DAYS_IN_A_WEEK - minRestDaysPerWeek;
 
     // Contrainte SOFT : variable de violation pour mesurer l'écart
     for (int e = 0; e < context.getEmployeeCount(); e++) {
       for (int w = 0; w < context.getWorkingDaysPerWeek()[e].length; w++) {
         // Variable de violation : jours travaillés au-delà du maximum autorisé
         var violationVar =
-            context.getModel().newIntVar(0, daysPerCycle, "rest_days_violation_e" + e + "_w" + w);
+            context.getModel().newIntVar(0, Constants.DAYS_IN_A_WEEK, "rest_days_violation_e" + e + "_w" + w);
 
         // violationVar >= workingDays - maxWorkingDays
         context
