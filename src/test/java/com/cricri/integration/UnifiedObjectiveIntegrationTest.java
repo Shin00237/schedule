@@ -3,10 +3,7 @@ package com.cricri.integration;
 import static com.cricri.testutils.SolverAssertions.assertSolutionExists;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.Arrays;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
 import com.cricri.constraints.Constraint;
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.config.ParameterKey;
@@ -19,6 +16,10 @@ import com.cricri.service.ShiftScheduler;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.sat.CpSolver;
 import com.google.ortools.sat.CpSolverStatus;
+import java.util.Arrays;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests d'intégration pour l'objectif unifié avec la refacto SOFT.
@@ -72,7 +73,10 @@ class UnifiedObjectiveIntegrationTest {
                 ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(),
                 2),
             ConstraintConfig.of(
-                ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, ParameterKey.MIN_REST_DAYS_PER_WEEK.getKeyName(), 2),
+                ConstraintType.MINIMUM_REST_DAYS,
+                ConstraintNature.SOFT,
+                ParameterKey.MIN_REST_DAYS_PER_WEEK.getKeyName(),
+                2),
             ConstraintConfig.of(
                 ConstraintType.MAX_HOURS_PER_WEEK,
                 ConstraintNature.SOFT,
@@ -95,7 +99,10 @@ class UnifiedObjectiveIntegrationTest {
             // Contraintes HARD critiques
             ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD),
             ConstraintConfig.of(
-                ConstraintType.MINIMUM_REST, ConstraintNature.HARD, ParameterKey.MIN_REST_HOURS.getKeyName(), 11),
+                ConstraintType.MINIMUM_REST,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_REST_HOURS.getKeyName(),
+                11),
 
             // Contraintes SOFT pour optimisation
             ConstraintConfig.of(
@@ -129,7 +136,10 @@ class UnifiedObjectiveIntegrationTest {
                 ParameterKey.MAX_HOURS_PER_WEEK.getKeyName(),
                 40 * 60),
             ConstraintConfig.of(
-                ConstraintType.MINIMUM_REST, ConstraintNature.HARD, ParameterKey.MIN_REST_HOURS.getKeyName(), 11));
+                ConstraintType.MINIMUM_REST,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_REST_HOURS.getKeyName(),
+                11));
 
     // When
     ShiftScheduler scheduler = buildSchedulerWithConfigs(configs);
@@ -146,7 +156,10 @@ class UnifiedObjectiveIntegrationTest {
         Arrays.asList(
             ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD), // -10
             ConstraintConfig.of(
-                ConstraintType.MINIMUM_REST, ConstraintNature.HARD, ParameterKey.MIN_REST_HOURS.getKeyName(), 11),
+                ConstraintType.MINIMUM_REST,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_REST_HOURS.getKeyName(),
+                11),
             ConstraintConfig.of(
                 ConstraintType.MAX_HOURS_PER_WEEK,
                 ConstraintNature.SOFT,

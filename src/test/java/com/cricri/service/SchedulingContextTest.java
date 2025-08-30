@@ -5,15 +5,16 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.HashMap;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.model.Week;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.Loader;
+import java.util.HashMap;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests unitaires pour SchedulingContext.
@@ -202,7 +203,11 @@ class SchedulingContextTest {
   void contextWithLargeDatasetTest() {
     // Test avec plus d'employés et de shifts
     List<Employee> largeTeam = TestDataFactory.createEmployees(8);
-    Week[] weeks = {SchedulingConfiguration.createWeek(0), SchedulingConfiguration.createWeek(1), SchedulingConfiguration.createWeek(2)};
+    Week[] weeks = {
+      SchedulingConfiguration.createWeek(0),
+      SchedulingConfiguration.createWeek(1),
+      SchedulingConfiguration.createWeek(2)
+    };
 
     List<Shift> largeShiftSet =
         List.of(

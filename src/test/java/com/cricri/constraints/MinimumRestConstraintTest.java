@@ -1,8 +1,7 @@
 package com.cricri.constraints;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import java.util.List;
-import org.junit.jupiter.api.Test;
+
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
@@ -13,6 +12,8 @@ import com.cricri.testutils.ConstraintTestBase;
 import com.cricri.testutils.SolverAssertions;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.sat.CpSolver;
+import java.util.List;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests unitaires pour MinimumRestConstraint.
@@ -27,9 +28,13 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
 
   @Override
   protected void setupSpecific() {
-    constraint = new MinimumRestConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_REST, ConstraintNature.HARD, ParameterKey.MIN_REST_HOURS.getKeyName(), minimumRestHours)
-    );
+    constraint =
+        new MinimumRestConstraint(
+            ConstraintConfig.of(
+                ConstraintType.MINIMUM_REST,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_REST_HOURS.getKeyName(),
+                minimumRestHours));
   }
 
   @Test
@@ -43,11 +48,15 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
   void noRestConflictWithNormalShiftsTest() {
     // Avec des shifts normaux (8h-16h) sur des jours différents, pas de conflit
     new MinimumCoverageConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
-    ).applyHardConstraint(context);
+            ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD))
+        .applyHardConstraint(context);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
-    ).applyHardConstraint(context);
+            ConstraintConfig.of(
+                ConstraintType.ASSIGNMENT_HOURS,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(),
+                5 * 60))
+        .applyHardConstraint(context);
     constraint.applyHardConstraint(context);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(context);
@@ -62,11 +71,15 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
     SchedulingContext conflictContext = createConflictingScenario();
 
     new MinimumCoverageConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
-    ).applyHardConstraint(conflictContext);
+            ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD))
+        .applyHardConstraint(conflictContext);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
-    ).applyHardConstraint(conflictContext);
+            ConstraintConfig.of(
+                ConstraintType.ASSIGNMENT_HOURS,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(),
+                5 * 60))
+        .applyHardConstraint(conflictContext);
     constraint.applyHardConstraint(conflictContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(conflictContext);
@@ -99,11 +112,15 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
         TestDataFactory.createContext(employees, consecutiveShifts);
 
     new MinimumCoverageConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
-    ).applyHardConstraint(adequateRestContext);
+            ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD))
+        .applyHardConstraint(adequateRestContext);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
-    ).applyHardConstraint(adequateRestContext);
+            ConstraintConfig.of(
+                ConstraintType.ASSIGNMENT_HOURS,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(),
+                5 * 60))
+        .applyHardConstraint(adequateRestContext);
     constraint.applyHardConstraint(adequateRestContext);
 
     // Une solution devrait exister car il y a assez de repos
@@ -128,11 +145,15 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
         TestDataFactory.createContext(employees, tooCloseShifts);
 
     new MinimumCoverageConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
-    ).applyHardConstraint(insufficientRestContext);
+            ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD))
+        .applyHardConstraint(insufficientRestContext);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
-    ).applyHardConstraint(insufficientRestContext);
+            ConstraintConfig.of(
+                ConstraintType.ASSIGNMENT_HOURS,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(),
+                5 * 60))
+        .applyHardConstraint(insufficientRestContext);
     constraint.applyHardConstraint(insufficientRestContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(insufficientRestContext);
@@ -150,17 +171,25 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
   @Test
   void differentRestPeriodsTest() {
     // Tester avec un repos plus strict (16h) mais sur un scénario plus simple
-    MinimumRestConstraint strictConstraint = new MinimumRestConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_REST, ConstraintNature.HARD, ParameterKey.MIN_REST_HOURS.getKeyName(), 16)
-    );
+    MinimumRestConstraint strictConstraint =
+        new MinimumRestConstraint(
+            ConstraintConfig.of(
+                ConstraintType.MINIMUM_REST,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_REST_HOURS.getKeyName(),
+                16));
 
     // Utiliser un contexte plus simple qui devrait être faisable
     new MinimumCoverageConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
-    ).applyHardConstraint(context);
+            ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD))
+        .applyHardConstraint(context);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
-    ).applyHardConstraint(context);
+            ConstraintConfig.of(
+                ConstraintType.ASSIGNMENT_HOURS,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(),
+                5 * 60))
+        .applyHardConstraint(context);
     strictConstraint.applyHardConstraint(context);
 
     // Vérifier que le contexte standard reste faisable avec repos strict
@@ -173,9 +202,13 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
   @Test
   void restConstraintWithFlexibleRestPeriodTest() {
     // Tester avec un repos plus souple (8h)
-    MinimumRestConstraint flexibleConstraint = new MinimumRestConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_REST, ConstraintNature.HARD, ParameterKey.MIN_REST_HOURS.getKeyName(), 8)
-    );
+    MinimumRestConstraint flexibleConstraint =
+        new MinimumRestConstraint(
+            ConstraintConfig.of(
+                ConstraintType.MINIMUM_REST,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_REST_HOURS.getKeyName(),
+                8));
 
     List<Shift> flexibleShifts =
         List.of(
@@ -189,11 +222,15 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
     SchedulingContext flexibleContext = TestDataFactory.createContext(employees, flexibleShifts);
 
     new MinimumCoverageConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
-    ).applyHardConstraint(flexibleContext);
+            ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD))
+        .applyHardConstraint(flexibleContext);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
-    ).applyHardConstraint(flexibleContext);
+            ConstraintConfig.of(
+                ConstraintType.ASSIGNMENT_HOURS,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(),
+                5 * 60))
+        .applyHardConstraint(flexibleContext);
     flexibleConstraint.applyHardConstraint(flexibleContext);
 
     // Devrait être faisable avec repos flexible
@@ -211,11 +248,15 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
             manyEmployees, TestDataFactory.createConflictingShifts(week1));
 
     new MinimumCoverageConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
-    ).applyHardConstraint(multiEmployeeContext);
+            ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD))
+        .applyHardConstraint(multiEmployeeContext);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
-    ).applyHardConstraint(multiEmployeeContext);
+            ConstraintConfig.of(
+                ConstraintType.ASSIGNMENT_HOURS,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(),
+                5 * 60))
+        .applyHardConstraint(multiEmployeeContext);
     constraint.applyHardConstraint(multiEmployeeContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(multiEmployeeContext);
@@ -253,11 +294,15 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
     SchedulingContext nightContext = TestDataFactory.createContext(employees, nightShifts);
 
     new MinimumCoverageConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
-    ).applyHardConstraint(nightContext);
+            ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD))
+        .applyHardConstraint(nightContext);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
-    ).applyHardConstraint(nightContext);
+            ConstraintConfig.of(
+                ConstraintType.ASSIGNMENT_HOURS,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(),
+                5 * 60))
+        .applyHardConstraint(nightContext);
     constraint.applyHardConstraint(nightContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(nightContext);
@@ -285,11 +330,15 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
     SchedulingContext weekendContext = TestDataFactory.createContext(employees, weekendShifts);
 
     new MinimumCoverageConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
-    ).applyHardConstraint(weekendContext);
+            ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD))
+        .applyHardConstraint(weekendContext);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
-    ).applyHardConstraint(weekendContext);
+            ConstraintConfig.of(
+                ConstraintType.ASSIGNMENT_HOURS,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(),
+                5 * 60))
+        .applyHardConstraint(weekendContext);
     constraint.applyHardConstraint(weekendContext);
 
     // Devrait être faisable car weekend = beaucoup de repos

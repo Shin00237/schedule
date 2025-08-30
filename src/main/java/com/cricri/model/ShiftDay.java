@@ -1,7 +1,7 @@
 package com.cricri.model;
 
-import java.time.DayOfWeek;
 import com.cricri.constants.Constants;
+import java.time.DayOfWeek;
 
 public record ShiftDay(
     int dayNumber, // 0-indexé (0-6 dans la semaine, global pour les contraintes)

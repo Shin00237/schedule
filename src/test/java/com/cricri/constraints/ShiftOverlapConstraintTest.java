@@ -3,11 +3,7 @@ package com.cricri.constraints;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.time.Duration;
-import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.List;
-import org.junit.jupiter.api.Test;
+
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
@@ -24,13 +20,18 @@ import com.cricri.testutils.SolverAssertions;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.sat.CpSolver;
 import com.google.ortools.sat.CpSolverStatus;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests pour la contrainte de chevauchement entre shifts.
  *
- * <p>Cette contrainte s'applique aux shifts qui se chevauchent temporellement
- * pour garantir qu'au moins N employés soient présents dans les deux shifts
- * pendant la période de chevauchement pour assurer la transmission d'informations.
+ * <p>Cette contrainte s'applique aux shifts qui se chevauchent temporellement pour garantir qu'au
+ * moins N employés soient présents dans les deux shifts pendant la période de chevauchement pour
+ * assurer la transmission d'informations.
  */
 class ShiftOverlapConstraintTest extends ConstraintTestBase {
 
@@ -39,8 +40,11 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
     // Given
     ShiftOverlapConstraint constraint =
         new ShiftOverlapConstraint(
-            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(), 1)
-        );
+            ConstraintConfig.of(
+                ConstraintType.SHIFT_OVERLAP,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(),
+                1));
 
     // Then
     constraintPropertiesTest(constraint);
@@ -55,11 +59,21 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
     ShiftDay monday = week.getDay(0);
 
     // Shift du matin 8h-13h
-    ShiftType morningType = new ShiftType("MATIN", LocalTime.of(8, 0), LocalTime.of(13, 0), Duration.ofMinutes(0)); // 8h-13h, 5h effectives
+    ShiftType morningType =
+        new ShiftType(
+            "MATIN",
+            LocalTime.of(8, 0),
+            LocalTime.of(13, 0),
+            Duration.ofMinutes(0)); // 8h-13h, 5h effectives
     Shift morningShift = new Shift("morning", monday, morningType, 2, 2);
 
     // Shift d'après-midi 12h-17h (chevauchement 12h-13h)
-    ShiftType afternoonType = new ShiftType("APREM", LocalTime.of(12, 0), LocalTime.of(17, 0), Duration.ofMinutes(0)); // 12h-17h, 5h effectives
+    ShiftType afternoonType =
+        new ShiftType(
+            "APREM",
+            LocalTime.of(12, 0),
+            LocalTime.of(17, 0),
+            Duration.ofMinutes(0)); // 12h-17h, 5h effectives
     Shift afternoonShift = new Shift("afternoon", monday, afternoonType, 2, 2);
 
     List<Shift> overlappingShifts = Arrays.asList(morningShift, afternoonShift);
@@ -67,8 +81,11 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
 
     ShiftOverlapConstraint constraint =
         new ShiftOverlapConstraint(
-            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(), 1)
-        ); // 1 employé dans les deux shifts
+            ConstraintConfig.of(
+                ConstraintType.SHIFT_OVERLAP,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(),
+                1)); // 1 employé dans les deux shifts
 
     // When - Appliquer la contrainte HARD
     constraint.applyHardConstraint(context);
@@ -87,11 +104,15 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
     ShiftDay monday = week.getDay(0);
 
     // Shift du matin 8h-12h
-    ShiftType morningType = new ShiftType("MATIN", LocalTime.of(8, 0), LocalTime.of(12, 0), Duration.ofMinutes(0)); // 8h-12h
+    ShiftType morningType =
+        new ShiftType(
+            "MATIN", LocalTime.of(8, 0), LocalTime.of(12, 0), Duration.ofMinutes(0)); // 8h-12h
     Shift morningShift = new Shift("morning", monday, morningType, 2, 2);
 
     // Shift du soir 18h-22h (gap de 6h, pas de chevauchement)
-    ShiftType eveningType = new ShiftType("SOIR", LocalTime.of(18, 0), LocalTime.of(22, 0), Duration.ofMinutes(0)); // 18h-22h
+    ShiftType eveningType =
+        new ShiftType(
+            "SOIR", LocalTime.of(18, 0), LocalTime.of(22, 0), Duration.ofMinutes(0)); // 18h-22h
     Shift eveningShift = new Shift("evening", monday, eveningType, 2, 2);
 
     List<Shift> separateShifts = Arrays.asList(morningShift, eveningShift);
@@ -99,8 +120,11 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
 
     ShiftOverlapConstraint constraint =
         new ShiftOverlapConstraint(
-            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(), 1)
-        );
+            ConstraintConfig.of(
+                ConstraintType.SHIFT_OVERLAP,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(),
+                1));
 
     // When
     constraint.applyHardConstraint(context);
@@ -119,23 +143,33 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
     ShiftDay monday = week.getDay(0);
 
     // Shift du matin 8h-13h (3 employés exactement)
-    ShiftType morningType = new ShiftType("MATIN", LocalTime.of(8, 0), LocalTime.of(13, 0), Duration.ofMinutes(0));
+    ShiftType morningType =
+        new ShiftType("MATIN", LocalTime.of(8, 0), LocalTime.of(13, 0), Duration.ofMinutes(0));
     Shift morningShift = new Shift("morning", monday, morningType, 3, 3);
 
     // Shift d'après-midi 12h-17h chevauchant (3 employés exactement)
-    ShiftType afternoonType = new ShiftType("APREM", LocalTime.of(12, 0), LocalTime.of(17, 0), Duration.ofMinutes(0)); // 12h-17h, chevauche 12h-13h
+    ShiftType afternoonType =
+        new ShiftType(
+            "APREM",
+            LocalTime.of(12, 0),
+            LocalTime.of(17, 0),
+            Duration.ofMinutes(0)); // 12h-17h, chevauche 12h-13h
     Shift afternoonShift = new Shift("afternoon", monday, afternoonType, 3, 3);
 
     // On a seulement 4 employés au total, mais on veut 5 employés dans les deux shifts
     List<Employee> totalEmployees = TestDataFactory.createEmployees(4);
     List<Employee> limitedEmployees = totalEmployees.subList(0, 4);
     List<Shift> impossibleShifts = Arrays.asList(morningShift, afternoonShift);
-    SchedulingContext impossibleContext = TestDataFactory.createContext(limitedEmployees, impossibleShifts);
+    SchedulingContext impossibleContext =
+        TestDataFactory.createContext(limitedEmployees, impossibleShifts);
 
     ShiftOverlapConstraint constraint =
         new ShiftOverlapConstraint(
-            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(), 5)
-        ); // 5 employés dans les deux shifts (impossible)
+            ConstraintConfig.of(
+                ConstraintType.SHIFT_OVERLAP,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(),
+                5)); // 5 employés dans les deux shifts (impossible)
 
     // When/Then - Devrait rendre le scénario infaisable
     testConstraintMakesScenarioInfeasible(
@@ -151,11 +185,13 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
     ShiftDay monday = week.getDay(0);
 
     // Shift du matin 8h-13h
-    ShiftType morningType = new ShiftType("MATIN", LocalTime.of(8, 0), LocalTime.of(13, 0), Duration.ofMinutes(0));
+    ShiftType morningType =
+        new ShiftType("MATIN", LocalTime.of(8, 0), LocalTime.of(13, 0), Duration.ofMinutes(0));
     Shift morningShift = new Shift("morning", monday, morningType, 2, 2);
 
     // Shift d'après-midi 12h-17h (chevauchement 12h-13h)
-    ShiftType afternoonType = new ShiftType("APREM", LocalTime.of(12, 0), LocalTime.of(17, 0), Duration.ofMinutes(0));
+    ShiftType afternoonType =
+        new ShiftType("APREM", LocalTime.of(12, 0), LocalTime.of(17, 0), Duration.ofMinutes(0));
     Shift afternoonShift = new Shift("afternoon", monday, afternoonType, 2, 2);
 
     List<Shift> overlappingShifts = Arrays.asList(morningShift, afternoonShift);
@@ -163,10 +199,12 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
     ObjectiveCollector collector = new ObjectiveCollector();
     ConstraintConfig config =
         ConstraintConfig.of(
-            ConstraintType.SHIFT_OVERLAP, ConstraintNature.SOFT, ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(), 1);
+            ConstraintType.SHIFT_OVERLAP,
+            ConstraintNature.SOFT,
+            ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(),
+            1);
 
-    ShiftOverlapConstraint constraint =
-        new ShiftOverlapConstraint(config);
+    ShiftOverlapConstraint constraint = new ShiftOverlapConstraint(config);
 
     // When
     constraint.applySoftConstraint(context, collector);
@@ -183,11 +221,13 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
     ShiftDay monday = week.getDay(0);
 
     // Shift du matin 8h-13h
-    ShiftType morningType = new ShiftType("MATIN", LocalTime.of(8, 0), LocalTime.of(13, 0), Duration.ofMinutes(0));
+    ShiftType morningType =
+        new ShiftType("MATIN", LocalTime.of(8, 0), LocalTime.of(13, 0), Duration.ofMinutes(0));
     Shift morningShift = new Shift("morning", monday, morningType, 2, 2);
 
     // Shift d'après-midi 12h-17h (chevauchement 12h-13h)
-    ShiftType afternoonType = new ShiftType("APREM", LocalTime.of(12, 0), LocalTime.of(17, 0), Duration.ofMinutes(0));
+    ShiftType afternoonType =
+        new ShiftType("APREM", LocalTime.of(12, 0), LocalTime.of(17, 0), Duration.ofMinutes(0));
     Shift afternoonShift = new Shift("afternoon", monday, afternoonType, 2, 2);
 
     List<Shift> shifts = Arrays.asList(morningShift, afternoonShift);
@@ -196,8 +236,11 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
 
     ShiftOverlapConstraint constraint =
         new ShiftOverlapConstraint(
-            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.SOFT, ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(), 1)
-        ); // 1 employé dans les deux shifts
+            ConstraintConfig.of(
+                ConstraintType.SHIFT_OVERLAP,
+                ConstraintNature.SOFT,
+                ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(),
+                1)); // 1 employé dans les deux shifts
 
     // When
     constraint.applySoftConstraint(context, collector);
@@ -216,11 +259,17 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
     ShiftDay monday = week.getDay(0);
 
     // Shift du matin 8h-13h (3 employés)
-    ShiftType morningType = new ShiftType("MATIN", LocalTime.of(8, 0), LocalTime.of(13, 0), Duration.ofMinutes(0));
+    ShiftType morningType =
+        new ShiftType("MATIN", LocalTime.of(8, 0), LocalTime.of(13, 0), Duration.ofMinutes(0));
     Shift morningShift = new Shift("morning", monday, morningType, 3, 3);
 
     // Shift d'après-midi 12h-17h chevauchant (3 employés)
-    ShiftType afternoonType = new ShiftType("APREM", LocalTime.of(12, 0), LocalTime.of(17, 0), Duration.ofMinutes(0)); // 12h-17h, chevauche 12h-13h
+    ShiftType afternoonType =
+        new ShiftType(
+            "APREM",
+            LocalTime.of(12, 0),
+            LocalTime.of(17, 0),
+            Duration.ofMinutes(0)); // 12h-17h, chevauche 12h-13h
     Shift afternoonShift = new Shift("afternoon", monday, afternoonType, 3, 3);
 
     List<Shift> shifts = Arrays.asList(morningShift, afternoonShift);
@@ -228,8 +277,11 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
 
     ShiftOverlapConstraint constraint =
         new ShiftOverlapConstraint(
-            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(), 2)
-        ); // 2 employés dans les deux shifts
+            ConstraintConfig.of(
+                ConstraintType.SHIFT_OVERLAP,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(),
+                2)); // 2 employés dans les deux shifts
 
     // When
     constraint.applyHardConstraint(context);
@@ -249,11 +301,15 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
     ShiftDay tuesday = week.getDay(1);
 
     // Shift de fin lundi 20h-23h59
-    ShiftType mondayType = new ShiftType("LUNDI", LocalTime.of(20, 0), LocalTime.of(23, 59), Duration.ofMinutes(0)); // 20h-23h59
+    ShiftType mondayType =
+        new ShiftType(
+            "LUNDI", LocalTime.of(20, 0), LocalTime.of(23, 59), Duration.ofMinutes(0)); // 20h-23h59
     Shift mondayShift = new Shift("monday", monday, mondayType, 2, 2);
 
     // Shift de début mardi 0h-4h (pas de chevauchement)
-    ShiftType tuesdayType = new ShiftType("MARDI", LocalTime.of(0, 0), LocalTime.of(4, 0), Duration.ofMinutes(0)); // 00h-04h
+    ShiftType tuesdayType =
+        new ShiftType(
+            "MARDI", LocalTime.of(0, 0), LocalTime.of(4, 0), Duration.ofMinutes(0)); // 00h-04h
     Shift tuesdayShift = new Shift("tuesday", tuesday, tuesdayType, 2, 2);
 
     List<Shift> differentDayShifts = Arrays.asList(mondayShift, tuesdayShift);
@@ -261,8 +317,11 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
 
     ShiftOverlapConstraint constraint =
         new ShiftOverlapConstraint(
-            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(), 1)
-        );
+            ConstraintConfig.of(
+                ConstraintType.SHIFT_OVERLAP,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(),
+                1));
 
     // When
     constraint.applyHardConstraint(context);
@@ -281,22 +340,35 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
     ShiftDay monday = week.getDay(0);
 
     // Shifts qui se chevauchent de 12h30 à 13h
-    ShiftType type1 = new ShiftType("TYPE1", LocalTime.of(8, 0), LocalTime.of(13, 0), Duration.ofMinutes(0)); // 8h-13h
+    ShiftType type1 =
+        new ShiftType(
+            "TYPE1", LocalTime.of(8, 0), LocalTime.of(13, 0), Duration.ofMinutes(0)); // 8h-13h
     Shift shift1 = new Shift("shift1", monday, type1, 2, 2);
 
-    ShiftType type2 = new ShiftType("TYPE2", LocalTime.of(12, 30), LocalTime.of(17, 30), Duration.ofMinutes(0)); // 12h30-17h30 (chevauche avec shift1)
+    ShiftType type2 =
+        new ShiftType(
+            "TYPE2",
+            LocalTime.of(12, 30),
+            LocalTime.of(17, 30),
+            Duration.ofMinutes(0)); // 12h30-17h30 (chevauche avec shift1)
     Shift shift2 = new Shift("shift2", monday, type2, 2, 2);
 
     // Shift qui ne chevauche avec aucun autre
-    ShiftType type3 = new ShiftType("TYPE3", LocalTime.of(18, 0), LocalTime.of(22, 0), Duration.ofMinutes(0)); // 18h-22h
+    ShiftType type3 =
+        new ShiftType(
+            "TYPE3", LocalTime.of(18, 0), LocalTime.of(22, 0), Duration.ofMinutes(0)); // 18h-22h
     Shift shift3 = new Shift("shift3", monday, type3, 2, 2);
 
     List<Shift> mixedShifts = Arrays.asList(shift1, shift2, shift3);
     SchedulingContext context = TestDataFactory.createContext(employees, mixedShifts);
 
-    ShiftOverlapConstraint constraint = new ShiftOverlapConstraint(
-        ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(), 1)
-    );
+    ShiftOverlapConstraint constraint =
+        new ShiftOverlapConstraint(
+            ConstraintConfig.of(
+                ConstraintType.SHIFT_OVERLAP,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_OVERLAP_EMPLOYEES.getKeyName(),
+                1));
 
     // When
     constraint.applyHardConstraint(context);

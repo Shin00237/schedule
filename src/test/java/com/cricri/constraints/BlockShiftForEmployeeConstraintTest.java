@@ -1,9 +1,7 @@
 package com.cricri.constraints;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import java.util.List;
-import java.util.Map;
-import org.junit.jupiter.api.Test;
+
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
@@ -16,6 +14,9 @@ import com.cricri.testutils.ConstraintTestBase;
 import com.cricri.testutils.SolverAssertions;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.sat.CpSolver;
+import java.util.List;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests unitaires pour BlockShiftForEmployeeConstraint.
@@ -31,16 +32,18 @@ class BlockShiftForEmployeeConstraintTest extends ConstraintTestBase {
     // Créer plus d'employés pour permettre la couverture des shifts
     employees = TestDataFactory.createEmployees(4); // E1 à E4
     context = TestDataFactory.createContext(employees, shifts);
-    
-    // Cas nominal : bloquer l'employé E1 sur les shifts "Lundi-NORMAL" et "Mardi-NORMAL"
-    Map<String, List<String>> blockedAssignments = Map.of(
-        "E1", List.of("Lundi-NORMAL", "Mardi-NORMAL")
-    );
 
-    constraint = new BlockShiftForEmployeeConstraint(
-        ConstraintConfig.of(ConstraintType.BLOCKED_SHIFT_EMPLOYEE, ConstraintNature.HARD,
-                          ParameterKey.BLOCKED_ASSIGNMENTS.getKeyName(), blockedAssignments)
-    );
+    // Cas nominal : bloquer l'employé E1 sur les shifts "Lundi-NORMAL" et "Mardi-NORMAL"
+    Map<String, List<String>> blockedAssignments =
+        Map.of("E1", List.of("Lundi-NORMAL", "Mardi-NORMAL"));
+
+    constraint =
+        new BlockShiftForEmployeeConstraint(
+            ConstraintConfig.of(
+                ConstraintType.BLOCKED_SHIFT_EMPLOYEE,
+                ConstraintNature.HARD,
+                ParameterKey.BLOCKED_ASSIGNMENTS.getKeyName(),
+                blockedAssignments));
   }
 
   @Test
@@ -53,11 +56,11 @@ class BlockShiftForEmployeeConstraintTest extends ConstraintTestBase {
   void basicBlockShiftForEmployeeConstraintTest() {
     // Appliquer la contrainte de blocage
     constraint.applyHardConstraint(context);
-    
+
     // Ajouter contrainte de couverture minimum pour forcer l'assignation des autres employés
-    MinimumCoverageConstraint coverage = new MinimumCoverageConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
-    );
+    MinimumCoverageConstraint coverage =
+        new MinimumCoverageConstraint(
+            ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD));
     coverage.applyHardConstraint(context);
 
     // Vérifier qu'une solution existe
@@ -74,25 +77,28 @@ class BlockShiftForEmployeeConstraintTest extends ConstraintTestBase {
   @Test
   void multipleEmployeesBlockedTest() {
     // Bloquer plusieurs employés sur différents shifts
-    Map<String, List<String>> multipleBlocks = Map.of(
-        "E1", List.of("Lundi-NORMAL"),
-        "E2", List.of("Mardi-NORMAL", "Mercredi-NORMAL"),
-        "E3", List.of("Jeudi-NORMAL")
-    );
+    Map<String, List<String>> multipleBlocks =
+        Map.of(
+            "E1", List.of("Lundi-NORMAL"),
+            "E2", List.of("Mardi-NORMAL", "Mercredi-NORMAL"),
+            "E3", List.of("Jeudi-NORMAL"));
 
-    BlockShiftForEmployeeConstraint multiConstraint = new BlockShiftForEmployeeConstraint(
-        ConstraintConfig.of(ConstraintType.BLOCKED_SHIFT_EMPLOYEE, ConstraintNature.HARD,
-                          ParameterKey.BLOCKED_ASSIGNMENTS.getKeyName(), multipleBlocks)
-    );
+    BlockShiftForEmployeeConstraint multiConstraint =
+        new BlockShiftForEmployeeConstraint(
+            ConstraintConfig.of(
+                ConstraintType.BLOCKED_SHIFT_EMPLOYEE,
+                ConstraintNature.HARD,
+                ParameterKey.BLOCKED_ASSIGNMENTS.getKeyName(),
+                multipleBlocks));
 
     multiConstraint.applyHardConstraint(context);
-    
+
     // Ajouter contrainte de couverture minimum
-    MinimumCoverageConstraint coverage = new MinimumCoverageConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
-    );
+    MinimumCoverageConstraint coverage =
+        new MinimumCoverageConstraint(
+            ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD));
     coverage.applyHardConstraint(context);
-    
+
     CpSolver solver = SolverAssertions.solveAndAssertSolution(context);
 
     // Vérifier tous les blocages
@@ -109,19 +115,22 @@ class BlockShiftForEmployeeConstraintTest extends ConstraintTestBase {
     // Tester avec une map vide (aucun blocage)
     Map<String, List<String>> noBlocks = Map.of();
 
-    BlockShiftForEmployeeConstraint noBlockConstraint = new BlockShiftForEmployeeConstraint(
-        ConstraintConfig.of(ConstraintType.BLOCKED_SHIFT_EMPLOYEE, ConstraintNature.HARD,
-                          ParameterKey.BLOCKED_ASSIGNMENTS.getKeyName(), noBlocks)
-    );
+    BlockShiftForEmployeeConstraint noBlockConstraint =
+        new BlockShiftForEmployeeConstraint(
+            ConstraintConfig.of(
+                ConstraintType.BLOCKED_SHIFT_EMPLOYEE,
+                ConstraintNature.HARD,
+                ParameterKey.BLOCKED_ASSIGNMENTS.getKeyName(),
+                noBlocks));
 
     noBlockConstraint.applyHardConstraint(context);
-    
+
     // Ajouter contrainte de couverture minimum
-    MinimumCoverageConstraint coverage = new MinimumCoverageConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
-    );
+    MinimumCoverageConstraint coverage =
+        new MinimumCoverageConstraint(
+            ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD));
     coverage.applyHardConstraint(context);
-    
+
     CpSolver solver = SolverAssertions.solveAndAssertSolution(context);
 
     // Tous les shifts devraient pouvoir être couverts normalement
@@ -131,23 +140,24 @@ class BlockShiftForEmployeeConstraintTest extends ConstraintTestBase {
   @Test
   void softConstraintPreferenceTest() {
     // Test version SOFT : préférence de non-assignation mais pas interdiction
-    Map<String, List<String>> preferredBlocks = Map.of(
-        "E1", List.of("Lundi-NORMAL")
-    );
+    Map<String, List<String>> preferredBlocks = Map.of("E1", List.of("Lundi-NORMAL"));
 
-    BlockShiftForEmployeeConstraint softConstraint = new BlockShiftForEmployeeConstraint(
-        ConstraintConfig.of(ConstraintType.BLOCKED_SHIFT_EMPLOYEE, ConstraintNature.SOFT,
-                          ParameterKey.BLOCKED_ASSIGNMENTS.getKeyName(), preferredBlocks)
-    );
+    BlockShiftForEmployeeConstraint softConstraint =
+        new BlockShiftForEmployeeConstraint(
+            ConstraintConfig.of(
+                ConstraintType.BLOCKED_SHIFT_EMPLOYEE,
+                ConstraintNature.SOFT,
+                ParameterKey.BLOCKED_ASSIGNMENTS.getKeyName(),
+                preferredBlocks));
 
     // Appliquer seulement la contrainte SOFT (pas de HARD)
     ObjectiveCollector collector = new ObjectiveCollector();
     softConstraint.applySoftConstraint(context, collector);
-    
+
     // Ajouter contrainte de couverture minimum pour forcer assignations
-    MinimumCoverageConstraint coverage = new MinimumCoverageConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
-    );
+    MinimumCoverageConstraint coverage =
+        new MinimumCoverageConstraint(
+            ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD));
     coverage.applyHardConstraint(context);
 
     // Finaliser l'objectif et résoudre
@@ -158,7 +168,7 @@ class BlockShiftForEmployeeConstraintTest extends ConstraintTestBase {
 
     // Vérifier que tous les shifts sont couverts (contrainte HARD respectée)
     SolverAssertions.assertAllShiftsCovered(solver, context.getAssignments(), shifts);
-    
+
     // La contrainte SOFT devrait avoir influencé l'optimisation
     // Si possible, E1 devrait éviter le Lundi-NORMAL, mais ce n'est pas garanti
     // Le test vérifie surtout que la solution reste faisable
@@ -168,48 +178,50 @@ class BlockShiftForEmployeeConstraintTest extends ConstraintTestBase {
   void infeasibleScenarioTest() {
     // Scénario impossible : bloquer tous les employés sur un shift qui ne peut être couvert
     List<Employee> twoEmployees = TestDataFactory.createEmployees(2);
-    List<Shift> oneShift = List.of(
-        new Shift("CriticalShift", week1.getDay(0), TestDataFactory.NORMAL_SHIFT, 1, 1)
-    );
+    List<Shift> oneShift =
+        List.of(new Shift("CriticalShift", week1.getDay(0), TestDataFactory.NORMAL_SHIFT, 1, 1));
 
     // Bloquer les 2 employés sur le seul shift
-    Map<String, List<String>> impossibleBlocks = Map.of(
-        "E1", List.of("CriticalShift"),
-        "E2", List.of("CriticalShift")
-    );
+    Map<String, List<String>> impossibleBlocks =
+        Map.of(
+            "E1", List.of("CriticalShift"),
+            "E2", List.of("CriticalShift"));
 
     SchedulingContext impossibleContext = TestDataFactory.createContext(twoEmployees, oneShift);
 
-    BlockShiftForEmployeeConstraint impossibleConstraint = new BlockShiftForEmployeeConstraint(
-        ConstraintConfig.of(ConstraintType.BLOCKED_SHIFT_EMPLOYEE, ConstraintNature.HARD,
-                          ParameterKey.BLOCKED_ASSIGNMENTS.getKeyName(), impossibleBlocks)
-    );
-    
+    BlockShiftForEmployeeConstraint impossibleConstraint =
+        new BlockShiftForEmployeeConstraint(
+            ConstraintConfig.of(
+                ConstraintType.BLOCKED_SHIFT_EMPLOYEE,
+                ConstraintNature.HARD,
+                ParameterKey.BLOCKED_ASSIGNMENTS.getKeyName(),
+                impossibleBlocks));
+
     // Appliquer les deux contraintes pour rendre le scénario infaisable
     impossibleConstraint.applyHardConstraint(impossibleContext);
-    
+
     // Ajouter contrainte de couverture minimum - rend le scénario impossible
-    MinimumCoverageConstraint coverage = new MinimumCoverageConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
-    );
+    MinimumCoverageConstraint coverage =
+        new MinimumCoverageConstraint(
+            ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD));
     coverage.applyHardConstraint(impossibleContext);
-    
+
     // Maintenant le scénario devrait être infaisable
     SolverAssertions.assertNoSolutionExists(
-        solver, 
+        solver,
         impossibleContext.getModel(),
-        "Tous les employés sont bloqués sur le seul shift disponible, mais celui-ci doit être couvert"
-    );
+        "Tous les employés sont bloqués sur le seul shift disponible, mais celui-ci doit être couvert");
   }
 
-  /**
-   * Utilitaire pour vérifier qu'un employé n'est pas assigné à un shift.
-   */
-  private void assertEmployeeNotAssignedToShift(CpSolver solver, String employeeId, String shiftId) {
+  /** Utilitaire pour vérifier qu'un employé n'est pas assigné à un shift. */
+  private void assertEmployeeNotAssignedToShift(
+      CpSolver solver, String employeeId, String shiftId) {
     int employeeIndex = getEmployeeIndex(employeeId);
     int shiftIndex = getShiftIndex(shiftId);
 
-    assertEquals(0, solver.value(context.getAssignments()[employeeIndex][shiftIndex]),
+    assertEquals(
+        0,
+        solver.value(context.getAssignments()[employeeIndex][shiftIndex]),
         String.format("L'employé %s ne devrait pas être assigné au shift %s", employeeId, shiftId));
   }
 

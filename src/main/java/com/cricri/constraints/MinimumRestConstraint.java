@@ -93,9 +93,11 @@ public class MinimumRestConstraint implements Constraint {
     Shift shift2 = context.getShifts().get(shiftIndex2);
 
     // Calculer les temps absolus en minutes depuis le début de la période
-    int startTime1 = calculateAbsoluteTime(shift1.day(), shift1.type().heureDebut().toSecondOfDay() / 60);
+    int startTime1 =
+        calculateAbsoluteTime(shift1.day(), shift1.type().heureDebut().toSecondOfDay() / 60);
     int endTime1 = calculateAbsoluteEndTime(shift1);
-    int startTime2 = calculateAbsoluteTime(shift2.day(), shift2.type().heureDebut().toSecondOfDay() / 60);
+    int startTime2 =
+        calculateAbsoluteTime(shift2.day(), shift2.type().heureDebut().toSecondOfDay() / 60);
     int endTime2 = calculateAbsoluteEndTime(shift2);
 
     // Cas 1: Chevauchement - si les shifts se chevauchent temporellement
@@ -125,7 +127,7 @@ public class MinimumRestConstraint implements Constraint {
   private int calculateAbsoluteEndTime(Shift shift) {
     int startMinutes = shift.type().heureDebut().toSecondOfDay() / 60;
     int endMinutes = shift.type().heureFin().toSecondOfDay() / 60;
-    
+
     // Si l'heure de fin est plus petite que l'heure de début, le shift traverse minuit
     if (endMinutes < startMinutes) {
       // L'heure de fin est le jour suivant

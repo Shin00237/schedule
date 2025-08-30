@@ -1,6 +1,7 @@
 package com.cricri.service;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.time.DayOfWeek;
 import java.util.List;
 import org.junit.jupiter.api.Test;

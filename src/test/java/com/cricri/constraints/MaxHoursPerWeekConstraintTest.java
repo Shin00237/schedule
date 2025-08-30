@@ -2,13 +2,7 @@ package com.cricri.constraints;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.time.Duration;
-import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
@@ -22,6 +16,13 @@ import com.cricri.service.SchedulingContext;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
 import com.google.ortools.sat.CpSolverStatus;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class MaxHoursPerWeekConstraintTest {
 
@@ -40,7 +41,11 @@ class MaxHoursPerWeekConstraintTest {
 
     // Shifts sur 2 semaines pour tester la limite par semaine
     ShiftType normalShift =
-        new ShiftType("NORMAL", LocalTime.of(8, 0), LocalTime.of(16, 0), Duration.ofMinutes(45)); // 8h effectives (480-45=435min)
+        new ShiftType(
+            "NORMAL",
+            LocalTime.of(8, 0),
+            LocalTime.of(16, 0),
+            Duration.ofMinutes(45)); // 8h effectives (480-45=435min)
     Week week1 = SchedulingConfiguration.createWeek(0);
     Week week2 = SchedulingConfiguration.createWeek(1);
 
@@ -56,20 +61,28 @@ class MaxHoursPerWeekConstraintTest {
 
     // Contexte de test
     context = new SchedulingContext(employees, shifts, new HashMap<>());
-    constraint = new MaxHoursPerWeekConstraint(
-        ConstraintConfig.of(ConstraintType.MAX_HOURS_PER_WEEK, ConstraintNature.HARD, ParameterKey.MAX_HOURS_PER_WEEK.getKeyName(), maxHoursPerWeek)
-    );
+    constraint =
+        new MaxHoursPerWeekConstraint(
+            ConstraintConfig.of(
+                ConstraintType.MAX_HOURS_PER_WEEK,
+                ConstraintNature.HARD,
+                ParameterKey.MAX_HOURS_PER_WEEK.getKeyName(),
+                maxHoursPerWeek));
   }
 
   @Test
   void applyConstraintTest() {
     // Appliquer les contraintes nécessaires
     new MinimumCoverageConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
-    ).applyHardConstraint(context);
+            ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD))
+        .applyHardConstraint(context);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
-    ).applyHardConstraint(context);
+            ConstraintConfig.of(
+                ConstraintType.ASSIGNMENT_HOURS,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(),
+                5 * 60))
+        .applyHardConstraint(context);
     constraint.applyHardConstraint(context);
 
     // Résoudre
@@ -121,11 +134,15 @@ class MaxHoursPerWeekConstraintTest {
   void hoursCalculationTest() {
     // Appliquer les contraintes
     new MinimumCoverageConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
-    ).applyHardConstraint(context);
+            ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD))
+        .applyHardConstraint(context);
     new AssignmentHoursConstraint(
-        ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(), 5 * 60)
-    ).applyHardConstraint(context);
+            ConstraintConfig.of(
+                ConstraintType.ASSIGNMENT_HOURS,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_HOURS_PER_SHIFT.getKeyName(),
+                5 * 60))
+        .applyHardConstraint(context);
     constraint.applyHardConstraint(context);
 
     CpSolver solver = new CpSolver();

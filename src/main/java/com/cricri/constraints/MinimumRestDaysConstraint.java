@@ -44,7 +44,9 @@ public class MinimumRestDaysConstraint implements Constraint {
       for (int w = 0; w < context.getWorkingDaysPerWeek()[e].length; w++) {
         // Variable de violation : jours travaillés au-delà du maximum autorisé
         var violationVar =
-            context.getModel().newIntVar(0, Constants.DAYS_IN_A_WEEK, "rest_days_violation_e" + e + "_w" + w);
+            context
+                .getModel()
+                .newIntVar(0, Constants.DAYS_IN_A_WEEK, "rest_days_violation_e" + e + "_w" + w);
 
         // violationVar >= workingDays - maxWorkingDays
         context

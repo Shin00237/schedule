@@ -5,9 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
@@ -17,6 +15,9 @@ import com.cricri.model.Shift;
 import com.cricri.service.ObjectiveCollector;
 import com.cricri.service.SchedulingContext;
 import com.cricri.testutils.TestDataFactory;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests pour vérifier que les contraintes SOFT ajoutent correctement leurs violations à
@@ -42,8 +43,11 @@ class SoftConstraintViolationsTest {
     // Given - Configuration qui va probablement créer des violations
     MinimumRestDaysConstraint constraint =
         new MinimumRestDaysConstraint(
-            ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, ParameterKey.MIN_REST_DAYS_PER_WEEK.getKeyName(), 5)
-        );
+            ConstraintConfig.of(
+                ConstraintType.MINIMUM_REST_DAYS,
+                ConstraintNature.SOFT,
+                ParameterKey.MIN_REST_DAYS_PER_WEEK.getKeyName(),
+                5));
 
     int termsBefore = collector.getTermCount();
 
@@ -63,8 +67,11 @@ class SoftConstraintViolationsTest {
     // Given
     MinimumRestConstraint constraint =
         new MinimumRestConstraint(
-            ConstraintConfig.of(ConstraintType.MINIMUM_REST, ConstraintNature.SOFT, ParameterKey.MIN_REST_HOURS.getKeyName(), 12)
-        );
+            ConstraintConfig.of(
+                ConstraintType.MINIMUM_REST,
+                ConstraintNature.SOFT,
+                ParameterKey.MIN_REST_HOURS.getKeyName(),
+                12));
 
     int termsBefore = collector.getTermCount();
 
@@ -83,8 +90,11 @@ class SoftConstraintViolationsTest {
     // Given - Limite très basse pour forcer des violations
     MaxHoursPerWeekConstraint constraint =
         new MaxHoursPerWeekConstraint(
-            ConstraintConfig.of(ConstraintType.MAX_HOURS_PER_WEEK, ConstraintNature.SOFT, ParameterKey.MAX_HOURS_PER_WEEK.getKeyName(), 10 * 60)
-        );
+            ConstraintConfig.of(
+                ConstraintType.MAX_HOURS_PER_WEEK,
+                ConstraintNature.SOFT,
+                ParameterKey.MAX_HOURS_PER_WEEK.getKeyName(),
+                10 * 60));
 
     int termsBefore = collector.getTermCount();
 
@@ -105,9 +115,9 @@ class SoftConstraintViolationsTest {
     SchedulingContext limitedContext = TestDataFactory.createContext(fewEmployees, shifts);
     ObjectiveCollector limitedCollector = new ObjectiveCollector();
 
-    MinimumCoverageConstraint constraint = new MinimumCoverageConstraint(
-        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.SOFT)
-    );
+    MinimumCoverageConstraint constraint =
+        new MinimumCoverageConstraint(
+            ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.SOFT));
 
     // When
     constraint.applySoftConstraint(limitedContext, limitedCollector);
@@ -123,16 +133,25 @@ class SoftConstraintViolationsTest {
     // Given - Plusieurs contraintes SOFT qui vont toutes contribuer
     MinimumRestDaysConstraint restDaysConstraint =
         new MinimumRestDaysConstraint(
-            ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, ParameterKey.MIN_REST_DAYS_PER_WEEK.getKeyName(), 4)
-        );
+            ConstraintConfig.of(
+                ConstraintType.MINIMUM_REST_DAYS,
+                ConstraintNature.SOFT,
+                ParameterKey.MIN_REST_DAYS_PER_WEEK.getKeyName(),
+                4));
     MaxHoursPerWeekConstraint maxHoursConstraint =
         new MaxHoursPerWeekConstraint(
-            ConstraintConfig.of(ConstraintType.MAX_HOURS_PER_WEEK, ConstraintNature.SOFT, ParameterKey.MAX_HOURS_PER_WEEK.getKeyName(), 20 * 60)
-        );
+            ConstraintConfig.of(
+                ConstraintType.MAX_HOURS_PER_WEEK,
+                ConstraintNature.SOFT,
+                ParameterKey.MAX_HOURS_PER_WEEK.getKeyName(),
+                20 * 60));
     MaximizeWorkingHoursConstraint maximizeConstraint =
         new MaximizeWorkingHoursConstraint(
-            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(), 2)
-        );
+            ConstraintConfig.of(
+                ConstraintType.MAXIMIZE_WORKING_HOURS,
+                ConstraintNature.SOFT,
+                ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(),
+                2));
 
     // When - Appliquer toutes les contraintes au même collecteur
     restDaysConstraint.applySoftConstraint(context, collector);
@@ -161,8 +180,11 @@ class SoftConstraintViolationsTest {
     // Given - Les mêmes contraintes mais en mode HARD
     MinimumRestDaysConstraint hardConstraint =
         new MinimumRestDaysConstraint(
-            ConstraintConfig.of(ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.HARD, ParameterKey.MIN_REST_DAYS_PER_WEEK.getKeyName(), 2)
-        );
+            ConstraintConfig.of(
+                ConstraintType.MINIMUM_REST_DAYS,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_REST_DAYS_PER_WEEK.getKeyName(),
+                2));
 
     // When/Then - Les contraintes HARD ne devraient pas appeler applySoftConstraint
     // Elles utilisent applyHardConstraint à la place

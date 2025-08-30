@@ -105,7 +105,8 @@ public class ConstraintFactory {
   /**
    * Crée une contrainte de blocage d'employés sur des shifts spécifiques.
    *
-   * <p>Paramètres attendus : - "blockedAssignments" (Map&lt;String, List&lt;String&gt;&gt;) : Map employeeId → liste de shiftIds bloqués
+   * <p>Paramètres attendus : - "blockedAssignments" (Map&lt;String, List&lt;String&gt;&gt;) : Map
+   * employeeId → liste de shiftIds bloqués
    */
   private static Constraint createBlockShiftForEmployeeConstraint(ConstraintConfig config) {
     return new BlockShiftForEmployeeConstraint(config);

@@ -1,9 +1,9 @@
 package com.cricri.constraints.config;
 
-import java.util.Map;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.constraints.enums.ObjectiveWeight;
+import java.util.Map;
 
 /**
  * Configuration complète d'une contrainte dans le système de planification.
@@ -89,8 +89,6 @@ public record ConstraintConfig(
     return (T) value;
   }
 
-
-
   /**
    * Récupère le poids d'objectif pour les contraintes SOFT.
    *
@@ -114,7 +112,9 @@ public record ConstraintConfig(
       throw new ClassCastException(
           String.format(
               "Le paramètre '%s' devrait être de type %s mais est de type %s",
-              "objectiveWeight", ObjectiveWeight.class.getSimpleName(), value.getClass().getSimpleName()));
+              "objectiveWeight",
+              ObjectiveWeight.class.getSimpleName(),
+              value.getClass().getSimpleName()));
     }
     return (ObjectiveWeight) value;
   }

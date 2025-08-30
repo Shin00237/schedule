@@ -1,12 +1,5 @@
 package com.cricri.testutils;
 
-import java.time.Duration;
-import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.IntStream;
 import com.cricri.constants.Constants;
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.config.ParameterKey;
@@ -20,6 +13,13 @@ import com.cricri.model.Week;
 import com.cricri.service.SchedulingConfiguration;
 import com.cricri.service.SchedulingContext;
 import com.cricri.service.ShiftScheduler;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
 
 /**
  * Factory pour créer des données de test standardisées et réutilisables.
@@ -31,16 +31,32 @@ public class TestDataFactory {
 
   // Types de shifts standards
   public static final ShiftType NORMAL_SHIFT =
-      new ShiftType("NORMAL", LocalTime.of(8,0), LocalTime.of(16,0), Duration.ofMinutes(45)); // 8h-16h, 8h effectives, 45min pause
+      new ShiftType(
+          "NORMAL",
+          LocalTime.of(8, 0),
+          LocalTime.of(16, 0),
+          Duration.ofMinutes(45)); // 8h-16h, 8h effectives, 45min pause
 
   public static final ShiftType MORNING_SHIFT =
-      new ShiftType("MATIN", LocalTime.of(7, 0), LocalTime.of(15, 45),  Duration.ofMinutes(45)); // 7h-15h45, 8h45 effectives
+      new ShiftType(
+          "MATIN",
+          LocalTime.of(7, 0),
+          LocalTime.of(15, 45),
+          Duration.ofMinutes(45)); // 7h-15h45, 8h45 effectives
 
   public static final ShiftType EVENING_SHIFT =
-      new ShiftType("SOIR", LocalTime.of(15,0), LocalTime.of(23, 45),  Duration.ofMinutes(45)); // 15h-23h45, 8h45 effectives
+      new ShiftType(
+          "SOIR",
+          LocalTime.of(15, 0),
+          LocalTime.of(23, 45),
+          Duration.ofMinutes(45)); // 15h-23h45, 8h45 effectives
 
   public static final ShiftType NIGHT_SHIFT =
-      new ShiftType("NUIT", LocalTime.of(22, 30), LocalTime.of(7, 0), Duration.ofMinutes(30)); // 22h30-7h, 8h30 effectives
+      new ShiftType(
+          "NUIT",
+          LocalTime.of(22, 30),
+          LocalTime.of(7, 0),
+          Duration.ofMinutes(30)); // 22h30-7h, 8h30 effectives
 
   // Semaines de référence pour les tests
   public static final Week WEEK_1 = SchedulingConfiguration.createWeek(1);
@@ -290,9 +306,15 @@ public class TestDataFactory {
                 ParameterKey.MAX_HOURS_PER_WEEK.getKeyName(),
                 maxHoursPerWeek),
             ConstraintConfig.of(
-                ConstraintType.MINIMUM_REST, ConstraintNature.HARD, ParameterKey.MIN_REST_HOURS.getKeyName(), minRestHours),
+                ConstraintType.MINIMUM_REST,
+                ConstraintNature.HARD,
+                ParameterKey.MIN_REST_HOURS.getKeyName(),
+                minRestHours),
             ConstraintConfig.of(
-                ConstraintType.MINIMUM_REST_DAYS, ConstraintNature.SOFT, ParameterKey.MIN_REST_DAYS_PER_WEEK.getKeyName(), 1));
+                ConstraintType.MINIMUM_REST_DAYS,
+                ConstraintNature.SOFT,
+                ParameterKey.MIN_REST_DAYS_PER_WEEK.getKeyName(),
+                1));
 
     for (ConstraintConfig config : constraintConfigs) {
       scheduler.withConstraint(ConstraintFactory.create(config));
@@ -321,6 +343,8 @@ public class TestDataFactory {
    * @return Array de 2 semaines consécutives
    */
   public static Week[] createStandardWeeks() {
-    return new Week[] {SchedulingConfiguration.createWeek(0), SchedulingConfiguration.createWeek(1)};
+    return new Week[] {
+      SchedulingConfiguration.createWeek(0), SchedulingConfiguration.createWeek(1)
+    };
   }
 }

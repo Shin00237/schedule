@@ -46,15 +46,15 @@ public enum ConstraintType {
   MAXIMIZE_WORKING_HOURS,
 
   /**
-   * Garantit qu'un nombre minimum d'employés de chaque équipe soit présent pendant les périodes
-   * de chevauchement entre shifts pour assurer la transmission d'informations. Peut être HARD
+   * Garantit qu'un nombre minimum d'employés de chaque équipe soit présent pendant les périodes de
+   * chevauchement entre shifts pour assurer la transmission d'informations. Peut être HARD
    * (obligatoire) ou SOFT (optimisation).
    */
   SHIFT_OVERLAP,
 
   /**
-   * Empêche l'assignation d'employés spécifiques à des shifts spécifiques.
-   * Toujours utilisé comme contrainte HARD.
+   * Empêche l'assignation d'employés spécifiques à des shifts spécifiques. Toujours utilisé comme
+   * contrainte HARD.
    */
   BLOCKED_SHIFT_EMPLOYEE
 }

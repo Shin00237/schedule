@@ -1,9 +1,5 @@
 package com.cricri.testutils;
 
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.cricri.constraints.Constraint;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
@@ -11,6 +7,10 @@ import com.cricri.model.Week;
 import com.cricri.service.SchedulingContext;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Classe de base abstraite pour les tests de contraintes.

@@ -1,13 +1,6 @@
 package com.cricri;
 
-import java.time.Duration;
-import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import com.cricri.config.SolverConfiguration;
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
@@ -23,8 +16,19 @@ import com.cricri.service.ShiftScheduler;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
 import com.google.ortools.sat.CpSolverStatus;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
+@EnableConfigurationProperties(SolverConfiguration.class)
 public class ScheduleApplication {
 
   private static final Logger logger = LoggerFactory.getLogger(ScheduleApplication.class);
@@ -43,7 +47,8 @@ public class ScheduleApplication {
   };
 
   public static void main(String[] args) {
-    SpringApplication.run(ScheduleApplication.class, args);
+    ConfigurableApplicationContext context = SpringApplication.run(ScheduleApplication.class, args);
+    SolverConfiguration solverConfig = context.getBean(SolverConfiguration.class);
 
     // Charger les bibliothèques OR-Tools
     Loader.loadNativeLibraries();
@@ -59,10 +64,7 @@ public class ScheduleApplication {
 
     // Résoudre
     logger.info("\n=== Résolution ===");
-    CpSolver solver = new CpSolver();
-    solver.getParameters().setLogSearchProgress(true);
-    solver.getParameters().setCpModelPresolve(true);
-solver.getParameters().setCpModelProbingLevel(2);
+    CpSolver solver = configureSolver(solverConfig);
 
     CpSolverStatus status = solver.solve(scheduler.getModel());
 
@@ -76,7 +78,6 @@ solver.getParameters().setCpModelProbingLevel(2);
 
     // Afficher toutes les statistiques OR-Tools
     printSolverStatistics(solver, status);
-
   }
 
   private static ShiftScheduler createTestScheduler() {
@@ -89,10 +90,8 @@ solver.getParameters().setCpModelProbingLevel(2);
     List<Employee> employees = Arrays.asList(alice, bob, charlie, david, eva);
 
     // Créer des types de shift (avec 45 minutes de pause)
-    ShiftType matin =
-        new ShiftType("MATIN", HEURE_DEBUT_MATIN, HEURE_FIN_MATIN, DUREE_PAUSE);
-    ShiftType soir =
-        new ShiftType("SOIR", HEURE_DEBUT_SOIR, HEURE_FIN_SOIR, DUREE_PAUSE);
+    ShiftType matin = new ShiftType("MATIN", HEURE_DEBUT_MATIN, HEURE_FIN_MATIN, DUREE_PAUSE);
+    ShiftType soir = new ShiftType("SOIR", HEURE_DEBUT_SOIR, HEURE_FIN_SOIR, DUREE_PAUSE);
 
     // Créer une semaine
     Week week = SchedulingConfiguration.createWeek(0);
@@ -154,10 +153,10 @@ solver.getParameters().setCpModelProbingLevel(2);
                 ConstraintNature.SOFT,
                 ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(),
                 2)
-              // ConstraintConfig.of(
-              //   ConstraintType.SHIFT_OVERLAP,
-              //   ConstraintNature.HARD)
-                );
+            // ConstraintConfig.of(
+            //   ConstraintType.SHIFT_OVERLAP,
+            //   ConstraintNature.HARD)
+            );
 
     // Créer et ajouter toutes les contraintes
     for (ConstraintConfig config : constraintConfigs) {
@@ -165,6 +164,28 @@ solver.getParameters().setCpModelProbingLevel(2);
     }
 
     return scheduler;
+  }
+
+  private static CpSolver configureSolver(SolverConfiguration config) {
+    CpSolver solver = new CpSolver();
+
+    // Configuration des paramètres du solveur depuis le fichier de configuration
+    solver.getParameters().setLogSearchProgress(config.isLogSearchProgress());
+    solver.getParameters().setMaxTimeInSeconds(config.getMaxTimeInSeconds());
+    solver.getParameters().setNumWorkers(config.getNumWorkers());
+    solver.getParameters().setCpModelPresolve(config.isCpModelPresolve());
+    solver.getParameters().setCpModelProbingLevel(config.getCpModelProbingLevel());
+
+    logger.info("Solveur configuré avec:");
+    logger.info("  - Log search progress: {}", config.isLogSearchProgress());
+    logger.info("  - Temps maximum: {}s", config.getMaxTimeInSeconds());
+    logger.info("  - Nombre de workers: {}", config.getNumWorkers());
+    logger.info("  - Search branching: {}", config.getSearchBranching());
+    logger.info("  - Variable order: {}", config.getPreferredVariableOrder());
+    logger.info("  - CP model presolve: {}", config.isCpModelPresolve());
+    logger.info("  - CP model probing level: {}", config.getCpModelProbingLevel());
+
+    return solver;
   }
 
   private static void printConfiguration(ShiftScheduler scheduler) {
@@ -350,8 +371,10 @@ solver.getParameters().setCpModelProbingLevel(2);
       logger.info("  • Valeur de l'objectif: {}", solver.objectiveValue());
       if (solver.bestObjectiveBound() != solver.objectiveValue()) {
         logger.info("  • Meilleure borne: {}", solver.bestObjectiveBound());
-        double gap = Math.abs(solver.objectiveValue() - solver.bestObjectiveBound())
-                   / Math.abs(solver.objectiveValue()) * 100;
+        double gap =
+            Math.abs(solver.objectiveValue() - solver.bestObjectiveBound())
+                / Math.abs(solver.objectiveValue())
+                * 100;
         logger.info("  • Gap d'optimalité: {:.2f}%", gap);
       }
     }

@@ -6,9 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
@@ -21,6 +19,9 @@ import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.sat.CpSolver;
 import com.google.ortools.sat.CpSolverStatus;
 import com.google.ortools.sat.LinearExpr;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests spécifiques pour MaximizeWorkingHoursConstraint en mode SOFT avec ObjectiveCollector.
@@ -48,8 +49,11 @@ class MaximizeWorkingHoursSoftTest {
     // Given
     MaximizeWorkingHoursConstraint constraint =
         new MaximizeWorkingHoursConstraint(
-            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(), 2)
-        );
+            ConstraintConfig.of(
+                ConstraintType.MAXIMIZE_WORKING_HOURS,
+                ConstraintNature.SOFT,
+                ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(),
+                2));
 
     // When
     constraint.applySoftConstraint(context, collector);
@@ -71,8 +75,11 @@ class MaximizeWorkingHoursSoftTest {
 
     MaximizeWorkingHoursConstraint constraint =
         new MaximizeWorkingHoursConstraint(
-            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(), 3)
-        );
+            ConstraintConfig.of(
+                ConstraintType.MAXIMIZE_WORKING_HOURS,
+                ConstraintNature.SOFT,
+                ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(),
+                3));
 
     // When
     constraint.applySoftConstraint(weekdayContext, collector);
@@ -95,8 +102,11 @@ class MaximizeWorkingHoursSoftTest {
 
     MaximizeWorkingHoursConstraint constraint =
         new MaximizeWorkingHoursConstraint(
-            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(), 2)
-        );
+            ConstraintConfig.of(
+                ConstraintType.MAXIMIZE_WORKING_HOURS,
+                ConstraintNature.SOFT,
+                ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(),
+                2));
 
     // When
     constraint.applySoftConstraint(weekendContext, collector);
@@ -114,8 +124,11 @@ class MaximizeWorkingHoursSoftTest {
     // Given
     MaximizeWorkingHoursConstraint constraint =
         new MaximizeWorkingHoursConstraint(
-            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.HARD, ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(), 2)
-        );
+            ConstraintConfig.of(
+                ConstraintType.MAXIMIZE_WORKING_HOURS,
+                ConstraintNature.HARD,
+                ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(),
+                2));
 
     // When/Then
     assertThrows(
@@ -129,8 +142,11 @@ class MaximizeWorkingHoursSoftTest {
     // Given
     MaximizeWorkingHoursConstraint constraint =
         new MaximizeWorkingHoursConstraint(
-            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(), 2)
-        );
+            ConstraintConfig.of(
+                ConstraintType.MAXIMIZE_WORKING_HOURS,
+                ConstraintNature.SOFT,
+                ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(),
+                2));
 
     // When
     constraint.applySoftConstraint(context, collector);
@@ -154,8 +170,11 @@ class MaximizeWorkingHoursSoftTest {
     // Given - Configuration avec poids spécifique
     MaximizeWorkingHoursConstraint constraint =
         new MaximizeWorkingHoursConstraint(
-            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(), 2)
-        );
+            ConstraintConfig.of(
+                ConstraintType.MAXIMIZE_WORKING_HOURS,
+                ConstraintNature.SOFT,
+                ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(),
+                2));
 
     // When
     constraint.applySoftConstraint(context, collector);
@@ -173,8 +192,11 @@ class MaximizeWorkingHoursSoftTest {
     // Given
     MaximizeWorkingHoursConstraint constraint =
         new MaximizeWorkingHoursConstraint(
-            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(), 3)
-        );
+            ConstraintConfig.of(
+                ConstraintType.MAXIMIZE_WORKING_HOURS,
+                ConstraintNature.SOFT,
+                ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(),
+                3));
 
     // When/Then
     String name = constraint.getName();
@@ -188,12 +210,18 @@ class MaximizeWorkingHoursSoftTest {
     // Given
     MaximizeWorkingHoursConstraint softConstraint =
         new MaximizeWorkingHoursConstraint(
-            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(), 2)
-        );
+            ConstraintConfig.of(
+                ConstraintType.MAXIMIZE_WORKING_HOURS,
+                ConstraintNature.SOFT,
+                ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(),
+                2));
     MaximizeWorkingHoursConstraint hardConstraint =
         new MaximizeWorkingHoursConstraint(
-            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.HARD, ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(), 2)
-        );
+            ConstraintConfig.of(
+                ConstraintType.MAXIMIZE_WORKING_HOURS,
+                ConstraintNature.HARD,
+                ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(),
+                2));
 
     // When/Then
     assertEquals(ConstraintNature.SOFT, softConstraint.getNature());
