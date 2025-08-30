@@ -61,7 +61,9 @@ class MaxHoursPerWeekConstraintTest {
   @Test
   void applyConstraintTest() {
     // Appliquer les contraintes nécessaires
-    new MinimumCoverageConstraint().applyHardConstraint(context);
+    new MinimumCoverageConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
+    ).applyHardConstraint(context);
     new AssignmentHoursConstraint(
         ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
     ).applyHardConstraint(context);
@@ -115,7 +117,9 @@ class MaxHoursPerWeekConstraintTest {
   @Test
   void hoursCalculationTest() {
     // Appliquer les contraintes
-    new MinimumCoverageConstraint().applyHardConstraint(context);
+    new MinimumCoverageConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
+    ).applyHardConstraint(context);
     new AssignmentHoursConstraint(
         ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
     ).applyHardConstraint(context);

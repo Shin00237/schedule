@@ -44,7 +44,9 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
   @Test
   void basicAssignmentHoursConstraintTest() {
     // Ajouter une contrainte de couverture minimum pour avoir des assignations
-    new MinimumCoverageConstraint().applyHardConstraint(context);
+    new MinimumCoverageConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
+    ).applyHardConstraint(context);
 
     // Appliquer la contrainte testée
     constraint.applyHardConstraint(context);
@@ -65,7 +67,9 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
     SchedulingContext testContext = TestDataFactory.createContext(manyEmployees, fewShifts);
 
     // Appliquer les contraintes
-    new MinimumCoverageConstraint().applyHardConstraint(testContext);
+    new MinimumCoverageConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
+    ).applyHardConstraint(testContext);
     constraint.applyHardConstraint(testContext);
 
     // Résoudre
@@ -100,7 +104,9 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
   @Test
   void assignedEmployeeRespectsMinimumHoursTest() {
     // Ajouter contrainte de couverture
-    new MinimumCoverageConstraint().applyHardConstraint(context);
+    new MinimumCoverageConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
+    ).applyHardConstraint(context);
     constraint.applyHardConstraint(context);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(context);
@@ -123,7 +129,9 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
 
   @Test
   void assignedEmployeeRespectsMaximumHoursTest() {
-    new MinimumCoverageConstraint().applyHardConstraint(context);
+    new MinimumCoverageConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
+    ).applyHardConstraint(context);
     constraint.applyHardConstraint(context);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(context);
@@ -153,7 +161,9 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
             ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 7 * 60)
         );
 
-    new MinimumCoverageConstraint().applyHardConstraint(context);
+    new MinimumCoverageConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
+    ).applyHardConstraint(context);
     strictConstraint.applyHardConstraint(context);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(context);
@@ -181,7 +191,9 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
         ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 0)
     );
 
-    new MinimumCoverageConstraint().applyHardConstraint(context);
+    new MinimumCoverageConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
+    ).applyHardConstraint(context);
     flexibleConstraint.applyHardConstraint(context);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(context);
@@ -212,7 +224,9 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
     List<Shift> mixedShifts = TestDataFactory.createMixedShifts(week1);
     SchedulingContext mixedContext = TestDataFactory.createContext(employees, mixedShifts);
 
-    new MinimumCoverageConstraint().applyHardConstraint(mixedContext);
+    new MinimumCoverageConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
+    ).applyHardConstraint(mixedContext);
     constraint.applyHardConstraint(mixedContext);
 
     CpSolver solver = SolverAssertions.solveAndAssertSolution(mixedContext);

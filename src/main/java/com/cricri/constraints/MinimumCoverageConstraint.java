@@ -13,16 +13,8 @@ public class MinimumCoverageConstraint implements Constraint {
   private final ConstraintNature nature;
   private final ConstraintConfig config;
 
-  public MinimumCoverageConstraint() {
-    this(ConstraintNature.HARD, null);
-  }
-
-  public MinimumCoverageConstraint(ConstraintNature nature) {
-    this(nature, null);
-  }
-
-  public MinimumCoverageConstraint(ConstraintNature nature, ConstraintConfig config) {
-    this.nature = nature;
+  public MinimumCoverageConstraint(ConstraintConfig config) {
+    this.nature = config.nature();
     this.config = config;
   }
 

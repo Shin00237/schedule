@@ -40,7 +40,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
   @Test
   void noRestConflictWithNormalShiftsTest() {
     // Avec des shifts normaux (8h-16h) sur des jours différents, pas de conflit
-    new MinimumCoverageConstraint().applyHardConstraint(context);
+    new MinimumCoverageConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
+    ).applyHardConstraint(context);
     new AssignmentHoursConstraint(
         ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
     ).applyHardConstraint(context);
@@ -57,7 +59,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
     // Créer des shifts en conflit temporel (même jour, horaires qui se chevauchent)
     SchedulingContext conflictContext = createConflictingScenario();
 
-    new MinimumCoverageConstraint().applyHardConstraint(conflictContext);
+    new MinimumCoverageConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
+    ).applyHardConstraint(conflictContext);
     new AssignmentHoursConstraint(
         ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
     ).applyHardConstraint(conflictContext);
@@ -92,7 +96,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
     SchedulingContext adequateRestContext =
         TestDataFactory.createContext(employees, consecutiveShifts);
 
-    new MinimumCoverageConstraint().applyHardConstraint(adequateRestContext);
+    new MinimumCoverageConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
+    ).applyHardConstraint(adequateRestContext);
     new AssignmentHoursConstraint(
         ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
     ).applyHardConstraint(adequateRestContext);
@@ -119,7 +125,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
     SchedulingContext insufficientRestContext =
         TestDataFactory.createContext(employees, tooCloseShifts);
 
-    new MinimumCoverageConstraint().applyHardConstraint(insufficientRestContext);
+    new MinimumCoverageConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
+    ).applyHardConstraint(insufficientRestContext);
     new AssignmentHoursConstraint(
         ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
     ).applyHardConstraint(insufficientRestContext);
@@ -143,7 +151,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
     MinimumRestConstraint strictConstraint = new MinimumRestConstraint(16);
 
     // Utiliser un contexte plus simple qui devrait être faisable
-    new MinimumCoverageConstraint().applyHardConstraint(context);
+    new MinimumCoverageConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
+    ).applyHardConstraint(context);
     new AssignmentHoursConstraint(
         ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
     ).applyHardConstraint(context);
@@ -172,7 +182,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
 
     SchedulingContext flexibleContext = TestDataFactory.createContext(employees, flexibleShifts);
 
-    new MinimumCoverageConstraint().applyHardConstraint(flexibleContext);
+    new MinimumCoverageConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
+    ).applyHardConstraint(flexibleContext);
     new AssignmentHoursConstraint(
         ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
     ).applyHardConstraint(flexibleContext);
@@ -192,7 +204,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
         TestDataFactory.createContext(
             manyEmployees, TestDataFactory.createConflictingShifts(week1));
 
-    new MinimumCoverageConstraint().applyHardConstraint(multiEmployeeContext);
+    new MinimumCoverageConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
+    ).applyHardConstraint(multiEmployeeContext);
     new AssignmentHoursConstraint(
         ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
     ).applyHardConstraint(multiEmployeeContext);
@@ -232,7 +246,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
 
     SchedulingContext nightContext = TestDataFactory.createContext(employees, nightShifts);
 
-    new MinimumCoverageConstraint().applyHardConstraint(nightContext);
+    new MinimumCoverageConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
+    ).applyHardConstraint(nightContext);
     new AssignmentHoursConstraint(
         ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
     ).applyHardConstraint(nightContext);
@@ -262,7 +278,9 @@ class MinimumRestConstraintTest extends ConstraintTestBase {
 
     SchedulingContext weekendContext = TestDataFactory.createContext(employees, weekendShifts);
 
-    new MinimumCoverageConstraint().applyHardConstraint(weekendContext);
+    new MinimumCoverageConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.HARD)
+    ).applyHardConstraint(weekendContext);
     new AssignmentHoursConstraint(
         ConstraintConfig.of(ConstraintType.ASSIGNMENT_HOURS, ConstraintNature.HARD, "minHoursPerShift", 5 * 60)
     ).applyHardConstraint(weekendContext);

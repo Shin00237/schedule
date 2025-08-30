@@ -50,7 +50,7 @@ public class ConstraintFactory {
    * <p>Paramètres attendus : aucun
    */
   private static Constraint createMinimumCoverageConstraint(ConstraintConfig config) {
-    return new MinimumCoverageConstraint(config.nature(), config);
+    return new MinimumCoverageConstraint(config);
   }
 
   /**

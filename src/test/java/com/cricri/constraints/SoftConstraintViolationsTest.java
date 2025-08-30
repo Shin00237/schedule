@@ -105,7 +105,9 @@ class SoftConstraintViolationsTest {
     SchedulingContext limitedContext = TestDataFactory.createContext(fewEmployees, shifts);
     ObjectiveCollector limitedCollector = new ObjectiveCollector();
 
-    MinimumCoverageConstraint constraint = new MinimumCoverageConstraint(ConstraintNature.SOFT);
+    MinimumCoverageConstraint constraint = new MinimumCoverageConstraint(
+        ConstraintConfig.of(ConstraintType.MINIMUM_COVERAGE, ConstraintNature.SOFT)
+    );
 
     // When
     constraint.applySoftConstraint(limitedContext, limitedCollector);
