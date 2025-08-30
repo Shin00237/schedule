@@ -99,7 +99,6 @@ public class ConstraintFactory {
    * préférence pour jours de semaine (défaut: 2)
    */
   private static Constraint createMaximizeWorkingHoursConstraint(ConstraintConfig config) {
-    int weekdayMultiplier = config.getIntParameter("weekdayMultiplier", 2);
-    return new MaximizeWorkingHoursConstraint(weekdayMultiplier, config.nature(), config);
+    return new MaximizeWorkingHoursConstraint(config);
   }
 }

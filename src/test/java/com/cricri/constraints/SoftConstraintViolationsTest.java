@@ -126,7 +126,9 @@ class SoftConstraintViolationsTest {
             ConstraintConfig.of(ConstraintType.MAX_HOURS_PER_WEEK, ConstraintNature.SOFT, "maxHoursPerWeek", 20 * 60)
         );
     MaximizeWorkingHoursConstraint maximizeConstraint =
-        new MaximizeWorkingHoursConstraint(2, ConstraintNature.SOFT);
+        new MaximizeWorkingHoursConstraint(
+            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, "weekdayMultiplier", 2)
+        );
 
     // When - Appliquer toutes les contraintes au même collecteur
     restDaysConstraint.applySoftConstraint(context, collector);

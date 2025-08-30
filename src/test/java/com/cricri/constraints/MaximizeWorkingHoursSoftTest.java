@@ -3,7 +3,9 @@ package com.cricri.constraints;
 import static com.cricri.testutils.SolverAssertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.enums.ConstraintNature;
+import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.service.ObjectiveCollector;
@@ -41,7 +43,9 @@ class MaximizeWorkingHoursSoftTest {
   void testSoftConstraintAddsTermsToCollector() {
     // Given
     MaximizeWorkingHoursConstraint constraint =
-        new MaximizeWorkingHoursConstraint(2, ConstraintNature.SOFT);
+        new MaximizeWorkingHoursConstraint(
+            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, "weekdayMultiplier", 2)
+        );
 
     // When
     constraint.applySoftConstraint(context, collector);
@@ -62,7 +66,9 @@ class MaximizeWorkingHoursSoftTest {
     SchedulingContext weekdayContext = TestDataFactory.createContext(employees, weekdayShifts);
 
     MaximizeWorkingHoursConstraint constraint =
-        new MaximizeWorkingHoursConstraint(3, ConstraintNature.SOFT);
+        new MaximizeWorkingHoursConstraint(
+            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, "weekdayMultiplier", 3)
+        );
 
     // When
     constraint.applySoftConstraint(weekdayContext, collector);
@@ -84,7 +90,9 @@ class MaximizeWorkingHoursSoftTest {
     SchedulingContext weekendContext = TestDataFactory.createContext(employees, weekendShifts);
 
     MaximizeWorkingHoursConstraint constraint =
-        new MaximizeWorkingHoursConstraint(2, ConstraintNature.SOFT);
+        new MaximizeWorkingHoursConstraint(
+            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, "weekdayMultiplier", 2)
+        );
 
     // When
     constraint.applySoftConstraint(weekendContext, collector);
@@ -101,7 +109,9 @@ class MaximizeWorkingHoursSoftTest {
   void testHardModeThrowsUnsupported() {
     // Given
     MaximizeWorkingHoursConstraint constraint =
-        new MaximizeWorkingHoursConstraint(2, ConstraintNature.HARD);
+        new MaximizeWorkingHoursConstraint(
+            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.HARD, "weekdayMultiplier", 2)
+        );
 
     // When/Then
     assertThrows(
@@ -114,7 +124,9 @@ class MaximizeWorkingHoursSoftTest {
   void testSoftConstraintDoesNotCallModelMaximizeDirectly() {
     // Given
     MaximizeWorkingHoursConstraint constraint =
-        new MaximizeWorkingHoursConstraint(2, ConstraintNature.SOFT);
+        new MaximizeWorkingHoursConstraint(
+            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, "weekdayMultiplier", 2)
+        );
 
     // When
     constraint.applySoftConstraint(context, collector);
@@ -137,7 +149,9 @@ class MaximizeWorkingHoursSoftTest {
   void testObjectiveWeightConfiguration() {
     // Given - Configuration avec poids spécifique
     MaximizeWorkingHoursConstraint constraint =
-        new MaximizeWorkingHoursConstraint(2, ConstraintNature.SOFT);
+        new MaximizeWorkingHoursConstraint(
+            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, "weekdayMultiplier", 2)
+        );
 
     // When
     constraint.applySoftConstraint(context, collector);
@@ -154,7 +168,9 @@ class MaximizeWorkingHoursSoftTest {
   void testConstraintName() {
     // Given
     MaximizeWorkingHoursConstraint constraint =
-        new MaximizeWorkingHoursConstraint(3, ConstraintNature.SOFT);
+        new MaximizeWorkingHoursConstraint(
+            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, "weekdayMultiplier", 3)
+        );
 
     // When/Then
     String name = constraint.getName();
@@ -167,9 +183,13 @@ class MaximizeWorkingHoursSoftTest {
   void testConstraintNature() {
     // Given
     MaximizeWorkingHoursConstraint softConstraint =
-        new MaximizeWorkingHoursConstraint(2, ConstraintNature.SOFT);
+        new MaximizeWorkingHoursConstraint(
+            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.SOFT, "weekdayMultiplier", 2)
+        );
     MaximizeWorkingHoursConstraint hardConstraint =
-        new MaximizeWorkingHoursConstraint(2, ConstraintNature.HARD);
+        new MaximizeWorkingHoursConstraint(
+            ConstraintConfig.of(ConstraintType.MAXIMIZE_WORKING_HOURS, ConstraintNature.HARD, "weekdayMultiplier", 2)
+        );
 
     // When/Then
     assertEquals(ConstraintNature.SOFT, softConstraint.getNature());

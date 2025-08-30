@@ -22,22 +22,9 @@ public class MaximizeWorkingHoursConstraint implements Constraint {
   private final ConstraintNature nature;
   private final ConstraintConfig config;
 
-  public MaximizeWorkingHoursConstraint() {
-    this(2, ConstraintNature.SOFT, null);
-  }
-
-  public MaximizeWorkingHoursConstraint(int weekdayMultiplier) {
-    this(weekdayMultiplier, ConstraintNature.SOFT, null);
-  }
-
-  public MaximizeWorkingHoursConstraint(int weekdayMultiplier, ConstraintNature nature) {
-    this(weekdayMultiplier, nature, null);
-  }
-
-  public MaximizeWorkingHoursConstraint(
-      int weekdayMultiplier, ConstraintNature nature, ConstraintConfig config) {
-    this.weekdayMultiplier = weekdayMultiplier;
-    this.nature = nature;
+  public MaximizeWorkingHoursConstraint(ConstraintConfig config) {
+    this.weekdayMultiplier = config.getIntParameter("weekdayMultiplier", 2); // 2 par défaut
+    this.nature = config.nature();
     this.config = config;
   }
 
