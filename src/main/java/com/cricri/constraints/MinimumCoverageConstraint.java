@@ -32,7 +32,7 @@ public class MinimumCoverageConstraint implements Constraint {
       }
 
       // Contrainte HARD : somme >= minimum requis
-      context.getModel().addGreaterOrEqual(sumEmployees, shift.minEmployes());
+      context.getModel().addGreaterOrEqual(sumEmployees, shift.minEmployes()).getBuilder().setName(getName());
 
       // Et aussi <= maximum si défini
       if (shift.maxEmployes() > 0) {

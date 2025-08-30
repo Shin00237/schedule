@@ -1,6 +1,7 @@
 package com.cricri.factory;
 
 import com.cricri.constraints.AssignmentHoursConstraint;
+import com.cricri.constraints.BlockShiftForEmployeeConstraint;
 import com.cricri.constraints.Constraint;
 import com.cricri.constraints.MaxHoursPerWeekConstraint;
 import com.cricri.constraints.MaximizeWorkingHoursConstraint;
@@ -37,6 +38,7 @@ public class ConstraintFactory {
       case MAX_HOURS_PER_WEEK -> createMaxHoursPerWeekConstraint(config);
       case MAXIMIZE_WORKING_HOURS -> createMaximizeWorkingHoursConstraint(config);
       case SHIFT_OVERLAP -> createShiftOverlapConstraint(config);
+      case BLOCKED_SHIFT_EMPLOYEE -> createBlockShiftForEmployeeConstraint(config);
     };
   }
 
@@ -98,5 +100,14 @@ public class ConstraintFactory {
    */
   private static Constraint createMaximizeWorkingHoursConstraint(ConstraintConfig config) {
     return new MaximizeWorkingHoursConstraint(config);
+  }
+
+  /**
+   * Crée une contrainte de blocage d'employés sur des shifts spécifiques.
+   *
+   * <p>Paramètres attendus : - "blockedAssignments" (Map&lt;String, List&lt;String&gt;&gt;) : Map employeeId → liste de shiftIds bloqués
+   */
+  private static Constraint createBlockShiftForEmployeeConstraint(ConstraintConfig config) {
+    return new BlockShiftForEmployeeConstraint(config);
   }
 }

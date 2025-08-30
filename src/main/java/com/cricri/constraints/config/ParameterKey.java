@@ -27,7 +27,10 @@ public enum ParameterKey {
     MIN_HOURS_PER_SHIFT(Integer.class, 240, "Durée minimum d'un shift en minutes (4h par défaut)"),
     
     // Paramètres pour ShiftOverlapConstraint
-    MIN_OVERLAP_EMPLOYEES(Integer.class, 1, "Nombre minimum d'employés en chevauchement");
+    MIN_OVERLAP_EMPLOYEES(Integer.class, 1, "Nombre minimum d'employés en chevauchement"),
+    
+    // Paramètres pour BlockShiftForEmployeeConstraint
+    BLOCKED_ASSIGNMENTS(java.util.Map.class, java.util.Map.of(), "Map des assignations bloquées : employeeId → liste de shiftIds");
     
     private final Class<?> type;
     private final Object defaultValue;

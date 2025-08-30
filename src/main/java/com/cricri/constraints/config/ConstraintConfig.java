@@ -137,6 +137,7 @@ public record ConstraintConfig(
       case MAX_HOURS_PER_WEEK, SHIFT_OVERLAP -> ObjectiveWeight.MINIMIZE_HIGH;
       case MINIMUM_REST_DAYS -> ObjectiveWeight.MINIMIZE_MEDIUM;
       case MINIMUM_COVERAGE, ASSIGNMENT_HOURS -> ObjectiveWeight.MINIMIZE_LOW;
+      case BLOCKED_SHIFT_EMPLOYEE -> ObjectiveWeight.DISABLED; // Toujours HARD
     };
   }
 }

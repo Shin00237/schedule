@@ -60,6 +60,10 @@ public class ScheduleApplication {
     // Résoudre
     logger.info("\n=== Résolution ===");
     CpSolver solver = new CpSolver();
+    solver.getParameters().setLogSearchProgress(true);
+    solver.getParameters().setCpModelPresolve(true);
+solver.getParameters().setCpModelProbingLevel(2);
+
     CpSolverStatus status = solver.solve(scheduler.getModel());
 
     logger.info("Status: {}", status);
@@ -69,6 +73,10 @@ public class ScheduleApplication {
     } else {
       logger.warn("❌ Aucune solution trouvée!");
     }
+
+    // Afficher toutes les statistiques OR-Tools
+    printSolverStatistics(solver, status);
+
   }
 
   private static ShiftScheduler createTestScheduler() {
@@ -145,7 +153,11 @@ public class ScheduleApplication {
                 ConstraintType.MAXIMIZE_WORKING_HOURS,
                 ConstraintNature.SOFT,
                 ParameterKey.WEEKDAY_MULTIPLIER.getKeyName(),
-                2));
+                2)
+              // ConstraintConfig.of(
+              //   ConstraintType.SHIFT_OVERLAP,
+              //   ConstraintNature.HARD)
+                );
 
     // Créer et ajouter toutes les contraintes
     for (ConstraintConfig config : constraintConfigs) {
@@ -317,5 +329,43 @@ public class ScheduleApplication {
     int hours = minutes / 60;
     int mins = minutes % 60;
     return String.format("%02d:%02d", hours, mins);
+  }
+
+  private static void printSolverStatistics(CpSolver solver, CpSolverStatus status) {
+    logger.info("\n=== Statistiques OR-Tools ===");
+
+    // Statistiques de base
+    logger.info("Status final: {}", status);
+    logger.info("Temps de résolution: {} ms", solver.wallTime());
+    logger.info("Temps CPU utilisé: {} ms", solver.userTime());
+
+    // Informations sur le modèle
+    logger.info("\nTaille du modèle:");
+    // logger.info("  • Nombre de variables: {}", solver.numVariables());
+    // logger.info("  • Nombre de contraintes: {}", solver.numConstraints());
+
+    // Objective (si applicable)
+    if (status == CpSolverStatus.OPTIMAL || status == CpSolverStatus.FEASIBLE) {
+      logger.info("\n Objectif:");
+      logger.info("  • Valeur de l'objectif: {}", solver.objectiveValue());
+      if (solver.bestObjectiveBound() != solver.objectiveValue()) {
+        logger.info("  • Meilleure borne: {}", solver.bestObjectiveBound());
+        double gap = Math.abs(solver.objectiveValue() - solver.bestObjectiveBound())
+                   / Math.abs(solver.objectiveValue()) * 100;
+        logger.info("  • Gap d'optimalité: {:.2f}%", gap);
+      }
+    }
+
+    // Statistiques de recherche
+    logger.info("\nStatistiques de recherche:");
+    logger.info("  • Nombre de branches: {}", solver.numBranches());
+    logger.info("  • Nombre de conflits: {}", solver.numConflicts());
+    logger.info("  • get solutions Info: {}", solver.getSolutionInfo());
+    // logger.info("  • Nombre de décisions: {}", solver.numDecisions());
+
+    // Statistiques détaillées (responseStats contient plus d'infos)
+    logger.info("\n📈 Statistiques détaillées:");
+    String responseStats = solver.responseStats();
+    logger.info("{}", responseStats);
   }
 }
