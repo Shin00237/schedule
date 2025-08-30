@@ -35,7 +35,7 @@ import com.google.ortools.sat.CpSolverStatus;
 class ShiftOverlapConstraintTest extends ConstraintTestBase {
 
   @Test
-  void testConstraintProperties() {
+  void constraintPropertiesTest() {
     // Given
     ShiftOverlapConstraint constraint =
         new ShiftOverlapConstraint(
@@ -43,13 +43,13 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
         );
 
     // Then
-    testConstraintProperties(constraint);
+    constraintPropertiesTest(constraint);
     assertEquals("ShiftOverlap(minOverlap=1emp, HARD)", constraint.getName());
     assertEquals(ConstraintNature.HARD, constraint.getNature());
   }
 
   @Test
-  void testHardConstraintWithOverlappingShifts() {
+  void hardConstraintWithOverlappingShiftsTest() {
     // Given - Deux shifts qui se chevauchent réellement (matin 8h-13h, après-midi 12h-17h)
     Week week = TestDataFactory.WEEK_1;
     ShiftDay monday = week.getDay(0);
@@ -81,7 +81,7 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testHardConstraintWithNonOverlappingShifts() {
+  void hardConstraintWithNonOverlappingShiftsTest() {
     // Given - Deux shifts qui ne se chevauchent pas (contrainte ne s'applique pas)
     Week week = TestDataFactory.WEEK_1;
     ShiftDay monday = week.getDay(0);
@@ -113,7 +113,7 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testHardConstraintWithImpossibleStaffingRequirement() {
+  void hardConstraintWithImpossibleStaffingRequirementTest() {
     // Given - Shifts qui se chevauchent mais pas assez d'employés pour satisfaire les deux équipes
     Week week = TestDataFactory.WEEK_1;
     ShiftDay monday = week.getDay(0);
@@ -145,7 +145,7 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testSoftConstraintCreatesObjectiveTerms() {
+  void softConstraintCreatesObjectiveTermsTest() {
     // Given - Créer des shifts qui se chevauchent pour que la contrainte s'applique
     Week week = TestDataFactory.WEEK_1;
     ShiftDay monday = week.getDay(0);
@@ -177,7 +177,7 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testSoftConstraintIntegration() {
+  void softConstraintIntegrationTest() {
     // Given - Configuration avec chevauchement en SOFT
     Week week = TestDataFactory.WEEK_1;
     ShiftDay monday = week.getDay(0);
@@ -210,7 +210,7 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testMultipleEmployeeOverlap() {
+  void multipleEmployeeOverlapTest() {
     // Given - Test avec requirement de 2 employés de chaque équipe
     Week week = TestDataFactory.WEEK_1;
     ShiftDay monday = week.getDay(0);
@@ -242,7 +242,7 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testDifferentDaysNoOverlapRequired() {
+  void differentDaysNoOverlapRequiredTest() {
     // Given - Shifts sur des jours différents (contrainte ne s'applique pas)
     Week week = TestDataFactory.WEEK_1;
     ShiftDay monday = week.getDay(0);
@@ -275,7 +275,7 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
   }
 
   @Test
-  void testOverlapDetection() {
+  void overlapDetectionTest() {
     // Given - Test spécifique pour la détection de chevauchement
     Week week = TestDataFactory.WEEK_1;
     ShiftDay monday = week.getDay(0);

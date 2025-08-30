@@ -1,7 +1,7 @@
 package com.cricri.constraints.enums;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -10,7 +10,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 class ObjectiveWeightScenariosTest {
 
   @Test
-  void testWeightHierarchy() {
+  void weightHierarchyTest() {
     // Given/When/Then - Vérifier la hiérarchie des poids
 
     // CRITICAL > HIGH > MEDIUM > LOW pour maximisation
@@ -34,7 +34,7 @@ class ObjectiveWeightScenariosTest {
   }
 
   @Test
-  void testMaximizeWeightsArePositive() {
+  void maximizeWeightsArePositiveTest() {
     assertTrue(ObjectiveWeight.MAXIMIZE_CRITICAL.getWeight() > 0);
     assertTrue(ObjectiveWeight.MAXIMIZE_HIGH.getWeight() > 0);
     assertTrue(ObjectiveWeight.MAXIMIZE_MEDIUM.getWeight() > 0);
@@ -42,7 +42,7 @@ class ObjectiveWeightScenariosTest {
   }
 
   @Test
-  void testMinimizeWeightsAreNegative() {
+  void minimizeWeightsAreNegativeTest() {
     assertTrue(ObjectiveWeight.MINIMIZE_CRITICAL.getWeight() < 0);
     assertTrue(ObjectiveWeight.MINIMIZE_HIGH.getWeight() < 0);
     assertTrue(ObjectiveWeight.MINIMIZE_MEDIUM.getWeight() < 0);
@@ -50,7 +50,7 @@ class ObjectiveWeightScenariosTest {
   }
 
   @Test
-  void testCriticalDominatesOtherLevels() {
+  void criticalDominatesOtherLevelsTest() {
     // MAXIMIZE_CRITICAL doit dominer toutes les violations sauf MINIMIZE_CRITICAL
     long maxCritical = ObjectiveWeight.MAXIMIZE_CRITICAL.getWeight();
     long minHigh = Math.abs(ObjectiveWeight.MINIMIZE_HIGH.getWeight());
@@ -90,7 +90,7 @@ class ObjectiveWeightScenariosTest {
   }
 
   @Test
-  void testMutualExclusivity() {
+  void mutualExclusivityTest() {
     for (ObjectiveWeight weight : ObjectiveWeight.values()) {
       // Un poids ne peut être qu'une seule chose à la fois
       int trueCount = 0;
@@ -106,7 +106,7 @@ class ObjectiveWeightScenariosTest {
   }
 
   @Test
-  void testScenarioMaximizeWorkingHoursVsViolations() {
+  void scenarioMaximizeWorkingHoursVsViolationsTest() {
     // Scénario : MaximizeWorkingHours (CRITICAL) vs plusieurs violations moyennes
     long maximizeWeight = ObjectiveWeight.MAXIMIZE_CRITICAL.getWeight();
     long violationWeight = ObjectiveWeight.MINIMIZE_MEDIUM.getWeight();
@@ -124,7 +124,7 @@ class ObjectiveWeightScenariosTest {
   }
 
   @Test
-  void testScenarioCriticalViolationStopsOptimization() {
+  void scenarioCriticalViolationStopsOptimizationTest() {
     // Scénario : Une violation CRITICAL doit significativement réduire l'objectif
     long maximizeWeight = ObjectiveWeight.MAXIMIZE_CRITICAL.getWeight();
     long criticalViolationWeight = ObjectiveWeight.MINIMIZE_CRITICAL.getWeight();
@@ -149,7 +149,7 @@ class ObjectiveWeightScenariosTest {
   }
 
   @Test
-  void testScenarioMultipleLevelBalance() {
+  void scenarioMultipleLevelBalanceTest() {
     // Scénario complexe : mélange de différents niveaux
     long objective = 0;
 

@@ -1,13 +1,16 @@
 package com.cricri.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.IntVar;
 import com.google.ortools.sat.LinearExpr;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 /**
  * Tests unitaires pour ObjectiveCollector.
@@ -32,7 +35,7 @@ class ObjectiveCollectorTest {
   }
 
   @Test
-  void testCollectorStartsEmpty() {
+  void collectorStartsEmptyTest() {
     assertTrue(collector.isEmpty());
     assertEquals(0, collector.getTermCount());
 
@@ -43,7 +46,7 @@ class ObjectiveCollectorTest {
   }
 
   @Test
-  void testAddSingleTerm() {
+  void addSingleTermTest() {
     collector.addTerm(var1, 100);
 
     assertFalse(collector.isEmpty());
@@ -56,7 +59,7 @@ class ObjectiveCollectorTest {
   }
 
   @Test
-  void testAddMultipleTerms() {
+  void addMultipleTermsTest() {
     // Ajouter des termes avec différents poids (positifs et négatifs)
     collector.addTerm(var1, 1000); // MAXIMIZE_HIGH
     collector.addTerm(var2, -500); // Violation moyenne
@@ -70,7 +73,7 @@ class ObjectiveCollectorTest {
   }
 
   @Test
-  void testZeroWeightIgnored() {
+  void zeroWeightIgnoredTest() {
     collector.addTerm(var1, 100);
     collector.addTerm(var2, 0); // Doit être ignoré
     collector.addTerm(var3, -50);
@@ -80,12 +83,12 @@ class ObjectiveCollectorTest {
   }
 
   @Test
-  void testNullVariableThrows() {
+  void nullVariableThrowsTest() {
     assertThrows(IllegalArgumentException.class, () -> collector.addTerm(null, 100));
   }
 
   @Test
-  void testBuildIsIdempotent() {
+  void buildIsIdempotentTest() {
     collector.addTerm(var1, 100);
     collector.addTerm(var2, -50);
 
@@ -98,7 +101,7 @@ class ObjectiveCollectorTest {
   }
 
   @Test
-  void testThreadSafety() throws InterruptedException {
+  void threadSafetyTest() throws InterruptedException {
     // Test simple de concurrence
     Thread t1 =
         new Thread(

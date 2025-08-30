@@ -38,7 +38,7 @@ class UnifiedObjectiveIntegrationTest {
   }
 
   @Test
-  void testSingleSoftConstraintIntegration() {
+  void singleSoftConstraintIntegrationTest() {
     // Given - Seulement MaximizeWorkingHours en SOFT
     List<ConstraintConfig> configs =
         Arrays.asList(
@@ -58,7 +58,7 @@ class UnifiedObjectiveIntegrationTest {
   }
 
   @Test
-  void testMultipleSoftConstraintsIntegration() {
+  void multipleSoftConstraintsIntegrationTest() {
     // Given - Plusieurs contraintes SOFT avec différents poids
     List<ConstraintConfig> configs =
         Arrays.asList(
@@ -88,7 +88,7 @@ class UnifiedObjectiveIntegrationTest {
   }
 
   @Test
-  void testMixedHardAndSoftConstraints() {
+  void mixedHardAndSoftConstraintsTest() {
     // Given - Mix réaliste de contraintes HARD et SOFT
     List<ConstraintConfig> configs =
         Arrays.asList(
@@ -118,7 +118,7 @@ class UnifiedObjectiveIntegrationTest {
   }
 
   @Test
-  void testOnlyHardConstraints() {
+  void onlyHardConstraintsTest() {
     // Given - Seulement des contraintes HARD (pas d'objectif unifié)
     List<ConstraintConfig> configs =
         Arrays.asList(
@@ -140,7 +140,7 @@ class UnifiedObjectiveIntegrationTest {
   }
 
   @Test
-  void testConstraintPriorityOrdering() {
+  void constraintPriorityOrderingTest() {
     // Given - Contraintes avec différentes priorités
     List<ConstraintConfig> configs =
         Arrays.asList(
@@ -168,7 +168,7 @@ class UnifiedObjectiveIntegrationTest {
   }
 
   @Test
-  void testRegressionMaximizeWorkingHoursBehavior() {
+  void regressionMaximizeWorkingHoursBehaviorTest() {
     // Given - Configuration identique à l'ancien système
     List<ConstraintConfig> configs =
         Arrays.asList(
@@ -208,7 +208,7 @@ class UnifiedObjectiveIntegrationTest {
   }
 
   @Test
-  void testHighConflictScenario() {
+  void highConflictScenarioTest() {
     // Given - Configuration avec beaucoup de contraintes potentiellement conflictuelles
     List<ConstraintConfig> configs =
         Arrays.asList(

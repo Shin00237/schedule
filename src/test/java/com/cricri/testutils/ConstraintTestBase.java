@@ -111,7 +111,7 @@ public abstract class ConstraintTestBase {
    *
    * @param constraint La contrainte à tester
    */
-  protected void testConstraintProperties(Constraint constraint) {
+  protected void constraintPropertiesTest(Constraint constraint) {
     // Vérifier que le nom n'est pas null ou vide
     String name = constraint.getName();
     assert name != null : "Le nom de la contrainte ne doit pas être null";

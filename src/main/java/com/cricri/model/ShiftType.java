@@ -5,9 +5,9 @@ import java.time.LocalTime;
 
 public record ShiftType(
     String id, // "MATIN", "APRES_MIDI", "SOIR"
-    LocalTime heureDebut, // 390 pour 6h30 (6*60 + 30)
-    LocalTime heureFin, // 990 pour 16h30 (16*60 + 30)
-    Duration pause // durée de pause incluse dans le shift
+    LocalTime heureDebut,
+    LocalTime heureFin,
+    Duration pause
     ) {
 
   // Durée effective de travail (sans les pauses)

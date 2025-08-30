@@ -1,7 +1,8 @@
 package com.cricri.constraints;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import java.util.List;
+import org.junit.jupiter.api.Test;
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
@@ -13,8 +14,6 @@ import com.cricri.testutils.ConstraintTestBase;
 import com.cricri.testutils.SolverAssertions;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.sat.CpSolver;
-import java.util.List;
-import org.junit.jupiter.api.Test;
 
 /**
  * Tests unitaires pour AssignmentHoursConstraint.
@@ -36,7 +35,7 @@ class AssignmentHoursConstraintTest extends ConstraintTestBase {
 
   @Test
   void constraintPropertiesTest() {
-    testConstraintProperties(constraint);
+    constraintPropertiesTest(constraint);
 
     assertEquals(
         "AssignmentHours(min=" + (minHoursPerShift / 60.0) + "h, HARD)", constraint.getName());

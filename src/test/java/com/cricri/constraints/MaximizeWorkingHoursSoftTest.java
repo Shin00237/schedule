@@ -1,8 +1,14 @@
 package com.cricri.constraints;
 
-import static com.cricri.testutils.SolverAssertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
@@ -15,9 +21,6 @@ import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.sat.CpSolver;
 import com.google.ortools.sat.CpSolverStatus;
 import com.google.ortools.sat.LinearExpr;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 /**
  * Tests spécifiques pour MaximizeWorkingHoursConstraint en mode SOFT avec ObjectiveCollector.
@@ -41,7 +44,7 @@ class MaximizeWorkingHoursSoftTest {
   }
 
   @Test
-  void testSoftConstraintAddsTermsToCollector() {
+  void softConstraintAddsTermsToCollectorTest() {
     // Given
     MaximizeWorkingHoursConstraint constraint =
         new MaximizeWorkingHoursConstraint(
@@ -61,7 +64,7 @@ class MaximizeWorkingHoursSoftTest {
   }
 
   @Test
-  void testWeekdayBonusTermsAreAdded() {
+  void weekdayBonusTermsAreAddedTest() {
     // Given - Un seul shift en semaine pour isoler le test
     List<Shift> weekdayShifts = TestDataFactory.createWeekdayOnlyShifts();
     SchedulingContext weekdayContext = TestDataFactory.createContext(employees, weekdayShifts);
@@ -85,7 +88,7 @@ class MaximizeWorkingHoursSoftTest {
   }
 
   @Test
-  void testWeekendShiftsHaveNoBonus() {
+  void weekendShiftsHaveNoBonusTest() {
     // Given - Seulement des shifts weekend
     List<Shift> weekendShifts = TestDataFactory.createWeekendOnlyShifts();
     SchedulingContext weekendContext = TestDataFactory.createContext(employees, weekendShifts);
@@ -107,7 +110,7 @@ class MaximizeWorkingHoursSoftTest {
   }
 
   @Test
-  void testHardModeThrowsUnsupported() {
+  void hardModeThrowsUnsupportedTest() {
     // Given
     MaximizeWorkingHoursConstraint constraint =
         new MaximizeWorkingHoursConstraint(
@@ -122,7 +125,7 @@ class MaximizeWorkingHoursSoftTest {
   }
 
   @Test
-  void testSoftConstraintDoesNotCallModelMaximizeDirectly() {
+  void softConstraintDoesNotCallModelMaximizeDirectlyTest() {
     // Given
     MaximizeWorkingHoursConstraint constraint =
         new MaximizeWorkingHoursConstraint(
@@ -147,7 +150,7 @@ class MaximizeWorkingHoursSoftTest {
   }
 
   @Test
-  void testObjectiveWeightConfiguration() {
+  void objectiveWeightConfigurationTest() {
     // Given - Configuration avec poids spécifique
     MaximizeWorkingHoursConstraint constraint =
         new MaximizeWorkingHoursConstraint(
@@ -166,7 +169,7 @@ class MaximizeWorkingHoursSoftTest {
   }
 
   @Test
-  void testConstraintName() {
+  void constraintNameTest() {
     // Given
     MaximizeWorkingHoursConstraint constraint =
         new MaximizeWorkingHoursConstraint(
@@ -181,7 +184,7 @@ class MaximizeWorkingHoursSoftTest {
   }
 
   @Test
-  void testConstraintNature() {
+  void constraintNatureTest() {
     // Given
     MaximizeWorkingHoursConstraint softConstraint =
         new MaximizeWorkingHoursConstraint(

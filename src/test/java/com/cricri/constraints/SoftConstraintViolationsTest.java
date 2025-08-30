@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
@@ -15,9 +17,6 @@ import com.cricri.model.Shift;
 import com.cricri.service.ObjectiveCollector;
 import com.cricri.service.SchedulingContext;
 import com.cricri.testutils.TestDataFactory;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 /**
  * Tests pour vérifier que les contraintes SOFT ajoutent correctement leurs violations à
@@ -39,7 +38,7 @@ class SoftConstraintViolationsTest {
   }
 
   @Test
-  void testMinimumRestDaysConstraintAddsViolationTerms() {
+  void minimumRestDaysConstraintAddsViolationTermsTest() {
     // Given - Configuration qui va probablement créer des violations
     MinimumRestDaysConstraint constraint =
         new MinimumRestDaysConstraint(
@@ -60,7 +59,7 @@ class SoftConstraintViolationsTest {
   }
 
   @Test
-  void testMinimumRestConstraintAddsViolationTerms() {
+  void minimumRestConstraintAddsViolationTermsTest() {
     // Given
     MinimumRestConstraint constraint =
         new MinimumRestConstraint(
@@ -80,7 +79,7 @@ class SoftConstraintViolationsTest {
   }
 
   @Test
-  void testMaxHoursPerWeekConstraintAddsViolationTerms() {
+  void maxHoursPerWeekConstraintAddsViolationTermsTest() {
     // Given - Limite très basse pour forcer des violations
     MaxHoursPerWeekConstraint constraint =
         new MaxHoursPerWeekConstraint(
@@ -100,7 +99,7 @@ class SoftConstraintViolationsTest {
   }
 
   @Test
-  void testMinimumCoverageConstraintAddsViolationTerms() {
+  void minimumCoverageConstraintAddsViolationTermsTest() {
     // Given - Pas assez d'employés pour couvrir tous les shifts parfaitement
     List<Employee> fewEmployees = employees.subList(0, 2); // Seulement 2 employés
     SchedulingContext limitedContext = TestDataFactory.createContext(fewEmployees, shifts);
@@ -120,7 +119,7 @@ class SoftConstraintViolationsTest {
   }
 
   @Test
-  void testMultipleSoftConstraintsCombine() {
+  void multipleSoftConstraintsCombineTest() {
     // Given - Plusieurs contraintes SOFT qui vont toutes contribuer
     MinimumRestDaysConstraint restDaysConstraint =
         new MinimumRestDaysConstraint(
@@ -158,7 +157,7 @@ class SoftConstraintViolationsTest {
   }
 
   @Test
-  void testHardConstraintsDoNotAddToCollector() {
+  void hardConstraintsDoNotAddToCollectorTest() {
     // Given - Les mêmes contraintes mais en mode HARD
     MinimumRestDaysConstraint hardConstraint =
         new MinimumRestDaysConstraint(

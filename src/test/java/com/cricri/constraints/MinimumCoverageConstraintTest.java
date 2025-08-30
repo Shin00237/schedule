@@ -1,7 +1,8 @@
 package com.cricri.constraints;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import java.util.List;
+import org.junit.jupiter.api.Test;
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintType;
@@ -12,8 +13,6 @@ import com.cricri.testutils.ConstraintTestBase;
 import com.cricri.testutils.SolverAssertions;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.sat.CpSolver;
-import java.util.List;
-import org.junit.jupiter.api.Test;
 
 /**
  * Tests unitaires pour MinimumCoverageConstraint.
@@ -34,7 +33,7 @@ class MinimumCoverageConstraintTest extends ConstraintTestBase {
 
   @Test
   void constraintPropertiesTest() {
-    testConstraintProperties(constraint);
+    constraintPropertiesTest(constraint);
 
     assertEquals("MinimumCoverage(HARD)", constraint.getName());
   }

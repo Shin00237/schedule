@@ -2,7 +2,10 @@ package com.cricri.robustness;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import java.util.Collections;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
@@ -13,10 +16,6 @@ import com.cricri.model.Shift;
 import com.cricri.service.ShiftScheduler;
 import com.cricri.testutils.TestDataFactory;
 import com.google.ortools.Loader;
-import java.util.Collections;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 /**
  * Tests de robustesse pour vérifier que le système gère correctement les cas limites et les erreurs

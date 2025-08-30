@@ -37,7 +37,7 @@ class MinimumRestDaysConstraintTest extends ConstraintTestBase {
 
   @Test
   void constraintPropertiesTest() {
-    testConstraintProperties(constraint);
+    constraintPropertiesTest(constraint);
 
     assertEquals(
         "MinimumRestDays(" + minimumRestDays + " rest days min, SOFT)", constraint.getName());
