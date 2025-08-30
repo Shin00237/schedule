@@ -1,5 +1,7 @@
 package com.cricri.testutils;
 
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -29,16 +31,16 @@ public class TestDataFactory {
 
   // Types de shifts standards
   public static final ShiftType NORMAL_SHIFT =
-      new ShiftType("NORMAL", 480, 960, 480, 45); // 8h-16h, 8h effectives, 45min pause
+      new ShiftType("NORMAL", LocalTime.of(8,0), LocalTime.of(16,0), Duration.ofMinutes(45)); // 8h-16h, 8h effectives, 45min pause
 
   public static final ShiftType MORNING_SHIFT =
-      new ShiftType("MATIN", 420, 945, 525, 45); // 7h-15h45, 8h45 effectives
+      new ShiftType("MATIN", LocalTime.of(7, 0), LocalTime.of(15, 45),  Duration.ofMinutes(45)); // 7h-15h45, 8h45 effectives
 
   public static final ShiftType EVENING_SHIFT =
-      new ShiftType("SOIR", 900, 1425, 525, 45); // 15h-23h45, 8h45 effectives
+      new ShiftType("SOIR", LocalTime.of(15,0), LocalTime.of(23, 45),  Duration.ofMinutes(45)); // 15h-23h45, 8h45 effectives
 
   public static final ShiftType NIGHT_SHIFT =
-      new ShiftType("NUIT", 1350, 420, 510, 30); // 22h30-7h, 8h30 effectives
+      new ShiftType("NUIT", LocalTime.of(22, 30), LocalTime.of(7, 0), Duration.ofMinutes(30)); // 22h30-7h, 8h30 effectives
 
   // Semaines de référence pour les tests
   public static final Week WEEK_1 = SchedulingConfiguration.createWeek(1);

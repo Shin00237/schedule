@@ -1,5 +1,7 @@
 package com.cricri;
 
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import org.slf4j.Logger;
@@ -31,13 +33,11 @@ public class ScheduleApplication {
   private static final int MIN_EMPLOYES_PAR_SHIFT = 1;
   private static final int MAX_EMPLOYES_PAR_SHIFT = 2;
   private static final int MAX_HEURES_PAR_SEMAINE = 39 * 60; // 40h en minutes
-  private static final int HEURE_DEBUT_MATIN = 420; // 7h00
-  private static final int HEURE_FIN_MATIN = 945; // 15h45
-  private static final int DUREE_SHIFT_MATIN = 525; // 8h45
-  private static final int HEURE_DEBUT_SOIR = 900; // 15h00
-  private static final int HEURE_FIN_SOIR = 1425; // 23h45
-  private static final int DUREE_SHIFT_SOIR = 525; // 8h45
-  private static final int DUREE_PAUSE = 45; // 4h en minutes
+  private static final LocalTime HEURE_DEBUT_MATIN = LocalTime.of(7, 0); // 7h00
+  private static final LocalTime HEURE_FIN_MATIN = LocalTime.of(15, 45); // 15h45
+  private static final LocalTime HEURE_DEBUT_SOIR = LocalTime.of(15, 0); // 15h00
+  private static final LocalTime HEURE_FIN_SOIR = LocalTime.of(23, 45); // 23h45
+  private static final Duration DUREE_PAUSE = Duration.ofMinutes(45);
   private static final String[] JOURS = {
     "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"
   };
@@ -82,9 +82,9 @@ public class ScheduleApplication {
 
     // Créer des types de shift (avec 45 minutes de pause)
     ShiftType matin =
-        new ShiftType("MATIN", HEURE_DEBUT_MATIN, HEURE_FIN_MATIN, DUREE_SHIFT_MATIN, DUREE_PAUSE);
+        new ShiftType("MATIN", HEURE_DEBUT_MATIN, HEURE_FIN_MATIN, DUREE_PAUSE);
     ShiftType soir =
-        new ShiftType("SOIR", HEURE_DEBUT_SOIR, HEURE_FIN_SOIR, DUREE_SHIFT_SOIR, DUREE_PAUSE);
+        new ShiftType("SOIR", HEURE_DEBUT_SOIR, HEURE_FIN_SOIR, DUREE_PAUSE);
 
     // Créer une semaine
     Week week = SchedulingConfiguration.createWeek(0);
@@ -303,7 +303,7 @@ public class ScheduleApplication {
   }
 
   private static String calculateWorkingHours(Shift shift, long actualMinutes) {
-    int startMinutes = shift.type().heureDebutMinutes();
+    int startMinutes = shift.type().heureDebut().toSecondOfDay() / 60;
     int endMinutes = startMinutes + (int) actualMinutes;
 
     // Convertir en format HH:MM

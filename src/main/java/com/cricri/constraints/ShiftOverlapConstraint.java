@@ -162,10 +162,10 @@ public class ShiftOverlapConstraint implements Constraint {
         }
 
         // Vérifier le chevauchement temporel
-        int start1 = shift1.type().heureDebutMinutes();
-        int end1 = shift1.type().heureFinMinutes();
-        int start2 = shift2.type().heureDebutMinutes();
-        int end2 = shift2.type().heureFinMinutes();
+        int start1 = shift1.type().heureDebut().toSecondOfDay() / 60;
+        int end1 = shift1.type().heureFin().toSecondOfDay() / 60;
+        int start2 = shift2.type().heureDebut().toSecondOfDay() / 60;
+        int end2 = shift2.type().heureFin().toSecondOfDay() / 60;
 
         // Gérer le cas des shifts qui passent minuit (end < start)
         if (end1 < start1) {

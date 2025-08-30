@@ -2,6 +2,8 @@ package com.cricri.constraints;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +40,7 @@ class MaxHoursPerWeekConstraintTest {
 
     // Shifts sur 2 semaines pour tester la limite par semaine
     ShiftType normalShift =
-        new ShiftType("NORMAL", 480, 960, 480, 45); // 8h effectives (480-45=435min)
+        new ShiftType("NORMAL", LocalTime.of(8, 0), LocalTime.of(16, 0), Duration.ofMinutes(45)); // 8h effectives (480-45=435min)
     Week week1 = SchedulingConfiguration.createWeek(0);
     Week week2 = SchedulingConfiguration.createWeek(1);
 

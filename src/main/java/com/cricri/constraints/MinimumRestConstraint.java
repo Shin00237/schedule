@@ -93,25 +93,48 @@ public class MinimumRestConstraint implements Constraint {
     Shift shift2 = context.getShifts().get(shiftIndex2);
 
     // Calculer les temps absolus en minutes depuis le début de la période
-    int endTime1 = calculateAbsoluteTime(shift1.day(), shift1.type().heureFinMinutes());
-    int startTime2 = calculateAbsoluteTime(shift2.day(), shift2.type().heureDebutMinutes());
+    int startTime1 = calculateAbsoluteTime(shift1.day(), shift1.type().heureDebut().toSecondOfDay() / 60);
+    int endTime1 = calculateAbsoluteEndTime(shift1);
+    int startTime2 = calculateAbsoluteTime(shift2.day(), shift2.type().heureDebut().toSecondOfDay() / 60);
+    int endTime2 = calculateAbsoluteEndTime(shift2);
 
-    // Cas 1: Chevauchement - seulement si c'est le même jour absolu
-    int day1 = shift1.day().dayNumber(); // Déjà global et 0-indexé
-    int day2 = shift2.day().dayNumber(); // Déjà global et 0-indexé
-
-    if (day1 == day2 && startTime2 < endTime1) {
+    // Cas 1: Chevauchement - si les shifts se chevauchent temporellement
+    if ((startTime1 < endTime2 && endTime1 > startTime2)) {
       return true;
     }
 
     // Cas 2: Repos insuffisant - shift2 commence moins de minRestMinutes après la fin de shift1
-    return startTime2 > endTime1 && startTime2 < endTime1 + minRestMinutes;
+    if (endTime1 <= startTime2 && startTime2 < endTime1 + minRestMinutes) {
+      return true;
+    }
+
+    // Cas 3: Repos insuffisant - shift1 commence moins de minRestMinutes après la fin de shift2
+    if (endTime2 <= startTime1 && startTime1 < endTime2 + minRestMinutes) {
+      return true;
+    }
+
+    return false;
   }
 
   private int calculateAbsoluteTime(ShiftDay day, int heureMinutes) {
     // Convertir en temps absolu : jour * 24h * 60min + heureMinutes (déjà 0-indexé)
     int absoluteDay = day.dayNumber();
     return absoluteDay * 24 * 60 + heureMinutes;
+  }
+
+  private int calculateAbsoluteEndTime(Shift shift) {
+    int startMinutes = shift.type().heureDebut().toSecondOfDay() / 60;
+    int endMinutes = shift.type().heureFin().toSecondOfDay() / 60;
+    
+    // Si l'heure de fin est plus petite que l'heure de début, le shift traverse minuit
+    if (endMinutes < startMinutes) {
+      // L'heure de fin est le jour suivant
+      int nextDay = shift.day().dayNumber() + 1;
+      return nextDay * 24 * 60 + endMinutes;
+    } else {
+      // Shift normal dans la même journée
+      return calculateAbsoluteTime(shift.day(), endMinutes);
+    }
   }
 
   @Override
