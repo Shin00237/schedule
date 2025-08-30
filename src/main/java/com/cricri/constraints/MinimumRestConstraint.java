@@ -4,8 +4,8 @@ import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ObjectiveWeight;
-import com.cricri.model.Day;
 import com.cricri.model.Shift;
+import com.cricri.model.ShiftDay;
 import com.cricri.service.ObjectiveCollector;
 import com.cricri.service.SchedulingContext;
 import com.google.ortools.sat.LinearExpr;
@@ -108,7 +108,7 @@ public class MinimumRestConstraint implements Constraint {
     return startTime2 > endTime1 && startTime2 < endTime1 + minRestMinutes;
   }
 
-  private int calculateAbsoluteTime(Day day, int heureMinutes) {
+  private int calculateAbsoluteTime(ShiftDay day, int heureMinutes) {
     // Convertir en temps absolu : jour * 24h * 60min + heureMinutes (déjà 0-indexé)
     int absoluteDay = day.dayNumber();
     return absoluteDay * 24 * 60 + heureMinutes;

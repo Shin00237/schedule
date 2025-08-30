@@ -11,11 +11,12 @@ import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintType;
 import com.cricri.factory.ConstraintFactory;
-import com.cricri.model.Day;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
+import com.cricri.model.ShiftDay;
 import com.cricri.model.ShiftType;
 import com.cricri.model.Week;
+import com.cricri.service.SchedulingConfiguration;
 import com.cricri.service.ShiftScheduler;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
@@ -86,13 +87,13 @@ public class ScheduleApplication {
         new ShiftType("SOIR", HEURE_DEBUT_SOIR, HEURE_FIN_SOIR, DUREE_SHIFT_SOIR, DUREE_PAUSE);
 
     // Créer une semaine
-    Week week = Week.create(0);
+    Week week = SchedulingConfiguration.createWeek(0);
 
     // Créer des shifts pour une semaine complète
     List<Shift> shifts = new java.util.ArrayList<>();
 
     for (int i = 0; i < JOURS.length; i++) {
-      Day day = week.getDay(i);
+      ShiftDay day = week.getDay(i);
       // Shift du matin
       shifts.add(
           new Shift(

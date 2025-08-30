@@ -10,9 +10,9 @@ import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
 import com.cricri.constraints.enums.ConstraintType;
-import com.cricri.model.Day;
 import com.cricri.model.Employee;
 import com.cricri.model.Shift;
+import com.cricri.model.ShiftDay;
 import com.cricri.model.ShiftType;
 import com.cricri.model.Week;
 import com.cricri.service.ObjectiveCollector;
@@ -50,7 +50,7 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
   void testHardConstraintWithOverlappingShifts() {
     // Given - Deux shifts qui se chevauchent réellement (matin 8h-13h, après-midi 12h-17h)
     Week week = TestDataFactory.WEEK_1;
-    Day monday = week.getDay(0);
+    ShiftDay monday = week.getDay(0);
 
     // Shift du matin 8h-13h
     ShiftType morningType = new ShiftType("MATIN", 480, 780, 300, 0); // 8h-13h, 5h effectives
@@ -82,7 +82,7 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
   void testHardConstraintWithNonOverlappingShifts() {
     // Given - Deux shifts qui ne se chevauchent pas (contrainte ne s'applique pas)
     Week week = TestDataFactory.WEEK_1;
-    Day monday = week.getDay(0);
+    ShiftDay monday = week.getDay(0);
 
     // Shift du matin 8h-12h
     ShiftType morningType = new ShiftType("MATIN", 480, 720, 240, 0); // 8h-12h
@@ -114,7 +114,7 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
   void testHardConstraintWithImpossibleStaffingRequirement() {
     // Given - Shifts qui se chevauchent mais pas assez d'employés pour satisfaire les deux équipes
     Week week = TestDataFactory.WEEK_1;
-    Day monday = week.getDay(0);
+    ShiftDay monday = week.getDay(0);
 
     // Shift du matin 8h-13h (3 employés exactement)
     ShiftType morningType = new ShiftType("MATIN", 480, 780, 300, 0);
@@ -146,7 +146,7 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
   void testSoftConstraintCreatesObjectiveTerms() {
     // Given - Créer des shifts qui se chevauchent pour que la contrainte s'applique
     Week week = TestDataFactory.WEEK_1;
-    Day monday = week.getDay(0);
+    ShiftDay monday = week.getDay(0);
 
     // Shift du matin 8h-13h
     ShiftType morningType = new ShiftType("MATIN", 480, 780, 300, 0);
@@ -178,7 +178,7 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
   void testSoftConstraintIntegration() {
     // Given - Configuration avec chevauchement en SOFT
     Week week = TestDataFactory.WEEK_1;
-    Day monday = week.getDay(0);
+    ShiftDay monday = week.getDay(0);
 
     // Shift du matin 8h-13h
     ShiftType morningType = new ShiftType("MATIN", 480, 780, 300, 0);
@@ -211,7 +211,7 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
   void testMultipleEmployeeOverlap() {
     // Given - Test avec requirement de 2 employés de chaque équipe
     Week week = TestDataFactory.WEEK_1;
-    Day monday = week.getDay(0);
+    ShiftDay monday = week.getDay(0);
 
     // Shift du matin 8h-13h (3 employés)
     ShiftType morningType = new ShiftType("MATIN", 480, 780, 300, 0);
@@ -243,8 +243,8 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
   void testDifferentDaysNoOverlapRequired() {
     // Given - Shifts sur des jours différents (contrainte ne s'applique pas)
     Week week = TestDataFactory.WEEK_1;
-    Day monday = week.getDay(0);
-    Day tuesday = week.getDay(1);
+    ShiftDay monday = week.getDay(0);
+    ShiftDay tuesday = week.getDay(1);
 
     // Shift de fin lundi 20h-23h59
     ShiftType mondayType = new ShiftType("LUNDI", 1200, 1439, 239, 0); // 20h-23h59
@@ -276,7 +276,7 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
   void testOverlapDetection() {
     // Given - Test spécifique pour la détection de chevauchement
     Week week = TestDataFactory.WEEK_1;
-    Day monday = week.getDay(0);
+    ShiftDay monday = week.getDay(0);
 
     // Shifts qui se chevauchent de 12h30 à 13h
     ShiftType type1 = new ShiftType("TYPE1", 480, 780, 300, 0); // 8h-13h

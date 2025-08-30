@@ -41,8 +41,8 @@ public class TestDataFactory {
       new ShiftType("NUIT", 1350, 420, 510, 30); // 22h30-7h, 8h30 effectives
 
   // Semaines de référence pour les tests
-  public static final Week WEEK_1 = Week.create(1, SchedulingConfiguration.STANDARD_WEEK);
-  public static final Week WEEK_2 = Week.create(2, SchedulingConfiguration.STANDARD_WEEK);
+  public static final Week WEEK_1 = SchedulingConfiguration.createWeek(1);
+  public static final Week WEEK_2 = SchedulingConfiguration.createWeek(2);
 
   // Employés standards
   private static final String[] EMPLOYEE_NAMES = {
@@ -319,6 +319,6 @@ public class TestDataFactory {
    * @return Array de 2 semaines consécutives
    */
   public static Week[] createStandardWeeks() {
-    return new Week[] {Week.create(0), Week.create(1)};
+    return new Week[] {SchedulingConfiguration.createWeek(0), SchedulingConfiguration.createWeek(1)};
   }
 }

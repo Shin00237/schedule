@@ -3,7 +3,7 @@ package com.cricri.model;
 import java.time.DayOfWeek;
 import com.cricri.constants.Constants;
 
-public record Day(
+public record ShiftDay(
     int dayNumber, // 0-indexé (0-6 dans la semaine, global pour les contraintes)
     DayOfWeek dayOfWeek // MONDAY, TUESDAY, etc.
     ) {

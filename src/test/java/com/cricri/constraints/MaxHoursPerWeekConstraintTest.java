@@ -2,7 +2,11 @@ package com.cricri.constraints;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import com.cricri.constraints.config.ConstraintConfig;
 import com.cricri.constraints.config.ParameterKey;
 import com.cricri.constraints.enums.ConstraintNature;
@@ -11,15 +15,11 @@ import com.cricri.model.Employee;
 import com.cricri.model.Shift;
 import com.cricri.model.ShiftType;
 import com.cricri.model.Week;
+import com.cricri.service.SchedulingConfiguration;
 import com.cricri.service.SchedulingContext;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpSolver;
 import com.google.ortools.sat.CpSolverStatus;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 class MaxHoursPerWeekConstraintTest {
 
@@ -39,8 +39,8 @@ class MaxHoursPerWeekConstraintTest {
     // Shifts sur 2 semaines pour tester la limite par semaine
     ShiftType normalShift =
         new ShiftType("NORMAL", 480, 960, 480, 45); // 8h effectives (480-45=435min)
-    Week week1 = Week.create(0);
-    Week week2 = Week.create(1);
+    Week week1 = SchedulingConfiguration.createWeek(0);
+    Week week2 = SchedulingConfiguration.createWeek(1);
 
     shifts =
         Arrays.asList(
