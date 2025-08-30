@@ -35,7 +35,9 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
   void testConstraintProperties() {
     // Given
     ShiftOverlapConstraint constraint =
-        new ShiftOverlapConstraint(1, ConstraintNature.HARD, null);
+        new ShiftOverlapConstraint(
+            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, "minOverlapEmployees", 1)
+        );
 
     // Then
     testConstraintProperties(constraint);
@@ -61,7 +63,9 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
     SchedulingContext context = TestDataFactory.createContext(employees, overlappingShifts);
 
     ShiftOverlapConstraint constraint =
-        new ShiftOverlapConstraint(1, ConstraintNature.HARD, null); // 1 employé dans les deux shifts
+        new ShiftOverlapConstraint(
+            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, "minOverlapEmployees", 1)
+        ); // 1 employé dans les deux shifts
 
     // When - Appliquer la contrainte HARD
     constraint.applyHardConstraint(context);
@@ -91,7 +95,9 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
     SchedulingContext context = TestDataFactory.createContext(employees, separateShifts);
 
     ShiftOverlapConstraint constraint =
-        new ShiftOverlapConstraint(1, ConstraintNature.HARD, null);
+        new ShiftOverlapConstraint(
+            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, "minOverlapEmployees", 1)
+        );
 
     // When
     constraint.applyHardConstraint(context);
@@ -124,7 +130,9 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
     SchedulingContext impossibleContext = TestDataFactory.createContext(limitedEmployees, impossibleShifts);
 
     ShiftOverlapConstraint constraint =
-        new ShiftOverlapConstraint(5, ConstraintNature.HARD, null); // 5 employés dans les deux shifts (impossible)
+        new ShiftOverlapConstraint(
+            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, "minOverlapEmployees", 5)
+        ); // 5 employés dans les deux shifts (impossible)
 
     // When/Then - Devrait rendre le scénario infaisable
     testConstraintMakesScenarioInfeasible(
@@ -155,7 +163,7 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
             ConstraintType.SHIFT_OVERLAP, ConstraintNature.SOFT, "minOverlapEmployees", 1);
 
     ShiftOverlapConstraint constraint =
-        new ShiftOverlapConstraint(1, ConstraintNature.SOFT, config);
+        new ShiftOverlapConstraint(config);
 
     // When
     constraint.applySoftConstraint(context, collector);
@@ -184,7 +192,9 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
     ObjectiveCollector collector = new ObjectiveCollector();
 
     ShiftOverlapConstraint constraint =
-        new ShiftOverlapConstraint(1, ConstraintNature.SOFT, null); // 1 employé dans les deux shifts
+        new ShiftOverlapConstraint(
+            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.SOFT, "minOverlapEmployees", 1)
+        ); // 1 employé dans les deux shifts
 
     // When
     constraint.applySoftConstraint(context, collector);
@@ -214,7 +224,9 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
     SchedulingContext context = TestDataFactory.createContext(employees, shifts);
 
     ShiftOverlapConstraint constraint =
-        new ShiftOverlapConstraint(2, ConstraintNature.HARD, null); // 2 employés dans les deux shifts
+        new ShiftOverlapConstraint(
+            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, "minOverlapEmployees", 2)
+        ); // 2 employés dans les deux shifts
 
     // When
     constraint.applyHardConstraint(context);
@@ -245,7 +257,9 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
     SchedulingContext context = TestDataFactory.createContext(employees, differentDayShifts);
 
     ShiftOverlapConstraint constraint =
-        new ShiftOverlapConstraint(1, ConstraintNature.HARD, null);
+        new ShiftOverlapConstraint(
+            ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, "minOverlapEmployees", 1)
+        );
 
     // When
     constraint.applyHardConstraint(context);
@@ -277,7 +291,9 @@ class ShiftOverlapConstraintTest extends ConstraintTestBase {
     List<Shift> mixedShifts = Arrays.asList(shift1, shift2, shift3);
     SchedulingContext context = TestDataFactory.createContext(employees, mixedShifts);
 
-    ShiftOverlapConstraint constraint = new ShiftOverlapConstraint(1, ConstraintNature.HARD, null);
+    ShiftOverlapConstraint constraint = new ShiftOverlapConstraint(
+        ConstraintConfig.of(ConstraintType.SHIFT_OVERLAP, ConstraintNature.HARD, "minOverlapEmployees", 1)
+    );
 
     // When
     constraint.applyHardConstraint(context);

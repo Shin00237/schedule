@@ -30,15 +30,9 @@ public class ShiftOverlapConstraint implements Constraint {
     private final ConstraintNature nature;
     private final ConstraintConfig config;
 
-    public ShiftOverlapConstraint(int minOverlapEmployees, ConstraintNature nature, ConstraintConfig config) {
-        this.minOverlapEmployees = minOverlapEmployees;
-        this.nature = nature;
-        this.config = config;
-    }
-
-    public ShiftOverlapConstraint(ConstraintNature nature, ConstraintConfig config) {
+    public ShiftOverlapConstraint(ConstraintConfig config) {
         this.minOverlapEmployees = config.getIntParameter("minOverlapEmployees", 1);
-        this.nature = nature;
+        this.nature = config.nature();
         this.config = config;
     }
 

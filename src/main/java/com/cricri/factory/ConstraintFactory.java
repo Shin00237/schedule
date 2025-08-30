@@ -41,7 +41,7 @@ public class ConstraintFactory {
   }
 
   private static Constraint createShiftOverlapConstraint(ConstraintConfig config) {
-    return new ShiftOverlapConstraint(config.nature(), config);
+    return new ShiftOverlapConstraint(config);
   }
 
   /**
